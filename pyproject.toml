@@ -83,22 +83,6 @@ markers = [
 # curlx_pkg using its own .venv instead.
 norecursedirs = ["curlx_pkg", ".venv", "venv", "node_modules", "build", "dist"]
 
-[tool.pfix]
-# Self-healing Python configuration
-model = "openrouter/deep/deep-v4-pro"
-auto_apply = true
-auto_install_deps = true
-auto_restart = false
-max_retries = 3
-create_backups = false
-git_auto_commit = false
-
-[tool.pfix.runtime_todo]
-enabled = true
-todo_file = "TODO.md"
-min_severity = "low"
-deduplicate = true
-
 [tool.costs]
 # AI Cost tracking configuration
 badge = true

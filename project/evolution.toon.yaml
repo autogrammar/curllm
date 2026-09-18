@@ -1,5 +1,5 @@
-# code2llm/evolution | 2380 func | 340f | 2026-06-06
-# generated in 0.01s
+# code2llm/evolution | 2312 func | 340f | 2026-09-08
+# generated in 0.02s
 
 NEXT[10] (ranked by impact):
   [1] !! SPLIT           curllm_core/url_resolution/resolver.py
@@ -44,15 +44,15 @@ NEXT[10] (ranked by impact):
 
 
 RISKS[3]:
-  ⚠ Splitting hardcoded_report.json may break 0 import paths
   ⚠ Splitting curllm_core/url_resolution/resolver.py may break 23 import paths
   ⚠ Splitting static/js/app.js may break 123 import paths
+  ⚠ Splitting hardcoded_report.txt may break 0 import paths
 
 METRICS-TARGET:
   CC̄:          4.9 → ≤3.4
   max-CC:      154 → ≤20
-  god-modules: 33 → 0
-  high-CC(≥15): 109 → ≤54
+  god-modules: 31 → 0
+  high-CC(≥15): 108 → ≤54
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -80,4 +80,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  (first run — no previous data)
+  prev CC̄=4.9 → now CC̄=4.9

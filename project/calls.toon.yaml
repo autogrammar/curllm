@@ -1,29 +1,29 @@
-# code2llm call graph | /home/tom/github/wronai/curllm
-# generated in 0.35s
-# nodes: 419 | edges: 500 | modules: 107
-# CC̄=4.8
+# code2llm call graph | /home/tom/github/autogrammar/curllm
+# generated in 0.57s
+# nodes: 422 | edges: 500 | modules: 107
+# CC̄=4.9
 
 HUBS[20]:
   monitoring.website_monitor.print
     CC=0  in:1056  out:0  total:1056
   functions.js.safety.str
-    CC=2  in:539  out:1  total:540
+    CC=2  in:543  out:1  total:544
   curllm_core.form_fill.deterministic_form_fill
     CC=154  in:0  out:222  total:222
   curllm_core.llm_planner.generate_action
     CC=80  in:2  out:103  total:105
   functions.registry.FunctionRegistry.list
     CC=3  in:74  out:3  total:77
-  scripts.dev_watcher.DevWatcher.log
-    CC=3  in:68  out:4  total:72
   extension.extension.CurllmExtension.curllmExtension
     CC=44  in:0  out:72  total:72
+  scripts.dev_watcher.DevWatcher.log
+    CC=3  in:68  out:4  total:72
   scripts.analyze_deps.main
     CC=17  in:0  out:64  total:64
-  curllm_core.proxy.resolve_proxy
-    CC=42  in:1  out:56  total:57
   scripts.analyze_dependencies.main
     CC=13  in:0  out:57  total:57
+  curllm_core.proxy.resolve_proxy
+    CC=42  in:1  out:56  total:57
   curllm_core.streamware.flow.flow
     CC=2  in:51  out:4  total:55
   wordpress_batch.batch_create_posts
@@ -34,16 +34,16 @@ HUBS[20]:
     CC=28  in:1  out:51  total:52
   examples.currency.currency_example.main
     CC=9  in:0  out:52  total:52
-  examples.detection.llm_heuristics_example.main
-    CC=13  in:0  out:46  total:46
-  curllm_core.remediation.remediate_if_empty
-    CC=22  in:0  out:46  total:46
   curllm_core.server.proxy_health
     CC=27  in:0  out:46  total:46
+  examples.detection.llm_heuristics_example.main
+    CC=13  in:0  out:46  total:46
   curllm_core.proxy._load_public_list
     CC=45  in:2  out:40  total:42
   scripts.find_hardcoded.generate_report
     CC=16  in:1  out:41  total:42
+  curllm_core.progressive_context.build_progressive_context
+    CC=29  in:1  out:40  total:41
 
 MODULES:
   captcha.allegro_captcha_solver  [4 funcs]
@@ -51,8 +51,8 @@ MODULES:
     brute_force_solve  CC=5  out:8
     solve_allegro_puzzle  CC=14  out:29
     main  CC=9  out:40
-  captcha.captcha_solver  [1 funcs]
-    analyze_puzzle  CC=4  out:12
+  captcha.audio_solver  [1 funcs]
+    _transcribe_wav  CC=3  out:7
   captcha.playwright_bql_framework  [8 funcs]
     run_instruction  CC=7  out:22
     run  CC=3  out:6
@@ -62,6 +62,8 @@ MODULES:
     extract_iframe_info  CC=4  out:4
     extract_interactive_elements  CC=2  out:3
     extract_semantic_dom  CC=2  out:4
+  captcha.sliding_solver  [1 funcs]
+    analyze_puzzle  CC=4  out:12
   curllm_core.actions  [1 funcs]
     _auto_scroll  CC=1  out:1
   curllm_core.atomic_functions  [1 funcs]
@@ -72,9 +74,8 @@ MODULES:
     _ensure_playwright_browsers  CC=9  out:12
     setup_browser  CC=2  out:3
     setup_playwright  CC=28  out:51
-  curllm_core.captcha_slider  [2 funcs]
+  curllm_core.captcha_slider  [1 funcs]
     _frame_has_slider  CC=5  out:2
-    attempt_slider_challenge  CC=15  out:16
   curllm_core.captcha_widget  [1 funcs]
     handle_widget_captcha  CC=13  out:13
   curllm_core.config_logger  [5 funcs]
@@ -127,9 +128,10 @@ MODULES:
     looks_like_human_verify_text  CC=3  out:2
   curllm_core.intent_detector  [1 funcs]
     detect_intent  CC=1  out:5
-  curllm_core.llm  [2 funcs]
+  curllm_core.llm  [3 funcs]
     ainvoke  CC=2  out:7
     ainvoke_with_image  CC=4  out:15
+    chat  CC=2  out:8
   curllm_core.llm_container_validator  [2 funcs]
     validate_containers  CC=10  out:21
     validate_single_container  CC=4  out:11
@@ -143,15 +145,18 @@ MODULES:
     _setup_ollama_legacy  CC=3  out:5
     create_llm_client  CC=8  out:8
     setup_llm  CC=3  out:4
-  curllm_core.llm_filter_validator  [2 funcs]
+  curllm_core.llm_filter_validator  [3 funcs]
+    _log  CC=4  out:4
     _validate_batch_internal  CC=7  out:19
     validate_product  CC=3  out:16
-  curllm_core.llm_guided_extractor  [1 funcs]
-    _log  CC=3  out:6
   curllm_core.llm_heuristics  [1 funcs]
     discover_product_link_patterns  CC=23  out:26
   curllm_core.llm_planner  [1 funcs]
     generate_action  CC=80  out:103
+  curllm_core.metrics  [3 funcs]
+    get_domain_stats  CC=6  out:7
+    get_metrics_collector  CC=2  out:1
+    record_extraction  CC=2  out:3
   curllm_core.multi_criteria_filter  [1 funcs]
     print_filtering_report  CC=4  out:17
   curllm_core.page_context  [1 funcs]
@@ -167,9 +172,13 @@ MODULES:
     _dict_to_playwright_proxy  CC=3  out:10
     _load_public_list  CC=45  out:40
     resolve_proxy  CC=42  out:56
-  curllm_core.remediation  [2 funcs]
-    maybe_solve_slider_block  CC=17  out:18
-    remediate_if_empty  CC=22  out:46
+  curllm_core.result_corrector  [6 funcs]
+    analyze_and_report  CC=14  out:18
+    check_fields_present  CC=14  out:7
+    correct_with_llm  CC=10  out:21
+    detect_required_fields  CC=8  out:4
+    generate_correction_prompt  CC=3  out:6
+    validate_field_values  CC=18  out:17
   curllm_core.result_store  [11 funcs]
     _ensure_base  CC=4  out:9
     _extract_array  CC=9  out:12
@@ -203,19 +212,21 @@ MODULES:
   curllm_core.slider_plugin  [2 funcs]
     _detect_slider  CC=5  out:1
     try_external_slider_solver  CC=29  out:28
-  curllm_core.streamware.components.curllm  [2 funcs]
+  curllm_core.streamware.components.captcha.detect  [1 funcs]
+    detect_captcha  CC=2  out:8
+  curllm_core.streamware.components.captcha.solve  [1 funcs]
+    solve  CC=8  out:8
+  curllm_core.streamware.components.captcha.vision_solve  [2 funcs]
+    _solve_checkbox_captcha  CC=10  out:20
+    solve_captcha_visual  CC=7  out:13
+  curllm_core.streamware.components.curllm  [5 funcs]
+    stream  CC=4  out:3
     browse  CC=3  out:3
+    execute_bql  CC=2  out:3
     extract_data  CC=2  out:3
+    fill_form  CC=2  out:3
   curllm_core.streamware.components.decision_llm.llm_action_planner  [1 funcs]
     plan_next_action  CC=5  out:10
-  curllm_core.streamware.components.llm_decision  [7 funcs]
-    _llm_generate  CC=4  out:10
-    _parse_json_response  CC=5  out:6
-    extract_fields_from_instruction_llm  CC=7  out:7
-    interpret_instruction_llm  CC=5  out:5
-    parse_selector_name_llm  CC=4  out:3
-    plan_next_action_llm  CC=11  out:17
-    validate_action_llm  CC=3  out:13
   curllm_core.streamware.components.transform  [1 funcs]
     _transform_csv  CC=6  out:14
   curllm_core.streamware.core  [2 funcs]
@@ -300,13 +311,8 @@ MODULES:
   curllm_core.url_resolution.goal_detector_llm.goal_detector_hybrid  [2 funcs]
     detect_goal  CC=5  out:15
     detect_goal_sync  CC=5  out:7
-  curllm_core.url_resolution.resolver  [2 funcs]
-    _extract_search_term  CC=7  out:9
-    _llm_find_link  CC=12  out:19
   curllm_logs.run_logger  [1 funcs]
     log_table  CC=12  out:23
-  curllm_logs.screenshots  [1 funcs]
-    capture  CC=5  out:13
   curllm_server.executor.curllm_executor  [2 funcs]
     _accept_cookies  CC=8  out:6
     _strip_fences  CC=4  out:7
@@ -488,9 +494,6 @@ MODULES:
     fix_missing_logger  CC=23  out:36
     main  CC=12  out:29
     scan_project  CC=4  out:3
-  scripts.refactor_to_llm_dsl  [2 funcs]
-    main  CC=4  out:18
-    print_analysis_report  CC=5  out:15
   scripts.reorganize_versions  [2 funcs]
     add_deprecation_warning  CC=4  out:7
     main  CC=5  out:33
@@ -523,30 +526,30 @@ EDGES:
   examples.example_env_based_config → monitoring.website_monitor.print
   examples.benchmark_providers → monitoring.website_monitor.print
   examples.main → monitoring.website_monitor.print
-  examples_streamware.example_1_simple_browse → monitoring.website_monitor.print
-  examples_streamware.example_1_simple_browse → curllm_core.streamware.flow.flow
-  examples_streamware.example_2_data_extraction → monitoring.website_monitor.print
-  examples_streamware.example_2_data_extraction → curllm_core.streamware.flow.flow
-  examples_streamware.example_3_form_filling → monitoring.website_monitor.print
-  examples_streamware.example_3_form_filling → curllm_core.streamware.flow.flow
-  examples_streamware.example_4_bql_query → monitoring.website_monitor.print
-  examples_streamware.example_4_bql_query → curllm_core.streamware.flow.flow
-  examples_streamware.example_5_multi_format_export → monitoring.website_monitor.print
-  examples_streamware.example_5_multi_format_export → curllm_core.streamware.flow.flow
-  examples_streamware.example_5_multi_format_export → curllm_core.streamware.patterns.multicast.multicast
-  examples_streamware.example_6_batch_processing → monitoring.website_monitor.print
-  examples_streamware.example_6_batch_processing → curllm_core.streamware.patterns.join.join
-  examples_streamware.example_6_batch_processing → curllm_core.streamware.patterns.split.split
-  examples_streamware.example_6_batch_processing → curllm_core.streamware.flow.flow
-  examples_streamware.example_7_conditional_routing → monitoring.website_monitor.print
-  examples_streamware.example_7_conditional_routing → curllm_core.streamware.flow.flow
-  examples_streamware.example_7_conditional_routing → curllm_core.streamware.patterns.choose.choose
-  examples_streamware.example_8_scraping_pipeline → monitoring.website_monitor.print
-  examples_streamware.example_8_scraping_pipeline → curllm_core.streamware.helpers.pipeline.pipeline
-  examples_streamware.example_9_yaml_flow → monitoring.website_monitor.print
-  examples_streamware.example_9_yaml_flow → curllm_core.streamware.yaml_runner.run_yaml_flow
-  examples_streamware.example_10_http_to_scraping → monitoring.website_monitor.print
-  examples_streamware.example_10_http_to_scraping → curllm_core.streamware.flow.flow
-  examples_streamware.example_11_screenshot_capture → monitoring.website_monitor.print
-  examples_streamware.example_11_screenshot_capture → curllm_core.streamware.flow.flow
-  examples_streamware.example_12_data_validation → monitoring.website_monitor.print
+  examples.streamware.streamware_examples.example_1_simple_browse → monitoring.website_monitor.print
+  examples.streamware.streamware_examples.example_1_simple_browse → curllm_core.streamware.flow.flow
+  examples.streamware.streamware_examples.example_2_data_extraction → monitoring.website_monitor.print
+  examples.streamware.streamware_examples.example_2_data_extraction → curllm_core.streamware.flow.flow
+  examples.streamware.streamware_examples.example_3_form_filling → monitoring.website_monitor.print
+  examples.streamware.streamware_examples.example_3_form_filling → curllm_core.streamware.flow.flow
+  examples.streamware.streamware_examples.example_4_bql_query → monitoring.website_monitor.print
+  examples.streamware.streamware_examples.example_4_bql_query → curllm_core.streamware.flow.flow
+  examples.streamware.streamware_examples.example_5_pipeline_composition → monitoring.website_monitor.print
+  examples.streamware.streamware_examples.example_5_pipeline_composition → curllm_core.streamware.helpers.pipeline.pipeline
+  examples.streamware.streamware_examples.example_6_split_join → monitoring.website_monitor.print
+  examples.streamware.streamware_examples.example_6_split_join → curllm_core.streamware.patterns.join.join
+  examples.streamware.streamware_examples.example_6_split_join → curllm_core.streamware.patterns.split.split
+  examples.streamware.streamware_examples.example_6_split_join → curllm_core.streamware.flow.flow
+  examples.streamware.streamware_examples.example_7_multicast → monitoring.website_monitor.print
+  examples.streamware.streamware_examples.example_7_multicast → curllm_core.streamware.flow.flow
+  examples.streamware.streamware_examples.example_7_multicast → curllm_core.streamware.patterns.multicast.multicast
+  examples.streamware.streamware_examples.example_8_conditional_routing → monitoring.website_monitor.print
+  examples.streamware.streamware_examples.example_8_conditional_routing → curllm_core.streamware.flow.flow
+  examples.streamware.streamware_examples.example_8_conditional_routing → curllm_core.streamware.patterns.choose.choose
+  examples.streamware.streamware_examples.example_9_streaming → monitoring.website_monitor.print
+  examples.streamware.streamware_examples.example_9_streaming → curllm_core.streamware.flow.flow
+  examples.streamware.streamware_examples.example_10_with_metrics → monitoring.website_monitor.print
+  examples.streamware.streamware_examples.example_10_with_metrics → curllm_core.streamware.flow.flow
+  examples.streamware.streamware_examples.example_11_helper_functions → monitoring.website_monitor.print
+  examples.streamware.streamware_examples.example_11_helper_functions → curllm_core.streamware.components.curllm.browse
+  examples.streamware.streamware_examples.example_11_helper_functions → curllm_core.streamware.components.curllm.extract_data

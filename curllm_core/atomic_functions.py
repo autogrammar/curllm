@@ -18,9 +18,10 @@ from typing import Any, Dict, List, Optional, Tuple
 class AtomicFunctionExecutor:
     """Execute atomic DOM operations with full observability"""
     
-    def __init__(self, page, run_logger=None):
+    def __init__(self, page, run_logger=None, llm=None):
         self.page = page
         self.run_logger = run_logger
+        self.llm = llm
         self.execution_trace = []
     
     def _log(self, step: str, result: Any):
@@ -60,11 +61,17 @@ class AtomicFunctionExecutor:
         """)
         
         # Ask LLM to suggest selectors
-        try:
-            from curllm_core.streamware.llm_client import get_llm
-            llm = get_llm()
-            
-            prompt = f"""Analyze this DOM structure and suggest CSS selectors for finding {entity_type} containers.
+        llm = self.llm
+        if not llm:
+            try:
+                from curllm_core.streamware.llm_client import get_llm
+                llm = get_llm()
+            except Exception:
+                llm = None
+
+        if llm:
+            try:
+                prompt = f"""Analyze this DOM structure and suggest CSS selectors for finding {entity_type} containers.
 
 DOM sample (tag, id, class, text preview):
 {dom_sample[:2000]}
@@ -73,17 +80,25 @@ Return JSON array of selectors to try, ordered by likelihood:
 ["selector1", "selector2", ...]
 
 JSON:"""
-            
-            response = await llm.generate(prompt)
-            
-            import json
-            match = re.search(r'\[.*?\]', response, re.DOTALL)
-            if match:
-                selectors = json.loads(match.group())
-                self._log("llm_selectors", f"LLM suggested: {selectors}")
-                return selectors
-        except Exception as e:
-            self._log("llm_selectors", f"LLM failed: {e}, using fallback")
+                response = ""
+                if hasattr(llm, "generate"):
+                    response = await llm.generate(prompt)
+                elif hasattr(llm, "aquery"):
+                    response = await llm.aquery(prompt)
+                elif hasattr(llm, "ainvoke"):
+                    res = await llm.ainvoke(prompt)
+                    response = res.content if hasattr(res, "content") else str(res)
+                elif callable(llm):
+                    response = str(llm(prompt))
+                
+                import json
+                match = re.search(r'\[.*?\]', response, re.DOTALL)
+                if match:
+                    selectors = json.loads(match.group())
+                    self._log("llm_selectors", f"LLM suggested: {selectors}")
+                    return selectors
+            except Exception as e:
+                self._log("llm_selectors", f"LLM failed: {e}, using fallback")
         
         # Fallback: generic dynamic detection
         return await self._fallback_selector_discovery(entity_type)
@@ -170,41 +185,75 @@ JSON:"""
         return containers
     
     async def _find_containers_heuristic(self, entity_type: str) -> List[Dict]:
-        """Heuristic container detection based on patterns"""
-        
-        # Look for repeated structures with similar characteristics
-        result = await self.page.evaluate("""
-            (entityType) => {
-                const containers = [];
-                const allElements = Array.from(document.querySelectorAll('*'));
-                
-                // For products: look for elements with price patterns
-                if (entityType === 'product') {
-                    const pricePattern = /(\\d+[\\d\\s]*(?:[\\.,]\\d{2})?)\\s*(?:zł|PLN|€|\\$|USD|EUR)/i;
+        """Dynamic semantic container detection based on structure and entity type."""
+        try:
+            candidates_info = await self.page.evaluate("""
+                (entityType) => {
+                    const results = [];
+                    const potentialElements = document.querySelectorAll(
+                        'article, [class*="card"], [class*="item"], [class*="box"], [class*="entry"], ' +
+                        '[class*="result"], [class*="product"], [class*="listing"], [class*="offer"], li'
+                    );
                     
-                    for (const el of allElements) {
-                        const text = el.innerText || '';
-                        const hasPrice = pricePattern.test(text);
-                        const hasLink = el.querySelector('a[href]') !== null;
+                    const seen = new Set();
+                    for (const el of potentialElements) {
+                        if (!el.offsetParent) continue;
+                        const text = (el.innerText || '').trim();
+                        if (text.length < 15 || text.length > 2000) continue;
                         
-                        if (hasPrice && hasLink && text.length > 20 && text.length < 500) {
-                            containers.push({
-                                tag: el.tagName,
-                                className: el.className,
-                                preview: text.substring(0, 100)
-                            });
+                        const hasLink = el.querySelector('a[href]') !== null;
+                        const hasHeading = el.querySelector('h1, h2, h3, h4, h5, h6, strong') !== null;
+                        if (!hasLink && !hasHeading) continue;
+                        
+                        const cls = typeof el.className === 'string' ? el.className.trim().split(/\\s+/)[0] : '';
+                        const tag = el.tagName.toLowerCase();
+                        let selector = '';
+                        if (el.id) {
+                            selector = '#' + el.id;
+                        } else if (cls && cls.length > 2) {
+                            selector = `${tag}.${cls}`;
                         }
                         
-                        if (containers.length >= 50) break;
+                        if (selector && !seen.has(selector)) {
+                            seen.add(selector);
+                            results.push({
+                                selector: selector,
+                                preview: text.substring(0, 100),
+                                tag: tag,
+                                className: cls
+                            });
+                        }
+                        if (results.length >= 20) break;
                     }
+                    return results;
                 }
-                
-                return containers;
-            }
-        """, entity_type)
-        
-        self._log("find_containers_heuristic", f"Found {len(result)} by heuristic")
-        return result
+            """, entity_type)
+            
+            containers = []
+            for info in candidates_info:
+                sel = info.get("selector")
+                if not sel:
+                    continue
+                try:
+                    elements = await self.page.query_selector_all(sel)
+                    for i, elem in enumerate(elements[:30]):
+                        txt = await elem.inner_text()
+                        containers.append({
+                            "selector": sel,
+                            "index": i,
+                            "element": elem,
+                            "preview_text": txt[:100]
+                        })
+                    if containers:
+                        break
+                except Exception:
+                    continue
+            
+            self._log("find_containers_heuristic", f"Found {len(containers)} by semantic structure")
+            return containers
+        except Exception as e:
+            self._log("find_containers_heuristic", f"Heuristic container detection failed: {e}")
+            return []
     
     async def extract_field(self, container: Dict, field_spec) -> Optional[Any]:
         """

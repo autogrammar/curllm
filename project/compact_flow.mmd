@@ -1,10 +1,10 @@
 flowchart TD
-%% generated in 0.06s
+%% generated in 0.11s
     bql____main__["bql.__main__<br/>1 funcs"]
-    bql__executor["bql.executor<br/>11 funcs"]
     captcha__allegro_captcha_solver["captcha.allegro_captcha_solver<br/>5 funcs"]
-    captcha__captcha_solver["captcha.captcha_solver<br/>16 funcs"]
+    captcha__audio_solver["captcha.audio_solver<br/>5 funcs"]
     captcha__playwright_bql_framework["captcha.playwright_bql_framework<br/>15 funcs"]
+    captcha__sliding_solver["captcha.sliding_solver<br/>10 funcs"]
     curllm_core__actions["curllm_core.actions<br/>2 funcs"]
     curllm_core__atomic_functions["curllm_core.atomic_functions<br/>13 funcs"]
     curllm_core__bql["curllm_core.bql<br/>29 funcs"]
@@ -37,7 +37,7 @@ flowchart TD
     curllm_core__human_verify["curllm_core.human_verify<br/>2 funcs"]
     curllm_core__intent_detector["curllm_core.intent_detector<br/>7 funcs"]
     curllm_core__iterative_extractor["curllm_core.iterative_extractor<br/>11 funcs"]
-    curllm_core__llm["curllm_core.llm<br/>3 funcs"]
+    curllm_core__llm["curllm_core.llm<br/>5 funcs"]
     curllm_core__llm_container_validator["curllm_core.llm_container_validator<br/>8 funcs"]
     curllm_core__llm_dsl["curllm_core.llm_dsl<br/>51 funcs"]
     curllm_core__llm_factory["curllm_core.llm_factory<br/>19 funcs"]
@@ -65,10 +65,10 @@ flowchart TD
     curllm_core__runtime["curllm_core.runtime<br/>3 funcs"]
     curllm_core__screenshots["curllm_core.screenshots<br/>7 funcs"]
     curllm_core__semantic_query["curllm_core.semantic_query<br/>9 funcs"]
-    curllm_core__server["curllm_core.server<br/>8 funcs"]
+    curllm_core__server["curllm_core.server<br/>9 funcs"]
     curllm_core__shortcuts["curllm_core.shortcuts<br/>7 funcs"]
     curllm_core__slider_plugin["curllm_core.slider_plugin<br/>2 funcs"]
-    curllm_core__streamware["curllm_core.streamware<br/>476 funcs"]
+    curllm_core__streamware["curllm_core.streamware<br/>418 funcs"]
     curllm_core__task_runner_early["curllm_core.task_runner_early<br/>6 funcs"]
     curllm_core__task_runner_fallback["curllm_core.task_runner_fallback<br/>3 funcs"]
     curllm_core__task_runner_steps["curllm_core.task_runner_steps<br/>5 funcs"]
@@ -84,6 +84,8 @@ flowchart TD
     curllm_logs__log_session["curllm_logs.log_session<br/>15 funcs"]
     curllm_logs__run_logger["curllm_logs.run_logger<br/>18 funcs"]
     curllm_logs__screenshots["curllm_logs.screenshots<br/>17 funcs"]
+    curllm_mcp__service["curllm_mcp.service<br/>15 funcs"]
+    curllm_mcp__testql_export["curllm_mcp.testql_export<br/>6 funcs"]
     curllm_server__executor["curllm_server.executor<br/>22 funcs"]
     curllm_server__llm["curllm_server.llm<br/>2 funcs"]
     curllm_server__routes["curllm_server.routes<br/>4 funcs"]
@@ -129,7 +131,7 @@ flowchart TD
     examples__url_resolver ==>|159| monitoring__website_monitor
     examples__detection ==>|131| monitoring__website_monitor
     curllm_core__cli ==>|109| monitoring__website_monitor
-    curllm_core__streamware ==>|98| functions__js
+    curllm_core__streamware ==>|88| functions__js
     examples__orchestration ==>|71| monitoring__website_monitor
     examples__streamware ==>|69| monitoring__website_monitor
     curllm_core__streamware ==>|68| scripts__dev_watcher
@@ -167,86 +169,87 @@ flowchart TD
     functions__safety ==>|10| functions__js
     curllm_core__config_logger ==>|9| functions__js
     curllm_core__shortcuts ==>|9| curllm_core__extraction
-    curllm_core__extraction ==>|9| functions__registry
     curllm_core__deprecated ==>|9| functions__js
+    curllm_core__extraction ==>|9| functions__registry
     curllm_core__orchestration ==>|9| monitoring__website_monitor
     examples__extraction ==>|8| monitoring__website_monitor
     scripts__find_hardcoded ==>|8| monitoring__website_monitor
-    curllm_core__remediation ==>|8| functions__js
     curllm_core__multi_criteria_filter ==>|8| functions__js
+    curllm_core__remediation ==>|8| functions__js
     curllm_core__orchestration ==>|8| functions__js
     wordpress_batch ==>|7| monitoring__website_monitor
     forms__app ==>|7| functions__js
     curllm_core__url_resolution ==>|7| functions__js
-    curllm_core__tools ==>|7| monitoring__website_monitor
     curllm_core__diagnostics ==>|7| functions__js
+    curllm_core__tools ==>|7| monitoring__website_monitor
+    curllm_mcp__testql_export ==>|7| functions__js
+    curllm_mcp__service ==>|7| functions__js
     curllm_web__routes ==>|7| curllm_web__prompts
     examples__v2_usage ==>|6| monitoring__website_monitor
-    curllm_core__browser_setup ==>|6| monitoring__website_monitor
     curllm_logs__run_logger ==>|6| functions__js
-    curllm_core__streamware ==>|6| curllm_core__llm_guided_extractor
+    curllm_core__browser_setup ==>|6| monitoring__website_monitor
+    curllm_core__streamware ==>|6| curllm_core__llm_filter_validator
     curllm_core__cli ==>|6| curllm_core__streamware
     curllm_core__orchestrators ==>|6| functions__registry
     curlx_pkg__src ==>|6| monitoring__website_monitor
     curllm_core__context_optimizer ==>|5| functions__js
     curllm_core__llm_planner ==>|5| functions__js
+    scripts__dev_watcher ==>|5| functions__js
     curllm_core__task_runner_early ==>|5| curllm_core__extraction
     curllm_core__dom_statistics ==>|5| functions__registry
-    scripts__dev_watcher ==>|5| functions__js
     curllm_core__hierarchical ==>|5| functions__js
     curllm_core__data_export ==>|5| functions__registry
     functions__registry ==>|5| functions__js
     curllm_web__main ==>|5| curllm_web__server
-    captcha__playwright_bql_framework ==>|4| functions__js
-    examples__orchestration ==>|4| examples__url_resolver
     examples__v2_usage ==>|4| curllm_core__llm_factory
+    examples__orchestration ==>|4| examples__url_resolver
+    captcha__playwright_bql_framework ==>|4| functions__js
     curllm_core__browser_setup ==>|4| functions__js
     curllm_core__llm_filter_validator ==>|4| functions__js
     curllm_core__screenshots ==>|4| functions__js
     curllm_core__cli ==>|4| functions__js
+    curllm_core__deprecated ==>|4| curllm_core__form_fill
     curllm_core__field_filling ==>|4| functions__js
     curllm_core__deprecated ==>|4| curllm_core__streamware
-    curllm_core__deprecated ==>|4| curllm_core__form_fill
     curllm_core__validation ==>|4| functions__registry
     curllm_core__transparent ==>|4| functions__js
+    examples__currency -->|3| curllm_core__streamware
     examples__detection -->|3| curllm_core__detection
     examples__url_resolver -->|3| extension__extension
     examples__orchestration -->|3| curllm_core__semantic_query
-    examples__currency -->|3| curllm_core__streamware
-    curllm_core__vision_form_analysis -->|3| functions__js
     curllm_core__runtime -->|3| functions__js
+    curllm_core__vision_form_analysis -->|3| functions__js
     curllm_core__progressive_context -->|3| functions__js
+    curllm_core__llm -->|3| functions__js
     curllm_core__task_runner_fallback -->|3| curllm_core__extraction
-    captcha__captcha_solver -->|3| functions__js
     curllm_core__planner_progress -->|3| curllm_core__rerun_cmd
     curllm_core__server -->|3| functions__registry
     curllm_core__result_store -->|3| functions__js
     curllm_core__form_fill -->|3| functions__registry
     curllm_core__headers -->|3| functions__js
-    curllm_core__remediation -->|3| curllm_core__human_verify
     curllm_core__llm_container_validator -->|3| functions__js
     curllm_core__shortcuts -->|3| functions__js
     curllm_core__bql_extraction_orchestrator -->|3| functions__js
+    curllm_core__remediation -->|3| curllm_core__human_verify
     curllm_core__streamware -->|3| examples__url_resolver
     curllm_core__tools -->|3| functions__registry
-    curllm_core__cli -->|3| functions__registry
     curllm_core__hierarchical -->|3| curllm_core__vision_form_analysis
-    curllm_core__data_export -->|3| functions__js
+    curllm_core__cli -->|3| functions__registry
     curllm_core__llm_dsl -->|3| functions__js
+    curllm_core__data_export -->|3| functions__js
     curllm_core__dom_toolkit -->|3| functions__js
     bql____main__ -->|3| monitoring__website_monitor
     curllm_web__routes -->|3| curllm_web__utils
     functions__extractors -->|3| functions__patterns
     examples__bql -->|2| monitoring__website_monitor
     examples__bql -->|2| captcha__playwright_bql_framework
-    captcha__allegro_captcha_solver -->|2| functions__js
     scripts__analyze_dependencies -->|2| functions__registry
     scripts__code_quality -->|2| functions__js
+    captcha__sliding_solver -->|2| functions__js
+    captcha__allegro_captcha_solver -->|2| functions__js
     curllm_core__captcha_widget -->|2| functions__js
-    curllm_core__llm -->|2| functions__js
     curllm_core__error_handler -->|2| functions__js
     curllm_core__navigation -->|2| curllm_server__executor
-    curllm_logs__screenshots -->|2| functions__js
     curllm_core__slider_plugin -->|2| functions__js
     curllm_core__task_runner_tools -->|2| curllm_core__extraction
     curllm_core__llm_heuristics -->|2| functions__js
@@ -254,84 +257,75 @@ flowchart TD
     curllm_core__streamware -->|2| monitoring__website_monitor
     curllm_core__streamware -->|2| curllm_logs__run_logger
     curllm_core__tools -->|2| functions__js
-    curllm_core__extraction -->|2| functions__js
     curllm_core__extraction_orchestrator -->|2| curllm_core__extraction
+    curllm_core__hierarchical -->|2| curllm_core__form_fill
+    curllm_core__execution -->|2| curllm_core__extraction
+    curllm_core__execution -->|2| curllm_core__human_verify
+    curllm_core__element_finder -->|2| functions__js
     curllm_core__running -->|2| curllm_core__hierarchical
     curllm_core__running -->|2| curllm_core__extraction
     curllm_core__running -->|2| curllm_core__progressive_context
     curllm_core__running -->|2| curllm_core__page_context
-    curllm_core__execution -->|2| curllm_core__extraction
-    curllm_core__execution -->|2| curllm_core__human_verify
-    curllm_core__element_finder -->|2| functions__js
-    curllm_core__hierarchical -->|2| curllm_core__form_fill
+    curllm_core__extraction -->|2| functions__js
     curllm_core__orchestrators -->|2| curllm_core__streamware
+    curllm_logs__screenshots -->|2| functions__js
+    functions__generator -->|2| functions__js
     curllm_web__routes -->|2| functions__registry
     curllm_web__api -->|2| functions__js
-    functions__generator -->|2| functions__js
     examples -->|1| functions__js
+    captcha__audio_solver -->|1| functions__js
+    examples__llm_providers -->|1| functions__js
     examples__detection -->|1| curllm_core__deprecated
-    captcha__playwright_bql_framework -->|1| functions__registry
-    captcha__playwright_bql_framework -->|1| curllm_server__executor
-    examples__orchestration -->|1| curllm_core__extraction
     examples__url_resolver -->|1| curllm_core__browser_setup
+    examples__v2_usage -->|1| curllm_core__form_fill_llm
+    examples__orchestration -->|1| curllm_core__extraction
+    scripts__fix_missing_loggers -->|1| functions__js
+    scripts__analyze_deps -->|1| functions__js
     wordpress_batch -->|1| functions__registry
     wordpress_batch -->|1| functions__js
-    examples__llm_providers -->|1| functions__js
     monitoring__send_email -->|1| functions__js
-    examples__v2_usage -->|1| curllm_core__form_fill_llm
-    curllm_core__browser_setup -->|1| functions__registry
-    scripts__analyze_deps -->|1| functions__js
     curllm_logs__run_logger -->|1| functions__registry
-    scripts__fix_missing_loggers -->|1| functions__js
+    captcha__playwright_bql_framework -->|1| functions__registry
+    captcha__playwright_bql_framework -->|1| curllm_server__executor
+    curllm_core__browser_setup -->|1| functions__registry
     curllm_core__actions -->|1| curllm_core__page_utils
     curllm_core__llm_planner -->|1| curllm_server__executor
     curllm_core__llm_planner -->|1| functions__registry
+    forms__app -->|1| tools__generate_examples
+    scripts__dev_watcher -->|1| monitoring__website_monitor
     curllm_core__iterative_extractor -->|1| functions__js
-    scripts__refactor_to_llm_dsl -->|1| functions__js
     curllm_core__task_runner_early -->|1| curllm_core__intent_detector
-    curllm_core__atomic_functions -->|1| examples__url_resolver
     curllm_core__tool_retry -->|1| functions__registry
+    curllm_core__atomic_functions -->|1| examples__url_resolver
+    curllm_core__human_verify -->|1| functions__js
     curllm_core__navigation -->|1| curllm_core__diagnostics
     curllm_core__navigation -->|1| curllm_core__human_verify
     curllm_core__navigation -->|1| curllm_core__captcha_slider
     curllm_core__navigation -->|1| curllm_core__screenshots
     curllm_core__navigation -->|1| curllm_core__actions
     curllm_core__navigation -->|1| curllm_core__slider_plugin
-    curllm_core__human_verify -->|1| functions__js
     curllm_core__page_context -->|1| functions__js
     curllm_core__task_runner_steps -->|1| curllm_server__executor
     curllm_core__task_runner_steps -->|1| curllm_core__actions
     curllm_core__dynamic_container_detector -->|1| functions__registry
     curllm_core__slider_plugin -->|1| curllm_core__captcha_slider
+    curllm_core__result_corrector -->|1| functions__js
+    curllm_core__task_runner_tools -->|1| curllm_server__executor
+    curllm_core__shortcuts -->|1| curllm_core__page_context
+    curllm_core__multi_criteria_filter -->|1| curllm_core__streamware
     curllm_core__universal_field_extractor -->|1| functions__registry
+    curllm_core__metrics -->|1| functions__registry
+    curllm_core__retry -->|1| functions__js
+    scripts__refactor_to_llm_dsl -->|1| functions__js
     curllm_core__remediation -->|1| curllm_server__executor
     curllm_core__remediation -->|1| curllm_core__actions
     curllm_core__remediation -->|1| curllm_core__captcha_slider
     curllm_core__remediation -->|1| curllm_core__slider_plugin
-    curllm_core__shortcuts -->|1| curllm_core__page_context
-    forms__app -->|1| tools__generate_examples
-    curllm_core__multi_criteria_filter -->|1| curllm_core__streamware
-    curllm_core__task_runner_tools -->|1| curllm_server__executor
-    curllm_core__retry -->|1| functions__js
-    scripts__dev_watcher -->|1| monitoring__website_monitor
-    curllm_core__metrics -->|1| functions__registry
     curllm_core__streamware -->|1| curllm_core__dynamic_container_detector
     curllm_core__streamware -->|1| curllm_core__llm_planner
-    curllm_core__intent_detector -->|1| functions__js
-    curllm_core__result_corrector -->|1| functions__js
-    curllm_core__execution -->|1| curllm_core__validation_utils
-    curllm_core__extraction -->|1| examples__url_resolver
-    curllm_core__extraction -->|1| curllm_core__llm_factory
-    curllm_core__extraction -->|1| curllm_core__iterative_extractor
     curllm_core__extraction_orchestrator -->|1| curllm_core__page_context
+    curllm_core__execution -->|1| curllm_core__validation_utils
     curllm_core__deprecated -->|1| curllm_core__vision_form_analysis
-    curllm_core__dom -->|1| curllm_core__streamware
-    curllm_core__running -->|1| functions__registry
-    curllm_core__running -->|1| curllm_core__llm_guided_extractor
-    curllm_core__running -->|1| curllm_core__detection
-    curllm_core__running -->|1| curllm_core__iterative_extractor
-    curllm_core__running -->|1| curllm_core__human_verify
-    curllm_core__running -->|1| curllm_server__executor
     curllm_core__execution -->|1| curllm_core__runtime
     curllm_core__execution -->|1| curllm_core__config_logger
     curllm_core__execution -->|1| curllm_core__headers
@@ -343,24 +337,36 @@ flowchart TD
     curllm_core__execution -->|1| curllm_core__llm_planner
     curllm_core__execution -->|1| curllm_core__actions
     curllm_core__execution -->|1| curllm_core__form_fill_llm
+    curllm_core__dom -->|1| curllm_core__element_finder
+    curllm_core__dom -->|1| curllm_core__streamware
+    curllm_core__running -->|1| functions__registry
+    curllm_core__running -->|1| curllm_core__llm_guided_extractor
+    curllm_core__running -->|1| curllm_core__detection
+    curllm_core__running -->|1| curllm_core__iterative_extractor
+    curllm_core__running -->|1| curllm_core__human_verify
+    curllm_core__running -->|1| curllm_server__executor
+    curllm_core__extraction -->|1| examples__url_resolver
+    curllm_core__extraction -->|1| curllm_core__llm_factory
+    curllm_core__extraction -->|1| curllm_core__iterative_extractor
     curllm_core__dom -->|1| functions__registry
-    curllm_core__detection -->|1| functions__js
     curllm_core__orchestrators -->|1| curllm_core__captcha_slider
-    curllm_core__bql -->|1| functions__js
+    curllm_core__orchestration -->|1| curllm_logs__log_session
     curllm_core__dynamic -->|1| curllm_core__dom
+    curllm_core__bql -->|1| functions__js
     curllm_core__dom_toolkit -->|1| functions__registry
     pricing__app -->|1| curllm_core__browser_setup
     pricing__app -->|1| curllm_core__streamware
     pricing__app -->|1| curllm_core__llm_factory
     pricing__app -->|1| tools__generate_examples
-    bql__executor -->|1| functions__js
+    curllm_mcp__service -->|1| curllm_mcp__testql_export
+    curllm_web__routes -->|1| functions__js
     curllm_web__routes -->|1| curllm_web__api
     curllm_web__server -->|1| functions__js
-    curllm_web__routes -->|1| functions__js
     curllm_web__utils -->|1| functions__js
     curllm_server__routes -->|1| functions__js
-    curllm_server__llm -->|1| functions__js
     curllm_web__server -->|1| curllm_web__prompts
+    curllm_server__llm -->|1| functions__js
     curllm_server__executor -->|1| curllm_core__runtime
     curllm_server__executor -->|1| curllm_core__config_logger
-    curllm_core__orchestration -->|1| curllm_logs__log_session
+    curllm_core__detection -->|1| functions__js
+    curllm_core__intent_detector -->|1| functions__js

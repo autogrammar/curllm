@@ -1,63 +1,60 @@
-# code2llm | 586f 111876L | python:516,shell:28,yaml:13,json:5,javascript:5,yml:4,txt:3,toml:2,php:1 | 2026-06-06
-# generated in 0.29s
-# CC̅=4.8 | critical:117/2552 | dups:16 | cycles:0
+# code2llm | 602f 93701L | python:527,shell:30,yaml:14,json:5,javascript:5,yml:4,txt:4,toml:2,php:1 | 2026-09-08
+# generated in 0.40s
+# CC̅=4.9 | critical:116/2484 | dups:0 | cycles:0
 
 HEALTH[20]:
-  🔴 DUP   16 classes duplicated
-  🔴 GOD   captcha/captcha_solver.py = 768L, 6 classes, 16m, max CC=14
-  🔴 GOD   curllm_core/planning/planner.py = 546L, 5 classes, 13m, max CC=17
+  🟡 CC    run_benchmark CC=15 (limit:15)
+  🟡 CC    parse_command CC=16 (limit:15)
+  🟡 CC    curllmExtension CC=44 (limit:15)
+  🟡 CC    find_import_section_end CC=17 (limit:15)
+  🟡 CC    fix_missing_logger CC=23 (limit:15)
+  🟡 CC    atomize CC=19 (limit:15)
+  🟡 CC    main CC=17 (limit:15)
+  🟡 CC    batch_create_posts CC=19 (limit:15)
+  🟡 CC    send_email CC=15 (limit:15)
+  🟡 CC    log_form_summary CC=16 (limit:15)
   🟡 CC    _run_action CC=23 (limit:15)
   🟡 CC    _parse_actions_from_llm CC=19 (limit:15)
-  🟡 CC    parse_command CC=16 (limit:15)
-  🟡 CC    batch_create_posts CC=19 (limit:15)
-  🟡 CC    run_benchmark CC=15 (limit:15)
-  🟡 CC    send_email CC=15 (limit:15)
-  🟡 CC    curllmExtension CC=44 (limit:15)
-  🟡 CC    atomize CC=19 (limit:15)
-  🟡 CC    setup_playwright CC=28 (limit:15)
-  🟡 CC    _parse_prices_with_llm CC=15 (limit:15)
-  🟡 CC    main CC=17 (limit:15)
+  🟡 CC    parse_runtime_from_instruction CC=15 (limit:15)
   🟡 CC    analyze_form_fields_vision CC=21 (limit:15)
   🟡 CC    build_vision_enhanced_field_list CC=15 (limit:15)
   🟡 CC    create_vision_decision_tree CC=33 (limit:15)
-  🟡 CC    parse_runtime_from_instruction CC=15 (limit:15)
-  🟡 CC    log_form_summary CC=16 (limit:15)
   🟡 CC    build_progressive_context CC=29 (limit:15)
+  🟡 CC    setup_playwright CC=28 (limit:15)
+  🟡 CC    _load_public_list CC=45 (limit:15)
+  🟡 CC    resolve_proxy CC=42 (limit:15)
 
-REFACTOR[4]:
-  1. rm duplicates  (-16 dup classes)
-  2. split captcha/captcha_solver.py  (god module)
-  3. split curllm_core/planning/planner.py  (god module)
-  4. split 17 high-CC methods  (CC>15)
+REFACTOR[1]:
+  1. split 20 high-CC methods  (CC>15)
 
-PIPELINES[1832]:
-  [1] Src [load_env]: load_env
+PIPELINES[1762]:
+  [1] Src [https]: https
       PURITY: 100% pure
-  [2] Src [env_bool]: env_bool
+  [2] Src [http]: http
       PURITY: 100% pure
-  [3] Src [https]: https
+  [3] Src [loadEnv]: loadEnv
       PURITY: 100% pure
-  [4] Src [http]: http
+  [4] Src [txt]: txt
       PURITY: 100% pure
-  [5] Src [loadEnv]: loadEnv
+  [5] Src [ENV_PATH]: ENV_PATH
       PURITY: 100% pure
-  [6] Src [txt]: txt
+  [6] Src [API_HOST]: API_HOST → asBool
       PURITY: 100% pure
-  [7] Src [ENV_PATH]: ENV_PATH
+  [7] Src [res]: res
       PURITY: 100% pure
-  [8] Src [API_HOST]: API_HOST → asBool
+  [8] Src [u]: u
       PURITY: 100% pure
-  [9] Src [res]: res
+  [9] Src [data]: data
       PURITY: 100% pure
-  [10] Src [u]: u
+  [10] Src [mod]: mod
       PURITY: 100% pure
-  [11] Src [data]: data
+  [11] Src [req]: req
       PURITY: 100% pure
-  [12] Src [mod]: mod
+  [12] Src [endpoint]: endpoint → postJsonFetch → text
       PURITY: 100% pure
-  [13] Src [req]: req
+  [13] Src [load_env]: load_env
       PURITY: 100% pure
-  [14] Src [endpoint]: endpoint → postJsonFetch → text
+  [14] Src [env_bool]: env_bool
       PURITY: 100% pure
   [15] Src [quick_extract]: quick_extract
       PURITY: 100% pure
@@ -107,38 +104,32 @@ PIPELINES[1832]:
       PURITY: 100% pure
   [38] Src [example_4_bql_query]: example_4_bql_query → print
       PURITY: 100% pure
-  [39] Src [example_5_multi_format_export]: example_5_multi_format_export → print
+  [39] Src [example_5_pipeline_composition]: example_5_pipeline_composition → print
       PURITY: 100% pure
-  [40] Src [example_6_batch_processing]: example_6_batch_processing → print
+  [40] Src [example_6_split_join]: example_6_split_join → print
       PURITY: 100% pure
-  [41] Src [example_7_conditional_routing]: example_7_conditional_routing → print
+  [41] Src [example_7_multicast]: example_7_multicast → print
       PURITY: 100% pure
-  [42] Src [example_8_scraping_pipeline]: example_8_scraping_pipeline → print
+  [42] Src [example_8_conditional_routing]: example_8_conditional_routing → print
       PURITY: 100% pure
-  [43] Src [example_9_yaml_flow]: example_9_yaml_flow → print
+  [43] Src [example_9_streaming]: example_9_streaming → print
       PURITY: 100% pure
-  [44] Src [example_10_http_to_scraping]: example_10_http_to_scraping → print
+  [44] Src [example_10_with_metrics]: example_10_with_metrics → print
       PURITY: 100% pure
-  [45] Src [example_11_screenshot_capture]: example_11_screenshot_capture → print
+  [45] Src [example_11_helper_functions]: example_11_helper_functions → print
       PURITY: 100% pure
-  [46] Src [example_12_data_validation]: example_12_data_validation → print
+  [46] Src [example_12_web_scraping_pipeline]: example_12_web_scraping_pipeline → print
       PURITY: 100% pure
-  [47] Src [example_13_file_operations]: example_13_file_operations → print
+  [47] Src [example_13_error_handling]: example_13_error_handling → print
       PURITY: 100% pure
-  [48] Src [example_14_transform_pipeline]: example_14_transform_pipeline → print
+  [48] Src [example_14_file_operations]: example_14_file_operations → print
       PURITY: 100% pure
-  [49] Src [example_15_metrics_tracking]: example_15_metrics_tracking → print
+  [49] Src [example_15_http_requests]: example_15_http_requests → print
       PURITY: 100% pure
-  [50] Src [example_skapiec]: example_skapiec → print
+  [50] Src [__init__]: __init__
       PURITY: 100% pure
 
 LAYERS:
-  captcha/                        CC̄=6.2    ←in:2  →out:48  !! split
-  │ !! captcha_solver             768L  6C   16m  CC=14     ←0
-  │ !! playwright_bql_framework   624L  2C   15m  CC=23     ←2
-  │ allegro_captcha_solver     395L  1C    5m  CC=14     ←0
-  │ __init__                     0L  0C    0m  CC=0.0    ←0
-  │
   scripts/                        CC̄=5.9    ←in:68  →out:179  !! split
   │ !! dependency_report.json    3023L  0C    0m  CC=0.0    ←0
   │ dev_watcher                442L  4C   21m  CC=12     ←2
@@ -154,9 +145,10 @@ LAYERS:
   │ stop.sh                     34L  0C    0m  CC=0.0    ←0
   │ status.sh                   22L  0C    0m  CC=0.0    ←0
   │ bootstrap.sh                21L  0C    0m  CC=0.0    ←0
+  │ start-mcp.sh                14L  0C    0m  CC=0.0    ←0
   │ setup.sh                    10L  0C    0m  CC=0.0    ←0
   │
-  curllm_core/                    CC̄=5.4    ←in:51  →out:243  !! split  ×DUP
+  curllm_core/                    CC̄=5.4    ←in:51  →out:244  !! split
   │ !! resolver                  1203L  1C   23m  CC=25     ←0
   │ !! iterative_extractor       1051L  1C   11m  CC=36     ←2
   │ !! orchestrator               771L  1C   12m  CC=26     ←0
@@ -168,7 +160,7 @@ LAYERS:
   │ !! orchestrator               725L  1C   22m  CC=8      ←0
   │ !! detector                   702L  3C   15m  CC=18     ←2
   │ !! orchestrator               700L  0C    4m  CC=89     ←0
-  │ !! llm_element_finder         678L  1C   19m  CC=10     ←0
+  │ !! llm_element_finder         678L  1C   19m  CC=10     ←1
   │ !! extractor                  674L  0C   17m  CC=33     ←8
   │ !! social                     664L  2C   17m  CC=19     ←0
   │ !! runner                     643L  0C    2m  CC=121    ←0
@@ -177,12 +169,11 @@ LAYERS:
   │ !! llm_patterns               625L  0C    8m  CC=12     ←0
   │ !! live                       608L  2C   21m  CC=19     ←0
   │ !! master                     559L  3C   19m  CC=10     ←0
-  │ !! planner                    546L  5C   13m  CC=17     ←0
   │ !! url_resolver_llm           540L  2C   11m  CC=21     ←0
   │ !! atoms                      525L  2C   14m  CC=11     ←0
   │ !! orchestrator_steps         519L  1C   14m  CC=32     ←0
   │ !! filler                     497L  0C   13m  CC=33     ←0
-  │ !! llm_guided_extractor       492L  1C   12m  CC=15     ←2
+  │ !! llm_guided_extractor       492L  1C   12m  CC=15     ←1
   │ !! llm_form_orchestrator      482L  0C    6m  CC=29     ←0
   │ translator                 475L  1C   12m  CC=8      ←2
   │ vision_solve               466L  0C    8m  CC=10     ←1
@@ -218,9 +209,10 @@ LAYERS:
   │ !! multi_criteria_filter      373L  2C    7m  CC=34     ←0
   │ rules                      366L  2C   15m  CC=11     ←0
   │ !! hybrid_selector_ranker     364L  1C    6m  CC=18     ←0
-  │ !! bql_extraction_orchestrator   363L  1C   14m  CC=15     ←0  ×DUP
+  │ !! bql_extraction_orchestrator   363L  1C   14m  CC=15     ←0
   │ feedback                   357L  2C   16m  CC=6      ←0
   │ atomic_functions           355L  1C   13m  CC=14     ←0
+  │ !! task_planner               355L  1C    8m  CC=17     ←0
   │ !! metrics                    354L  2C   13m  CC=26     ←0
   │ !! llm_heuristics             346L  2C    7m  CC=23     ←0
   │ !! llm_planner                343L  0C    1m  CC=80     ←2
@@ -232,7 +224,6 @@ LAYERS:
   │ atomic_query               330L  3C   17m  CC=8      ←1
   │ rate_limiter               329L  2C   14m  CC=5      ←0
   │ !! result_corrector           328L  1C    6m  CC=18     ←1
-  │ client                     327L  2C   11m  CC=10     ←0  ×DUP
   │ !! validator                  326L  3C    6m  CC=29     ←0
   │ !! universal_field_extractor   322L  1C    7m  CC=21     ←0
   │ !! result_evaluator           322L  0C    1m  CC=85     ←1
@@ -240,7 +231,7 @@ LAYERS:
   │ form_detector              302L  0C    3m  CC=11     ←1
   │ extractor                  299L  0C    6m  CC=8      ←0
   │ hierarchical_planner_v2    298L  1C   10m  CC=8      ←0
-  │ llm_filter_validator       295L  1C    6m  CC=7      ←0
+  │ llm_filter_validator       295L  1C    6m  CC=7      ←1
   │ config_logger              293L  0C    6m  CC=6      ←2
   │ !! instruction_parser         291L  3C    5m  CC=16     ←0
   │ !! wordpress                  291L  1C    6m  CC=26     ←0
@@ -253,25 +244,23 @@ LAYERS:
   │ field_detector             283L  0C    5m  CC=13     ←1
   │ retry                      278L  4C    9m  CC=10     ←0
   │ yaml_runner                277L  1C   12m  CC=8      ←2
-  │ parser                     277L  3C   18m  CC=8      ←0  ×DUP
   │ !! form_analysis              277L  1C    9m  CC=15     ←0
   │ visual                     276L  1C    7m  CC=8      ←0
   │ !! context_optimizer          274L  0C    8m  CC=16     ←0
   │ container                  271L  0C    3m  CC=5      ←1
   │ prices                     270L  1C    4m  CC=1      ←0
+  │ !! server                     260L  0C    9m  CC=27     ←0
   │ actions                    260L  0C    6m  CC=10     ←0
   │ llm_extractor              256L  1C    9m  CC=8      ←0
   │ flow                       254L  1C   13m  CC=8      ←9
   │ scoring                    254L  1C    3m  CC=1      ←0
-  │ !! browser_setup              253L  1C    9m  CC=28     ←3  ×DUP
-  │ !! server                     253L  0C    8m  CC=27     ←0
+  │ !! browser_setup              253L  1C    9m  CC=28     ←3
   │ container_finder           253L  0C    4m  CC=14     ←1
   │ structure                  251L  1C    6m  CC=1      ←0
   │ llm_config                 249L  2C   16m  CC=4      ←0
   │ flow                       247L  0C    8m  CC=8      ←0
   │ patterns                   247L  1C    4m  CC=4      ←0
   │ planner                    244L  1C    8m  CC=14     ←0
-  │ orchestrator               244L  1C   15m  CC=4      ←0  ×DUP
   │ goal_detector_hybrid       243L  1C    7m  CC=13     ←0
   │ !! progressive_context        242L  0C    5m  CC=29     ←1
   │ task_runner_early          239L  0C    6m  CC=11     ←0
@@ -281,14 +270,12 @@ LAYERS:
   │ !! result_store               229L  0C   11m  CC=21     ←0
   │ generator                  226L  3C    5m  CC=7      ←0
   │ clustering                 223L  1C    3m  CC=1      ←0
-  │ !! executor                   215L  1C   11m  CC=15     ←0  ×DUP
   │ task_runner_steps          214L  0C    5m  CC=12     ←0
   │ frequency                  214L  1C    5m  CC=1      ←0
   │ file                       212L  2C   10m  CC=8      ←0
   │ !! page_context               210L  0C    1m  CC=22     ←4
   │ urls                       210L  1C    6m  CC=14     ←0
   │ executor                   207L  2C    7m  CC=10     ←0
-  │ stealth                    204L  1C    9m  CC=4      ←2  ×DUP
   │ !! proxy                      202L  1C    6m  CC=45     ←1
   │ !! transform                  201L  3C    8m  CC=16     ←0
   │ analyze                    195L  0C    4m  CC=4      ←0
@@ -297,10 +284,9 @@ LAYERS:
   │ analyzer                   190L  1C    7m  CC=5      ←0
   │ llm_form_orchestrator      189L  1C    7m  CC=11     ←0
   │ detect                     185L  1C    1m  CC=2      ←4
-  │ bql_parser                 185L  1C   17m  CC=8      ←0  ×DUP
+  │ bql_parser                 185L  1C   17m  CC=8      ←0
   │ setup                      181L  0C   12m  CC=4      ←0
   │ !! task_runner_fallback       180L  0C    3m  CC=19     ←0
-  │ setup                      180L  1C    8m  CC=6      ←0  ×DUP
   │ !! shortcuts                  178L  0C    7m  CC=19     ←0
   │ context                    178L  0C    3m  CC=4      ←0
   │ proxy                      178L  2C   10m  CC=5      ←0
@@ -308,18 +294,20 @@ LAYERS:
   │ utils                      177L  0C    6m  CC=12     ←0
   │ !! runtime                    176L  0C    3m  CC=15     ←2
   │ !! navigation                 175L  0C    1m  CC=50     ←0
+  │ stealth                    170L  0C    6m  CC=4      ←2
   │ !! human_verify               164L  0C    2m  CC=31     ←4
   │ tools                      162L  0C    4m  CC=11     ←0
   │ screenshots                161L  0C    7m  CC=8      ←1
-  │ !! find_search_input          160L  0C    1m  CC=17     ←1
+  │ client                     161L  1C    6m  CC=10     ←0
+  │ !! find_search_input          160L  0C    1m  CC=17     ←0
   │ capture                    156L  0C    4m  CC=4      ←0
   │ wait_for_hydration         156L  0C    4m  CC=6      ←0
   │ map_fields                 155L  0C    4m  CC=8      ←0
-  │ !! bql_executor               155L  1C   11m  CC=15     ←0  ×DUP
+  │ !! bql_executor               155L  1C   11m  CC=15     ←0
   │ core                       153L  3C   11m  CC=2      ←0
-  │ stealth                    151L  1C    3m  CC=1      ←0  ×DUP
+  │ stealth                    151L  1C    3m  CC=1      ←0
   │ registry                   149L  0C    8m  CC=2      ←13
-  │ llm_hierarchical_planner   148L  1C    6m  CC=5      ←1
+  │ llm_hierarchical_planner   148L  1C    6m  CC=5      ←0
   │ web                        147L  2C    5m  CC=9      ←0
   │ query                      146L  0C    6m  CC=3      ←0
   │ factory                    138L  0C    4m  CC=7      ←0
@@ -332,25 +320,28 @@ LAYERS:
   │ !! slider_plugin              115L  0C    2m  CC=29     ←2
   │ !! price_filter               113L  1C    1m  CC=15     ←0
   │ config                     111L  1C    1m  CC=1      ←0
-  │ base                       111L  1C    7m  CC=12     ←0
   │ diagnostics                111L  0C    2m  CC=14     ←1
+  │ base                       111L  1C    7m  CC=12     ←0
   │ llm_field_analyzer         110L  1C    5m  CC=8      ←0
   │ fill                       108L  0C    2m  CC=11     ←1
   │ llm_submit_detector        107L  1C    4m  CC=13     ←0
   │ __init__                   106L  0C    0m  CC=0.0    ←0
+  │ plan_types                 104L  4C    4m  CC=5      ←0
   │ split_component            100L  1C    4m  CC=10     ←0
   │ url_types                   98L  3C    0m  CC=0.0    ←0
   │ detect                      97L  0C    3m  CC=4      ←1
   │ choose_component            96L  1C    5m  CC=4      ←0
   │ captcha_widget              95L  0C    2m  CC=13     ←0
-  │ !! remediation                 95L  0C    2m  CC=22     ←0
+  │ llm                         95L  1C    5m  CC=4      ←0
   │ uri                         95L  1C    9m  CC=8      ←0
-  │ captcha                     94L  1C    5m  CC=10     ←0  ×DUP
+  │ !! remediation                 95L  0C    2m  CC=22     ←0
+  │ captcha                     94L  1C    5m  CC=10     ←0
   │ find_inputs                 89L  0C    1m  CC=10     ←1
+  │ setup                       86L  0C    2m  CC=6      ←0
   │ llm_action_planner          85L  1C    3m  CC=7      ←0
   │ !! captcha_slider              83L  0C    2m  CC=15     ←4
-  │ __init__                    83L  0C    0m  CC=0.0    ←0
   │ field_filler                81L  0C    3m  CC=5      ←1
+  │ __init__                    81L  0C    0m  CC=0.0    ←0
   │ !! planner_progress            75L  0C    1m  CC=19     ←0
   │ smart_form_fill             74L  0C    1m  CC=10     ←0
   │ __init__                    74L  0C    0m  CC=0.0    ←0
@@ -360,13 +351,13 @@ LAYERS:
   │ metrics                     67L  1C    5m  CC=2      ←0
   │ scroll_load                 66L  1C    1m  CC=7      ←0
   │ execute_search              66L  0C    1m  CC=7      ←0
-  │ llm                         64L  1C    3m  CC=4      ←0  ×DUP
   │ submit_form_llm             64L  0C    1m  CC=3      ←0
   │ analyze_page_type           64L  0C    1m  CC=1      ←0
   │ page_utils                  63L  0C    3m  CC=8      ←1
   │ _find_link_with_llm         62L  0C    1m  CC=10     ←1
   │ orchestrator_config         59L  1C    2m  CC=3      ←0
   │ llm_decision_component      56L  1C    4m  CC=3      ←0
+  │ __init__                    55L  0C    1m  CC=2      ←0
   │ __init__                    55L  0C    0m  CC=0.0    ←0
   │ __init__                    54L  0C    0m  CC=0.0    ←0
   │ find_buttons                52L  0C    1m  CC=5      ←0
@@ -380,16 +371,15 @@ LAYERS:
   │ find_elements_by_role       47L  0C    1m  CC=5      ←0
   │ _find_link_statistical      46L  0C    1m  CC=10     ←1
   │ __init__                    45L  0C    0m  CC=0.0    ←0
-  │ batch_process               44L  0C    1m  CC=5      ←0
+  │ vision                      44L  1C    3m  CC=3      ←0
   │ retry                       44L  0C    1m  CC=1      ←0
-  │ browserless                 43L  2C   10m  CC=1      ←0  ×DUP
-  │ __init__                    43L  0C    0m  CC=0.0    ←0
+  │ batch_process               44L  0C    1m  CC=5      ←0
+  │ browserless                 43L  2C   10m  CC=1      ←0
   │ __init__                    43L  0C    0m  CC=0.0    ←0
   │ find_link_for_goal          42L  0C    1m  CC=5      ←1
   │ join_component              41L  1C    2m  CC=5      ←0
   │ __init__                    41L  0C    0m  CC=0.0    ←0
   │ find_links_by_text          40L  0C    1m  CC=9      ←1
-  │ vision                      39L  1C    3m  CC=3      ←0  ×DUP
   │ agent_factory               38L  1C    2m  CC=4      ←0
   │ _extract_values_with_llm    37L  0C    1m  CC=3      ←1
   │ __init__                    37L  0C    0m  CC=0.0    ←0
@@ -397,8 +387,8 @@ LAYERS:
   │ find_links_by_url_pattern    34L  0C    1m  CC=5      ←1
   │ validate_data               33L  0C    1m  CC=1      ←0
   │ pipeline                    33L  0C    1m  CC=3      ←2
-  │ try_direct_urls             33L  0C    1m  CC=5      ←0
   │ find_links_by_aria          33L  0C    1m  CC=6      ←1
+  │ try_direct_urls             33L  0C    1m  CC=5      ←0
   │ validate_task               33L  0C    1m  CC=1      ←0
   │ exceptions                  33L  6C    0m  CC=0.0    ←0
   │ split                       32L  0C    1m  CC=3      ←2
@@ -425,6 +415,7 @@ LAYERS:
   │ multicast                   26L  0C    1m  CC=1      ←2
   │ detect_navigation_goal      25L  0C    1m  CC=1      ←0
   │ join                        25L  0C    1m  CC=1      ←2
+  │ planner                     25L  0C    1m  CC=1      ←0
   │ __init__                    25L  0C    0m  CC=0.0    ←0
   │ actions                     24L  0C    2m  CC=2      ←4
   │ headers                     24L  0C    1m  CC=9      ←1
@@ -465,15 +456,15 @@ LAYERS:
   │ element_match               16L  1C    0m  CC=0.0    ←0
   │ shopping_intent             16L  1C    0m  CC=0.0    ←0
   │ social_intent               16L  1C    0m  CC=0.0    ←0
-  │ social_platform             16L  1C    0m  CC=0.0    ←0
   │ field_mapping               16L  1C    0m  CC=0.0    ←0
-  │ validation_strategy         16L  1C    0m  CC=0.0    ←0
+  │ social_platform             16L  1C    0m  CC=0.0    ←0
   │ validation_check            16L  1C    0m  CC=0.0    ←0
+  │ validation_strategy         16L  1C    0m  CC=0.0    ←0
   │ query_type                  16L  1C    0m  CC=0.0    ←0
   │ list_available_components    15L  0C    1m  CC=1      ←0
   │ execute                     15L  0C    1m  CC=1      ←0
-  │ auth_credentials            15L  1C    0m  CC=0.0    ←0
   │ form_field                  15L  1C    0m  CC=0.0    ←0
+  │ auth_credentials            15L  1C    0m  CC=0.0    ←0
   │ __init__                    15L  0C    0m  CC=0.0    ←0
   │ __init__                    15L  0C    0m  CC=0.0    ←0
   │ has_content_type            14L  0C    1m  CC=1      ←0
@@ -482,14 +473,14 @@ LAYERS:
   │ __init__                    14L  0C    0m  CC=0.0    ←0
   │ __init__                    14L  0C    0m  CC=0.0    ←0
   │ goal_detection_result       13L  1C    0m  CC=0.0    ←0
-  │ extraction_result           13L  1C    0m  CC=0.0    ←0
   │ extraction_request          13L  1C    0m  CC=0.0    ←0
+  │ extraction_result           13L  1C    0m  CC=0.0    ←0
   │ checkout_step               13L  1C    0m  CC=0.0    ←0
   │ __init__                    13L  0C    0m  CC=0.0    ←0
   │ export_excel                12L  0C    1m  CC=1      ←0
-  │ export_csv                  12L  0C    1m  CC=1      ←0
   │ export_markdown             12L  0C    1m  CC=1      ←0
   │ export_json                 12L  0C    1m  CC=1      ←0
+  │ export_csv                  12L  0C    1m  CC=1      ←0
   │ logger                      12L  0C    0m  CC=0.0    ←0
   │ __init__                    12L  0C    0m  CC=0.0    ←0
   │ __init__                    11L  0C    0m  CC=0.0    ←0
@@ -517,11 +508,14 @@ LAYERS:
   │ bql_utils                    4L  0C    1m  CC=3      ←0
   │ url_resolver                 4L  0C    0m  CC=0.0    ←0
   │ executor                     4L  0C    0m  CC=0.0    ←0
+  │ orchestrator                 4L  0C    0m  CC=0.0    ←0
+  │ executor                     4L  0C    0m  CC=0.0    ←0
+  │ parser                       4L  0C    0m  CC=0.0    ←0
   │ dynamic_detector             3L  0C    0m  CC=0.0    ←0
   │ llm_element_finder           3L  0C    0m  CC=0.0    ←0
-  │ llm_field_filler             3L  0C    0m  CC=0.0    ←0
   │ command_parser               3L  0C    0m  CC=0.0    ←0
   │ task_planner                 3L  0C    0m  CC=0.0    ←0
+  │ llm_field_filler             3L  0C    0m  CC=0.0    ←0
   │ orchestrator                 3L  0C    0m  CC=0.0    ←0
   │ task_runner                  3L  0C    0m  CC=0.0    ←0
   │ result_validator             3L  0C    0m  CC=0.0    ←0
@@ -533,6 +527,18 @@ LAYERS:
   │ __init__                     1L  0C    0m  CC=0.0    ←0
   │ __init__                     1L  0C    0m  CC=0.0    ←0
   │ !! form_fill                    0L  0C    2m  CC=154    ←1
+  │
+  captcha/                        CC̄=5.1    ←in:2  →out:48  !! split
+  │ !! playwright_bql_framework   624L  2C   15m  CC=23     ←2
+  │ allegro_captcha_solver     395L  1C    5m  CC=14     ←0
+  │ sliding_solver             244L  1C   10m  CC=7      ←0
+  │ captcha_orchestrator       143L  1C    7m  CC=8      ←0
+  │ audio_solver                93L  1C    5m  CC=5      ←0
+  │ captcha_solver              84L  0C    1m  CC=2      ←0
+  │ curllm_extension            46L  1C    2m  CC=4      ←0
+  │ captcha_types               37L  2C    0m  CC=0.0    ←0
+  │ captcha_support             30L  0C    0m  CC=0.0    ←0
+  │ __init__                    14L  0C    0m  CC=0.0    ←0
   │
   pricing/                        CC̄=4.9    ←in:0  →out:22  !! split
   │ !! app                        849L  3C   16m  CC=11     ←0
@@ -552,16 +558,38 @@ LAYERS:
   static/                         CC̄=4.2    ←in:0  →out:0
   │ !! app.js                    1162L  0C  123m  CC=23     ←0
   │
-  bql/                            CC̄=3.9    ←in:0  →out:3  ×DUP
-  │ bql_parser                 303L  1C   17m  CC=8      ←0  ×DUP
-  │ !! bql_executor               214L  1C   11m  CC=15     ←0  ×DUP
-  │ examples                    53L  0C    0m  CC=0.0    ←0
-  │ __main__                    23L  0C    1m  CC=3      ←0
-  │ bql_node                    19L  1C    1m  CC=3      ←0
-  │ __init__                    18L  0C    0m  CC=0.0    ←0
-  │ query_type                  15L  1C    0m  CC=0.0    ←0
+  curllm_mcp/                     CC̄=3.8    ←in:0  →out:14  !! split
+  │ service                    260L  2C   15m  CC=6      ←0
+  │ !! server                     182L  0C    4m  CC=15     ←0
+  │ testql_export              168L  0C    6m  CC=12     ←1
+  │ __init__                     1L  0C    0m  CC=0.0    ←0
+  │
+  curllm_server/                  CC̄=3.7    ←in:0  →out:0
+  │ !! curllm_executor            513L  1C   22m  CC=17     ←7
+  │ execute                     58L  0C    1m  CC=1      ←0
+  │ config                      53L  1C    1m  CC=1      ←0
+  │ simple_ollama               39L  1C    2m  CC=2      ←0
+  │ __main__                    35L  0C    1m  CC=4      ←0
+  │ app                         26L  0C    0m  CC=0.0    ←0
+  │ health                      18L  0C    1m  CC=1      ←0
+  │ models                      18L  0C    1m  CC=2      ←0
+  │ screenshot                  16L  0C    1m  CC=2      ←0
+  │ __init__                    15L  0C    0m  CC=0.0    ←0
+  │ local_agent                 12L  1C    1m  CC=1      ←0
+  │ run_logger                   8L  1C    0m  CC=0.0    ←0
+  │ __init__                     8L  0C    0m  CC=0.0    ←0
   │ __init__                     6L  0C    0m  CC=0.0    ←0
+  │ solver                       5L  0C    0m  CC=0.0    ←0
   │ __init__                     5L  0C    0m  CC=0.0    ←0
+  │ __init__                     5L  0C    0m  CC=0.0    ←0
+  │ __init__                     5L  0C    0m  CC=0.0    ←0
+  │ __init__                     5L  0C    0m  CC=0.0    ←0
+  │ browserless_context          5L  0C    0m  CC=0.0    ←0
+  │ __init__                     5L  0C    0m  CC=0.0    ←0
+  │ stealth_config               5L  0C    0m  CC=0.0    ←0
+  │ browserless_page             5L  0C    0m  CC=0.0    ←0
+  │ __init__                     5L  0C    0m  CC=0.0    ←0
+  │ analyzer                     5L  0C    0m  CC=0.0    ←0
   │ __init__                     5L  0C    0m  CC=0.0    ←0
   │
   forms/                          CC̄=3.5    ←in:0  →out:8  !! split
@@ -574,7 +602,7 @@ LAYERS:
   functions/                      CC̄=3.5    ←in:72  →out:7
   │ registry                   427L  2C   21m  CC=10     ←3
   │ generator                  414L  1C   10m  CC=11     ←0
-  │ safety.js                  335L  2C   30m  CC=7      ←146
+  │ safety.js                  335L  2C   30m  CC=7      ←145
   │ extractors.js              326L  0C   31m  CC=12     ←0
   │ fallback                   275L  3C    9m  CC=8      ←0
   │ registry                   263L  2C   14m  CC=14     ←41
@@ -630,7 +658,6 @@ LAYERS:
   │ example_find_products      112L  0C    3m  CC=4      ←6
   │ example_shopping_flow      112L  0C    2m  CC=3      ←0
   │ node_api_example.js        101L  0C   22m  CC=7      ←0
-  │ extract_products            97L  0C    4m  CC=2      ←0
   │ php_api_example.php         76L  0C    2m  CC=6      ←0
   │ run_all                     64L  0C    2m  CC=7      ←0
   │ browser_helper              61L  0C    2m  CC=6      ←6
@@ -647,11 +674,14 @@ LAYERS:
   │ curl_api.sh                 29L  0C    0m  CC=0.0    ←0
   │ curl_product_search.sh      29L  0C    0m  CC=0.0    ←0
   │ curl_wp_login.sh            29L  0C    0m  CC=0.0    ←0
+  │ extract_products.sh         27L  0C    0m  CC=0.0    ←0
   │ curllm_product_search.sh    27L  0C    0m  CC=0.0    ←0
+  │ mcp-cursor.json             12L  0C    0m  CC=0.0    ←0
   │ run.sh                       8L  0C    0m  CC=0.0    ←0
   │ run.sh                       8L  0C    0m  CC=0.0    ←0
   │ curllm-extract-links.sh      8L  0C    0m  CC=0.0    ←0
   │ __init__                     1L  0C    0m  CC=0.0    ←0
+  │ extract_products             0L  0C    4m  CC=2      ←0
   │
   curllm_web/                     CC̄=3.2    ←in:0  →out:22  !! split
   │ server_manager             143L  0C    4m  CC=7      ←1
@@ -663,8 +693,8 @@ LAYERS:
   │ upload                      38L  0C    1m  CC=5      ←0
   │ log_utils                   38L  0C    2m  CC=4      ←1
   │ app                         37L  0C    0m  CC=0.0    ←0
-  │ static                      32L  0C    2m  CC=4      ←0
   │ prompt_manager              32L  0C    2m  CC=3      ←2
+  │ static                      32L  0C    2m  CC=4      ←0
   │ execute                     29L  0C    1m  CC=3      ←0
   │ logs                        23L  0C    2m  CC=2      ←0
   │ health                      20L  0C    1m  CC=1      ←0
@@ -679,49 +709,34 @@ LAYERS:
   │ __init__                     6L  0C    0m  CC=0.0    ←0
   │ __init__                     5L  0C    0m  CC=0.0    ←0
   │
+  bql/                            CC̄=3.0    ←in:0  →out:3
+  │ examples                    53L  0C    0m  CC=0.0    ←0
+  │ __main__                    23L  0C    1m  CC=3      ←0
+  │ bql_node                    19L  1C    1m  CC=3      ←0
+  │ __init__                    18L  0C    0m  CC=0.0    ←0
+  │ query_type                  15L  1C    0m  CC=0.0    ←0
+  │ __init__                     6L  0C    0m  CC=0.0    ←0
+  │ __init__                     5L  0C    0m  CC=0.0    ←0
+  │ bql_parser                   5L  0C    0m  CC=0.0    ←0
+  │ __init__                     5L  0C    0m  CC=0.0    ←0
+  │ bql_executor                 5L  0C    0m  CC=0.0    ←0
+  │
   extension/                      CC̄=2.8    ←in:3  →out:0
   │ !! extension.js               955L  2C   82m  CC=44     ←2
   │
-  curllm_server/                  CC̄=2.8    ←in:0  →out:0  ×DUP
-  │ !! curllm_executor            513L  1C   22m  CC=17     ←7
-  │ solver                      74L  1C    4m  CC=3      ←0  ×DUP
-  │ stealth_config              62L  1C    3m  CC=1      ←0  ×DUP
-  │ browserless_page            61L  1C    7m  CC=1      ←0  ×DUP
-  │ analyzer                    59L  1C    3m  CC=3      ←0  ×DUP
-  │ execute                     58L  0C    1m  CC=1      ←0
-  │ config                      53L  1C    1m  CC=1      ←0
-  │ simple_ollama               39L  1C    2m  CC=2      ←0
-  │ __main__                    35L  0C    1m  CC=4      ←0
-  │ browserless_context         26L  1C    3m  CC=1      ←0  ×DUP
-  │ app                         26L  0C    0m  CC=0.0    ←0
-  │ health                      18L  0C    1m  CC=1      ←0
-  │ models                      18L  0C    1m  CC=2      ←0
-  │ screenshot                  16L  0C    1m  CC=2      ←0
-  │ __init__                    15L  0C    0m  CC=0.0    ←0
-  │ local_agent                 12L  1C    1m  CC=1      ←0
-  │ run_logger                   8L  1C    0m  CC=0.0    ←0
-  │ __init__                     8L  0C    0m  CC=0.0    ←0
-  │ __init__                     6L  0C    0m  CC=0.0    ←0
-  │ __init__                     5L  0C    0m  CC=0.0    ←0
-  │ __init__                     5L  0C    0m  CC=0.0    ←0
-  │ __init__                     5L  0C    0m  CC=0.0    ←0
-  │ __init__                     5L  0C    0m  CC=0.0    ←0
-  │ __init__                     5L  0C    0m  CC=0.0    ←0
-  │ __init__                     5L  0C    0m  CC=0.0    ←0
-  │ __init__                     5L  0C    0m  CC=0.0    ←0
-  │
   ./                              CC̄=2.0    ←in:0  →out:0
-  │ !! hardcoded_report.json    18143L  0C    0m  CC=0.0    ←0
+  │ !! hardcoded_report.txt      1128L  0C    0m  CC=0.0    ←0
   │ !! examples                   592L  0C   21m  CC=11     ←0
-  │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
+  │ !! goal.yaml                  530L  0C    0m  CC=0.0    ←0
   │ examples_streamware        379L  0C   15m  CC=2      ←0
   │ Makefile                   359L  0C    0m  CC=0.0    ←0
   │ install.sh                 290L  0C    0m  CC=0.0    ←0
   │ test.json                  259L  0C    0m  CC=0.0    ←0
   │ docker-compose.yml         138L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml             121L  0C    0m  CC=0.0    ←0
   │ !! wordpress_batch            103L  0C    1m  CC=19     ←0
   │ web_prompts.json            97L  0C    0m  CC=0.0    ←0
-  │ pyproject.toml              92L  0C    0m  CC=0.0    ←0
+  │ prefact.yaml                94L  0C    0m  CC=0.0    ←0
   │ QUICKSTART.sh               66L  0C    0m  CC=0.0    ←0
   │ start-web-full.sh           62L  0C    0m  CC=0.0    ←0
   │ project.sh                  59L  0C    0m  CC=0.0    ←0
@@ -730,8 +745,8 @@ LAYERS:
   │ Dockerfile                  45L  0C    0m  CC=0.0    ←0
   │ docker-compose.test.yml     45L  0C    0m  CC=0.0    ←0
   │ requirements.txt            28L  0C    0m  CC=0.0    ←0
-  │ restart.sh                   1L  0C    0m  CC=0.0    ←0
   │ tree.sh                      1L  0C    0m  CC=0.0    ←0
+  │ restart.sh                   1L  0C    0m  CC=0.0    ←0
   │
   monitoring/                     CC̄=1.8    ←in:1056  →out:1
   │ website_monitor.sh         337L  0C    7m  CC=0.0    ←52
@@ -760,15 +775,15 @@ LAYERS:
   │ example_browse.yaml         19L  0C    0m  CC=0.0    ←0
   │
   ── zero ──
-     captcha/__init__.py                       0L
      curllm_core/form_fill.py                  0L
+     examples/extraction/products/extract_products.py  0L
 
 COUPLING:
                                       monitoring            functions.js             curllm_core  curllm_core.streamware                 scripts   examples.url_resolver      examples.detection         curllm_core.cli     examples.streamware  curllm_core.deprecated  examples.orchestration               functions                examples     examples_streamware                 captcha
               monitoring                      ──                       1                     ←21                      ←2                    ←157                    ←159                    ←131                    ←109                     ←69                     ←64                     ←71                                             ←66                     ←32                     ←37  hub
-            functions.js                      ←1                      ──                    ←175                     ←98                     ←20                                                                      ←4                                              ←9                                              ←7                      ←1                                              ←9  hub
-             curllm_core                      21                     175                      ──                       1                                               1                                                                                              ←4                      ←3                      17                      ←4                                                  hub
-  curllm_core.streamware                       2                      98                       8                      ──                      68                       3                                              ←6                     ←31                      ←4                                              13                                             ←20                          hub
+            functions.js                      ←1                      ──                    ←176                     ←88                     ←20                                                                      ←4                                              ←9                                              ←7                      ←1                                              ←9  hub
+             curllm_core                      21                     176                      ──                       1                                               1                                                                                              ←4                      ←3                      17                      ←4                                                  hub
+  curllm_core.streamware                       2                      88                       8                      ──                      68                       3                                              ←6                     ←31                      ←4                                              13                                             ←20                          hub
                  scripts                     157                      20                                             ←68                      ──                                                                                                                                                                       2                                                                          hub
    examples.url_resolver                     159                                               1                      ←3                                              ──                                                                                                                      ←4                                                                                                  hub
       examples.detection                     131                                                                                                                                              ──                                                                       1                                                                                                                          !! fan-out
@@ -781,53 +796,54 @@ COUPLING:
      examples_streamware                      32                                                                      20                                                                                                                                                                                                                                              ──                          !! fan-out
                  captcha                      37                       9                                                                                                                                                                                                                                               1                                                                      ──  !! fan-out
   CYCLES: none
-  HUB: curllm_web.server/ (fan-in=5)
-  HUB: curllm_core.streamware/ (fan-in=69)
-  HUB: scripts/ (fan-in=68)
-  HUB: curllm_core/ (fan-in=51)
-  HUB: monitoring/ (fan-in=1056)
-  HUB: functions/ (fan-in=72)
-  HUB: curllm_web.prompts/ (fan-in=8)
   HUB: curllm_core.extraction/ (fan-in=26)
-  HUB: curllm_server.executor/ (fan-in=8)
   HUB: examples.url_resolver/ (fan-in=9)
-  HUB: functions.js/ (fan-in=539)
+  HUB: curllm_web.server/ (fan-in=5)
+  HUB: functions.js/ (fan-in=543)
+  HUB: curllm_core/ (fan-in=51)
   HUB: curllm_core.form_fill/ (fan-in=6)
-  SMELL: curllm_web.server/ fan-out=22 → split needed
-  SMELL: curllm_core.extraction_orchestrator/ fan-out=13 → split needed
+  HUB: curllm_web.prompts/ (fan-in=8)
+  HUB: scripts/ (fan-in=68)
+  HUB: functions/ (fan-in=72)
+  HUB: monitoring/ (fan-in=1056)
+  HUB: curllm_core.streamware/ (fan-in=69)
+  HUB: curllm_server.executor/ (fan-in=8)
   SMELL: examples.llm-providers/ fan-out=27 → split needed
-  SMELL: curllm_core.streamware/ fan-out=194 → split needed
-  SMELL: scripts/ fan-out=179 → split needed
-  SMELL: curllm_logs/ fan-out=9 → split needed
-  SMELL: captcha/ fan-out=48 → split needed
-  SMELL: examples.extraction/ fan-out=8 → split needed
-  SMELL: examples_streamware/ fan-out=52 → split needed
-  SMELL: curllm_core/ fan-out=243 → split needed
-  SMELL: examples.orchestration/ fan-out=79 → split needed
-  SMELL: examples.streamware/ fan-out=100 → split needed
-  SMELL: examples/ fan-out=72 → split needed
-  SMELL: curllm_core.orchestration/ fan-out=18 → split needed
-  SMELL: curllm_web.routes/ fan-out=14 → split needed
-  SMELL: curllm_core.execution/ fan-out=32 → split needed
-  SMELL: curllm_web/ fan-out=22 → split needed
-  SMELL: curllm_core.validation/ fan-out=20 → split needed
-  SMELL: forms/ fan-out=8 → split needed
-  SMELL: curllm_core.running/ fan-out=31 → split needed
-  SMELL: functions.safety/ fan-out=10 → split needed
-  SMELL: curllm_core.tools/ fan-out=12 → split needed
+  SMELL: pricing/ fan-out=22 → split needed
   SMELL: curllm_core.extraction/ fan-out=14 → split needed
-  SMELL: examples.currency/ fan-out=36 → split needed
-  SMELL: curllm_server.executor/ fan-out=15 → split needed
-  SMELL: curllm_core.hierarchical/ fan-out=10 → split needed
   SMELL: examples.detection/ fan-out=135 → split needed
   SMELL: examples.url_resolver/ fan-out=163 → split needed
+  SMELL: examples.streamware/ fan-out=100 → split needed
+  SMELL: examples/ fan-out=72 → split needed
+  SMELL: examples.extraction/ fan-out=8 → split needed
+  SMELL: curllm_web.server/ fan-out=22 → split needed
+  SMELL: curllm_logs/ fan-out=9 → split needed
+  SMELL: examples_streamware/ fan-out=52 → split needed
+  SMELL: curllm_core.execution/ fan-out=32 → split needed
   SMELL: curllm_core.deprecated/ fan-out=82 → split needed
-  SMELL: curllm_core.data_export/ fan-out=8 → split needed
-  SMELL: pricing/ fan-out=22 → split needed
+  SMELL: curllm_core/ fan-out=244 → split needed
+  SMELL: functions.safety/ fan-out=10 → split needed
+  SMELL: curllm_core.orchestration/ fan-out=18 → split needed
   SMELL: curllm_core.cli/ fan-out=122 → split needed
-  SMELL: wordpress_batch/ fan-out=9 → split needed
+  SMELL: curllm_core.validation/ fan-out=20 → split needed
   SMELL: curllm_core.form_fill/ fan-out=20 → split needed
   SMELL: curllm_core.orchestrators/ fan-out=36 → split needed
+  SMELL: forms/ fan-out=8 → split needed
+  SMELL: curllm_web/ fan-out=22 → split needed
+  SMELL: scripts/ fan-out=179 → split needed
+  SMELL: curllm_mcp/ fan-out=14 → split needed
+  SMELL: curllm_web.routes/ fan-out=14 → split needed
+  SMELL: examples.currency/ fan-out=36 → split needed
+  SMELL: curllm_core.tools/ fan-out=12 → split needed
+  SMELL: curllm_core.extraction_orchestrator/ fan-out=13 → split needed
+  SMELL: curllm_core.streamware/ fan-out=184 → split needed
+  SMELL: captcha/ fan-out=48 → split needed
+  SMELL: examples.orchestration/ fan-out=79 → split needed
+  SMELL: curllm_server.executor/ fan-out=15 → split needed
+  SMELL: curllm_core.data_export/ fan-out=8 → split needed
+  SMELL: curllm_core.running/ fan-out=31 → split needed
+  SMELL: curllm_core.hierarchical/ fan-out=10 → split needed
+  SMELL: wordpress_batch/ fan-out=9 → split needed
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon

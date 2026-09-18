@@ -375,3 +375,6 @@ __marimo__/
 .github/
 .planfile/
 .projektor/
+
+# koru runtime artefacts (generated)
+.planfile/sprints/*.bak-*

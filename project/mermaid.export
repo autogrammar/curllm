@@ -3,38 +3,6 @@ flowchart TD
     subgraph bql____main__
         bql____main____main["main"]
     end
-    subgraph bql__executor
-        bql__executor__bql_executor__BQLExecutor____init__["__init__"]
-        bql__executor__bql_executor__BQLExecutor__execute["execute"]
-        bql__executor__bql_executor__BQLExecutor___execute_query["_execute_query"]
-        bql__executor__bql_executor__BQLExecutor___execute_mutation["_execute_mutation"]
-        bql__executor__bql_executor__BQLExecutor___execute_operation{{_execute_operation CC=15}}
-        bql__executor__bql_executor__BQLExecutor___execute_action["_execute_action"]
-        bql__executor__bql_executor__BQLExecutor___execute_selections["_execute_selections"]
-        bql__executor__bql_executor__BQLExecutor___execute_page_selection["_execute_page_selection"]
-        bql__executor__bql_executor__BQLExecutor___select_elements["_select_elements"]
-        bql__executor__bql_executor__BQLExecutor___extract_from_element["_extract_from_element"]
-        bql__executor__bql_executor__BQLExecutor___execute_instruction["_execute_instruction"]
-    end
-    subgraph bql__parser
-        bql__parser__bql_parser__BQLParser____init__["__init__"]
-        bql__parser__bql_parser__BQLParser__parse["parse"]
-        bql__parser__bql_parser__BQLParser___preprocess["_preprocess"]
-        bql__parser__bql_parser__BQLParser___tokenize["_tokenize"]
-        bql__parser__bql_parser__BQLParser___match["_match"]
-        bql__parser__bql_parser__BQLParser___consume["_consume"]
-        bql__parser__bql_parser__BQLParser___parse_query_block["_parse_query_block"]
-        bql__parser__bql_parser__BQLParser___parse_mutation_block["_parse_mutation_block"]
-        bql__parser__bql_parser__BQLParser___parse_operation["_parse_operation"]
-        bql__parser__bql_parser__BQLParser___parse_action["_parse_action"]
-        bql__parser__bql_parser__BQLParser___parse_arguments["_parse_arguments"]
-        bql__parser__bql_parser__BQLParser___parse_value("_parse_value CC=8")
-        bql__parser__bql_parser__BQLParser___parse_array["_parse_array"]
-        bql__parser__bql_parser__BQLParser___parse_object["_parse_object"]
-        bql__parser__bql_parser__BQLParser___parse_selection_set["_parse_selection_set"]
-        bql__parser__bql_parser__BQLParser___parse_simple_instruction["_parse_simple_instruction"]
-        bql__parser__bql_parser__BQLParser___extract_operations_from_text("_extract_operations_from_text CC=8")
-    end
     subgraph bql__types
         bql__types__bql_node__BQLNode____post_init__["__post_init__"]
     end
@@ -45,23 +13,28 @@ flowchart TD
         captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__brute_force_solve["brute_force_solve"]
         captcha__allegro_captcha_solver__main("main CC=9")
     end
+    subgraph captcha__audio_solver
+        captcha__audio_solver__AudioCaptchaSolver____init__["__init__"]
+        captcha__audio_solver__AudioCaptchaSolver__solve["solve"]
+        captcha__audio_solver__AudioCaptchaSolver___click_audio_button["_click_audio_button"]
+        captcha__audio_solver__AudioCaptchaSolver___load_audio_bytes["_load_audio_bytes"]
+        captcha__audio_solver__AudioCaptchaSolver___transcribe_wav["_transcribe_wav"]
+    end
+    subgraph captcha__captcha_orchestrator
+        captcha__captcha_orchestrator__CaptchaSolver____init__["__init__"]
+        captcha__captcha_orchestrator__CaptchaSolver__detect_captcha_type["detect_captcha_type"]
+        captcha__captcha_orchestrator__CaptchaSolver___has_selector["_has_selector"]
+        captcha__captcha_orchestrator__CaptchaSolver__solve["solve"]
+        captcha__captcha_orchestrator__CaptchaSolver___solve_once["_solve_once"]
+        captcha__captcha_orchestrator__CaptchaSolver___solve_audio["_solve_audio"]
+        captcha__captcha_orchestrator__CaptchaSolver__solve_with_service("solve_with_service CC=8")
+    end
     subgraph captcha__captcha_solver
-        captcha__captcha_solver__SlidingPuzzleSolver____init__["__init__"]
-        captcha__captcha_solver__SlidingPuzzleSolver__solve("solve CC=8")
-        captcha__captcha_solver__SlidingPuzzleSolver__analyze_puzzle["analyze_puzzle"]
-        captcha__captcha_solver__SlidingPuzzleSolver__execute_sliding_solution("execute_sliding_solution CC=11")
-        captcha__captcha_solver__SlidingPuzzleSolver__human_like_drag["human_like_drag"]
-        captcha__captcha_solver__SlidingPuzzleSolver__generate_bezier_points["generate_bezier_points"]
-        captcha__captcha_solver__SlidingPuzzleSolver__solve_with_2captcha["solve_with_2captcha"]
-        captcha__captcha_solver__AudioCaptchaSolver____init__["__init__"]
-        captcha__captcha_solver__AudioCaptchaSolver__solve("solve CC=12")
-        captcha__captcha_solver__CaptchaSolver____init__["__init__"]
-        captcha__captcha_solver__CaptchaSolver__detect_captcha_type("detect_captcha_type CC=10")
-        captcha__captcha_solver__CaptchaSolver__solve("solve CC=14")
-        captcha__captcha_solver__CaptchaSolver__solve_with_service("solve_with_service CC=8")
-        captcha__captcha_solver__CurllmCaptchaExtension____init__["__init__"]
-        captcha__captcha_solver__CurllmCaptchaExtension__handle_page["handle_page"]
         captcha__captcha_solver__main["main"]
+    end
+    subgraph captcha__curllm_extension
+        captcha__curllm_extension__CurllmCaptchaExtension____init__["__init__"]
+        captcha__curllm_extension__CurllmCaptchaExtension__handle_page["handle_page"]
     end
     subgraph captcha__playwright_bql_framework
         captcha__playwright_bql_framework__extract_semantic_dom["extract_semantic_dom"]
@@ -79,6 +52,21 @@ flowchart TD
         captcha__playwright_bql_framework__call_llm_openai["call_llm_openai"]
         captcha__playwright_bql_framework__select_llm_caller["select_llm_caller"]
         captcha__playwright_bql_framework___parse_actions_from_llm{{_parse_actions_from_llm CC=19}}
+    end
+    subgraph captcha__sliding_solver
+        captcha__sliding_solver__SlidingPuzzleSolver____init__["__init__"]
+        captcha__sliding_solver__SlidingPuzzleSolver__solve["solve"]
+        captcha__sliding_solver__SlidingPuzzleSolver___find_puzzle_element["_find_puzzle_element"]
+        captcha__sliding_solver__SlidingPuzzleSolver__analyze_puzzle["analyze_puzzle"]
+        captcha__sliding_solver__SlidingPuzzleSolver__execute_sliding_solution["execute_sliding_solution"]
+        captcha__sliding_solver__SlidingPuzzleSolver___find_slider["_find_slider"]
+        captcha__sliding_solver__SlidingPuzzleSolver___has_error_indicator["_has_error_indicator"]
+        captcha__sliding_solver__SlidingPuzzleSolver__human_like_drag["human_like_drag"]
+        captcha__sliding_solver__SlidingPuzzleSolver__generate_bezier_points["generate_bezier_points"]
+        captcha__sliding_solver__SlidingPuzzleSolver__solve_with_2captcha["solve_with_2captcha"]
+    end
+    subgraph curllm_core
+        curllm_core____getattr__["__getattr__"]
     end
     subgraph curllm_core__actions
         curllm_core__actions__execute_action["execute_action"]
@@ -105,17 +93,6 @@ flowchart TD
     end
     subgraph curllm_core__bql
         curllm_core__bql__bql_node__BQLNode____post_init__["__post_init__"]
-        curllm_core__bql__bql_executor__BQLExecutor____init__["__init__"]
-        curllm_core__bql__bql_executor__BQLExecutor__execute["execute"]
-        curllm_core__bql__bql_executor__BQLExecutor___execute_query["_execute_query"]
-        curllm_core__bql__bql_executor__BQLExecutor___execute_mutation["_execute_mutation"]
-        curllm_core__bql__bql_executor__BQLExecutor___execute_operation{{_execute_operation CC=15}}
-        curllm_core__bql__bql_executor__BQLExecutor___execute_action["_execute_action"]
-        curllm_core__bql__bql_executor__BQLExecutor___execute_selections["_execute_selections"]
-        curllm_core__bql__bql_executor__BQLExecutor___execute_page_selection["_execute_page_selection"]
-        curllm_core__bql__bql_executor__BQLExecutor___select_elements["_select_elements"]
-        curllm_core__bql__bql_executor__BQLExecutor___extract_from_element["_extract_from_element"]
-        curllm_core__bql__bql_executor__BQLExecutor___execute_instruction["_execute_instruction"]
         curllm_core__bql__bql_parser__BQLParser____init__["__init__"]
         curllm_core__bql__bql_parser__BQLParser__parse["parse"]
         curllm_core__bql__bql_parser__BQLParser___preprocess["_preprocess"]
@@ -133,6 +110,17 @@ flowchart TD
         curllm_core__bql__bql_parser__BQLParser___parse_selection_set["_parse_selection_set"]
         curllm_core__bql__bql_parser__BQLParser___parse_simple_instruction["_parse_simple_instruction"]
         curllm_core__bql__bql_parser__BQLParser___extract_operations_from_text("_extract_operations_from_text CC=8")
+        curllm_core__bql__bql_executor__BQLExecutor____init__["__init__"]
+        curllm_core__bql__bql_executor__BQLExecutor__execute["execute"]
+        curllm_core__bql__bql_executor__BQLExecutor___execute_query["_execute_query"]
+        curllm_core__bql__bql_executor__BQLExecutor___execute_mutation["_execute_mutation"]
+        curllm_core__bql__bql_executor__BQLExecutor___execute_operation{{_execute_operation CC=15}}
+        curllm_core__bql__bql_executor__BQLExecutor___execute_action["_execute_action"]
+        curllm_core__bql__bql_executor__BQLExecutor___execute_selections["_execute_selections"]
+        curllm_core__bql__bql_executor__BQLExecutor___execute_page_selection["_execute_page_selection"]
+        curllm_core__bql__bql_executor__BQLExecutor___select_elements["_select_elements"]
+        curllm_core__bql__bql_executor__BQLExecutor___extract_from_element["_extract_from_element"]
+        curllm_core__bql__bql_executor__BQLExecutor___execute_instruction["_execute_instruction"]
     end
     subgraph curllm_core__bql_extraction_orchestrator
         curllm_core__bql_extraction_orchestrator__BQLExtractionOrchestrator____init__["__init__"]
@@ -192,6 +180,22 @@ flowchart TD
         curllm_core__captcha_widget__handle_widget_captcha("handle_widget_captcha CC=13")
     end
     subgraph curllm_core__cli
+        curllm_core__cli__doctor__print_header["print_header"]
+        curllm_core__cli__doctor__print_check["print_check"]
+        curllm_core__cli__doctor__print_ok["print_ok"]
+        curllm_core__cli__doctor__print_fail["print_fail"]
+        curllm_core__cli__doctor__print_warn["print_warn"]
+        curllm_core__cli__doctor__check_python_version["check_python_version"]
+        curllm_core__cli__doctor__check_package_installation["check_package_installation"]
+        curllm_core__cli__doctor__check_dependencies["check_dependencies"]
+        curllm_core__cli__doctor__check_playwright_browsers["check_playwright_browsers"]
+        curllm_core__cli__doctor__check_directories["check_directories"]
+        curllm_core__cli__doctor__check_env_file["check_env_file"]
+        curllm_core__cli__doctor__check_ollama("check_ollama CC=9")
+        curllm_core__cli__doctor__check_port_available["check_port_available"]
+        curllm_core__cli__doctor__check_tesseract["check_tesseract"]
+        curllm_core__cli__doctor__check_curllm_modules["check_curllm_modules"]
+        curllm_core__cli__doctor__main("main CC=10")
         curllm_core__cli__web__main["main"]
         curllm_core__cli__feedback__main("main CC=13")
         curllm_core__cli__setup__print_header["print_header"]
@@ -214,22 +218,6 @@ flowchart TD
         curllm_core__cli__flow__cmd_list["cmd_list"]
         curllm_core__cli__flow__cmd_info("cmd_info CC=8")
         curllm_core__cli__flow__main["main"]
-        curllm_core__cli__doctor__print_header["print_header"]
-        curllm_core__cli__doctor__print_check["print_check"]
-        curllm_core__cli__doctor__print_ok["print_ok"]
-        curllm_core__cli__doctor__print_fail["print_fail"]
-        curllm_core__cli__doctor__print_warn["print_warn"]
-        curllm_core__cli__doctor__check_python_version["check_python_version"]
-        curllm_core__cli__doctor__check_package_installation["check_package_installation"]
-        curllm_core__cli__doctor__check_dependencies["check_dependencies"]
-        curllm_core__cli__doctor__check_playwright_browsers["check_playwright_browsers"]
-        curllm_core__cli__doctor__check_directories["check_directories"]
-        curllm_core__cli__doctor__check_env_file["check_env_file"]
-        curllm_core__cli__doctor__check_ollama("check_ollama CC=9")
-        curllm_core__cli__doctor__check_port_available["check_port_available"]
-        curllm_core__cli__doctor__check_tesseract["check_tesseract"]
-        curllm_core__cli__doctor__check_curllm_modules["check_curllm_modules"]
-        curllm_core__cli__doctor__main("main CC=10")
     end
     subgraph curllm_core__config
         curllm_core__config__Config____post_init__["__post_init__"]
@@ -254,9 +242,9 @@ flowchart TD
     end
     subgraph curllm_core__data_export
         curllm_core__data_export__export_excel__export_excel["export_excel"]
-        curllm_core__data_export__export_csv__export_csv["export_csv"]
         curllm_core__data_export__export_markdown__export_markdown["export_markdown"]
         curllm_core__data_export__export_json__export_json["export_json"]
+        curllm_core__data_export__export_csv__export_csv["export_csv"]
         curllm_core__data_export__data_exporter__DataExporter____init__["__init__"]
         curllm_core__data_export__data_exporter__DataExporter__to_json["to_json"]
         curllm_core__data_export__data_exporter__DataExporter__to_jsonl["to_jsonl"]
@@ -269,26 +257,6 @@ flowchart TD
         curllm_core__data_export__data_exporter__DataExporter__to_sqlite["to_sqlite"]
     end
     subgraph curllm_core__deprecated
-        curllm_core__deprecated__prompt_dsl__format_prompt_response_instructions["format_prompt_response_instructions"]
-        curllm_core__deprecated__prompt_dsl__parse_dsl_response{{parse_dsl_response CC=17}}
-        curllm_core__deprecated__prompt_dsl___parse_dict_args["_parse_dict_args"]
-        curllm_core__deprecated__prompt_dsl__format_action_as_dsl("format_action_as_dsl CC=9")
-        curllm_core__deprecated__prompt_dsl__parse_response_auto["parse_response_auto"]
-        curllm_core__deprecated__prompt_dsl__get_atomic_prompt["get_atomic_prompt"]
-        curllm_core__deprecated__form_detector__detect_all_form_fields["detect_all_form_fields"]
-        curllm_core__deprecated__form_detector__analyze_field_relationships("analyze_field_relationships CC=11")
-        curllm_core__deprecated__form_detector__create_llm_context["create_llm_context"]
-        curllm_core__deprecated__extraction_registry__ExtractionAttempt____init__["__init__"]
-        curllm_core__deprecated__extraction_registry__ExtractionAttempt__add_detected_selector["add_detected_selector"]
-        curllm_core__deprecated__extraction_registry__ExtractionAttempt__set_chosen_selector["set_chosen_selector"]
-        curllm_core__deprecated__extraction_registry__ExtractionAttempt__set_result["set_result"]
-        curllm_core__deprecated__extraction_registry__ExtractionAttempt__to_dict["to_dict"]
-        curllm_core__deprecated__extraction_registry__ExtractionPipeline____init__["__init__"]
-        curllm_core__deprecated__extraction_registry__ExtractionPipeline__start_attempt["start_attempt"]
-        curllm_core__deprecated__extraction_registry__ExtractionPipeline__set_winner["set_winner"]
-        curllm_core__deprecated__extraction_registry__ExtractionPipeline__get_transparency_report["get_transparency_report"]
-        curllm_core__deprecated__extraction_registry__ExtractionPipeline___generate_summary["_generate_summary"]
-        curllm_core__deprecated__extraction_registry__ExtractionPipeline__print_transparency_log("print_transparency_log CC=10")
         curllm_core__deprecated__form_analysis__analyze_form_fields_vision{{analyze_form_fields_vision CC=15}}
         curllm_core__deprecated__form_analysis___build_form_analysis_prompt["_build_form_analysis_prompt"]
         curllm_core__deprecated__form_analysis___parse_vision_response["_parse_vision_response"]
@@ -298,18 +266,21 @@ flowchart TD
         curllm_core__deprecated__form_analysis__VisionFormAnalyzer__clear_cache["clear_cache"]
         curllm_core__deprecated__form_analysis__VisionFormAnalyzer__filter_honeypots["filter_honeypots"]
         curllm_core__deprecated__form_analysis__VisionFormAnalyzer__get_fill_order["get_fill_order"]
-        curllm_core__deprecated__hybrid_selector_ranker__HybridSelectorRanker____init__["__init__"]
-        curllm_core__deprecated__hybrid_selector_ranker__HybridSelectorRanker___log["_log"]
-        curllm_core__deprecated__hybrid_selector_ranker__HybridSelectorRanker__rank_candidates["rank_candidates"]
-        curllm_core__deprecated__hybrid_selector_ranker__HybridSelectorRanker___llm_validate_candidates["_llm_validate_candidates"]
-        curllm_core__deprecated__hybrid_selector_ranker__HybridSelectorRanker___combine_decisions("_combine_decisions CC=10")
-        curllm_core__deprecated__hybrid_selector_ranker__HybridSelectorRanker__get_score_breakdown{{get_score_breakdown CC=18}}
-        curllm_core__deprecated__cli_orchestrator__parse_args["parse_args"]
-        curllm_core__deprecated__cli_orchestrator__main{{main CC=25}}
+        curllm_core__deprecated__form_detector__detect_all_form_fields["detect_all_form_fields"]
+        curllm_core__deprecated__form_detector__analyze_field_relationships("analyze_field_relationships CC=11")
+        curllm_core__deprecated__form_detector__create_llm_context["create_llm_context"]
         curllm_core__deprecated__dom_selectors__get_selectors_js["get_selectors_js"]
         curllm_core__deprecated__dom_selectors__build_querySelector_chain["build_querySelector_chain"]
         curllm_core__deprecated__dom_selectors__find_element_with_fallback("find_element_with_fallback CC=11")
         curllm_core__deprecated__dom_selectors__generate_find_element_js["generate_find_element_js"]
+        curllm_core__deprecated__llm_form_orchestrator__analyze_form_fields("analyze_form_fields CC=10")
+        curllm_core__deprecated__llm_form_orchestrator__get_available_operations["get_available_operations"]
+        curllm_core__deprecated__llm_form_orchestrator__create_llm_prompt["create_llm_prompt"]
+        curllm_core__deprecated__llm_form_orchestrator__execute_form_plan{{execute_form_plan CC=29}}
+        curllm_core__deprecated__llm_form_orchestrator__llm_orchestrated_form_fill("llm_orchestrated_form_fill CC=14")
+        curllm_core__deprecated__llm_form_orchestrator__parse_llm_plan["parse_llm_plan"]
+        curllm_core__deprecated__cli_orchestrator__parse_args["parse_args"]
+        curllm_core__deprecated__cli_orchestrator__main{{main CC=25}}
         curllm_core__deprecated__atomic_query__QueryResult____len__["__len__"]
         curllm_core__deprecated__atomic_query__QueryResult____iter__["__iter__"]
         curllm_core__deprecated__atomic_query__AtomicQuery____init__["__init__"]
@@ -327,8 +298,25 @@ flowchart TD
         curllm_core__deprecated__atomic_query__quick_find["quick_find"]
         curllm_core__deprecated__atomic_query__quick_extract_text["quick_extract_text"]
         curllm_core__deprecated__atomic_query__quick_extract_products["quick_extract_products"]
-        curllm_core__deprecated__hierarchical_planner_v2__HierarchicalPlannerV2____init__["__init__"]
-        curllm_core__deprecated__hierarchical_planner_v2__HierarchicalPlannerV2__execute("execute CC=8")
+        curllm_core__deprecated__prompt_dsl__format_prompt_response_instructions["format_prompt_response_instructions"]
+        curllm_core__deprecated__prompt_dsl__parse_dsl_response{{parse_dsl_response CC=17}}
+        curllm_core__deprecated__prompt_dsl___parse_dict_args["_parse_dict_args"]
+        curllm_core__deprecated__prompt_dsl__format_action_as_dsl("format_action_as_dsl CC=9")
+        curllm_core__deprecated__prompt_dsl__parse_response_auto["parse_response_auto"]
+        curllm_core__deprecated__prompt_dsl__get_atomic_prompt["get_atomic_prompt"]
+        curllm_core__deprecated__hybrid_selector_ranker__HybridSelectorRanker____init__["__init__"]
+        curllm_core__deprecated__hybrid_selector_ranker__HybridSelectorRanker___log["_log"]
+        curllm_core__deprecated__hybrid_selector_ranker__HybridSelectorRanker__rank_candidates["rank_candidates"]
+        curllm_core__deprecated__hybrid_selector_ranker__HybridSelectorRanker___llm_validate_candidates["_llm_validate_candidates"]
+        curllm_core__deprecated__hybrid_selector_ranker__HybridSelectorRanker___combine_decisions("_combine_decisions CC=10")
+        curllm_core__deprecated__hybrid_selector_ranker__HybridSelectorRanker__get_score_breakdown{{get_score_breakdown CC=18}}
+        curllm_core__deprecated__extraction_registry__ExtractionAttempt____init__["__init__"]
+        curllm_core__deprecated__extraction_registry__ExtractionAttempt__add_detected_selector["add_detected_selector"]
+        curllm_core__deprecated__extraction_registry__ExtractionAttempt__set_chosen_selector["set_chosen_selector"]
+        curllm_core__deprecated__extraction_registry__ExtractionAttempt__set_result["set_result"]
+        curllm_core__deprecated__extraction_registry__ExtractionAttempt__to_dict["to_dict"]
+        curllm_core__deprecated__extraction_registry__ExtractionPipeline____init__["__init__"]
+        curllm_core__deprecated__extraction_registry__ExtractionPipeline__start_attempt["start_attempt"]
     end
     subgraph curllm_core__detection
         curllm_core__detection__detector__DOMNode__signature["signature"]
@@ -352,26 +340,26 @@ flowchart TD
         curllm_core__diagnostics__diagnose_url_issue("diagnose_url_issue CC=14")
     end
     subgraph curllm_core__dom
-        curllm_core__dom__helpers__has_content_type__has_content_type["has_content_type"]
-        curllm_core__dom__helpers__find_links_by_location__find_links_by_location["find_links_by_location"]
-        curllm_core__dom__helpers__find_inputs__find_inputs("find_inputs CC=10")
-        curllm_core__dom__helpers__find_elements_by_role__find_elements_by_role["find_elements_by_role"]
         curllm_core__dom__helpers__execute_search__execute_search["execute_search"]
+        curllm_core__dom__helpers__has_content_type__has_content_type["has_content_type"]
         curllm_core__dom__helpers__find_buttons__find_buttons["find_buttons"]
-        curllm_core__dom__helpers__analyze_page_type__analyze_page_type["analyze_page_type"]
         curllm_core__dom__helpers__wait_for_hydration__wait_for_spa_hydration["wait_for_spa_hydration"]
         curllm_core__dom__helpers__wait_for_hydration__wait_for_interactive_elements["wait_for_interactive_elements"]
         curllm_core__dom__helpers__wait_for_hydration__wait_for_navigation_ready["wait_for_navigation_ready"]
         curllm_core__dom__helpers__wait_for_hydration__ensure_page_ready["ensure_page_ready"]
-        curllm_core__dom__helpers__find_search_input__find_search_input{{find_search_input CC=17}}
-        curllm_core__dom__helpers__extract_all_links__extract_all_links["extract_all_links"]
+        curllm_core__dom__helpers__analyze_page_type__analyze_page_type["analyze_page_type"]
+        curllm_core__dom__helpers__find_inputs__find_inputs("find_inputs CC=10")
+        curllm_core__dom__helpers__find_links_by_location__find_links_by_location["find_links_by_location"]
         curllm_core__dom__helpers___find_link_with_llm___find_link_with_llm("_find_link_with_llm CC=10")
-        curllm_core__dom__helpers__find_links_by_text__find_links_by_text("find_links_by_text CC=9")
-        curllm_core__dom__helpers__find_link_for_goal__find_link_for_goal["find_link_for_goal"]
-        curllm_core__dom__helpers__try_direct_urls__try_direct_urls["try_direct_urls"]
+        curllm_core__dom__helpers__find_search_input__find_search_input{{find_search_input CC=17}}
+        curllm_core__dom__helpers__find_elements_by_role__find_elements_by_role["find_elements_by_role"]
         curllm_core__dom__helpers__find_links_by_aria__find_links_by_aria["find_links_by_aria"]
-        curllm_core__dom__helpers__find_links_by_url_pattern__find_links_by_url_pattern["find_links_by_url_pattern"]
+        curllm_core__dom__helpers__find_link_for_goal__find_link_for_goal["find_link_for_goal"]
+        curllm_core__dom__helpers__extract_all_links__extract_all_links["extract_all_links"]
+        curllm_core__dom__helpers__find_links_by_text__find_links_by_text("find_links_by_text CC=9")
+        curllm_core__dom__helpers__try_direct_urls__try_direct_urls["try_direct_urls"]
         curllm_core__dom__helpers___find_link_statistical___find_link_statistical("_find_link_statistical CC=10")
+        curllm_core__dom__helpers__find_links_by_url_pattern__find_links_by_url_pattern["find_links_by_url_pattern"]
         curllm_core__dom__helpers___find_link_keyword_fallback___find_link_keyword_fallback{{_find_link_keyword_fallback CC=19}}
     end
     subgraph curllm_core__dom_statistics
@@ -388,12 +376,6 @@ flowchart TD
         curllm_core__dom_statistics__AdaptiveDepthAnalyzer___generate_reasoning["_generate_reasoning"]
     end
     subgraph curllm_core__dom_toolkit
-        curllm_core__dom_toolkit__statistics__scoring__CandidateScorer__score_containers["score_containers"]
-        curllm_core__dom_toolkit__statistics__scoring__CandidateScorer__rank_by_completeness["rank_by_completeness"]
-        curllm_core__dom_toolkit__statistics__scoring__CandidateScorer__compare_selectors["compare_selectors"]
-        curllm_core__dom_toolkit__statistics__clustering__ElementClusterer__cluster_by_structure["cluster_by_structure"]
-        curllm_core__dom_toolkit__statistics__clustering__ElementClusterer__find_similar_elements["find_similar_elements"]
-        curllm_core__dom_toolkit__statistics__clustering__ElementClusterer__group_by_parent["group_by_parent"]
         curllm_core__dom_toolkit__statistics__frequency__FrequencyAnalyzer__count_class_frequencies["count_class_frequencies"]
         curllm_core__dom_toolkit__statistics__frequency__FrequencyAnalyzer__count_tag_class_combinations["count_tag_class_combinations"]
         curllm_core__dom_toolkit__statistics__frequency__FrequencyAnalyzer__analyze_text_lengths["analyze_text_lengths"]
@@ -403,6 +385,9 @@ flowchart TD
         curllm_core__dom_toolkit__analyzers__selectors__SelectorGenerator__find_stable_selector["find_stable_selector"]
         curllm_core__dom_toolkit__analyzers__selectors__SelectorGenerator__extract_field_selectors["extract_field_selectors"]
         curllm_core__dom_toolkit__analyzers__selectors__SelectorGenerator__test_selector["test_selector"]
+        curllm_core__dom_toolkit__statistics__scoring__CandidateScorer__score_containers["score_containers"]
+        curllm_core__dom_toolkit__statistics__scoring__CandidateScorer__rank_by_completeness["rank_by_completeness"]
+        curllm_core__dom_toolkit__statistics__scoring__CandidateScorer__compare_selectors["compare_selectors"]
         curllm_core__dom_toolkit__analyzers__patterns__PatternDetector__find_repeating_containers["find_repeating_containers"]
         curllm_core__dom_toolkit__analyzers__patterns__PatternDetector__find_list_structures["find_list_structures"]
         curllm_core__dom_toolkit__analyzers__patterns__PatternDetector__detect_grid_layout["detect_grid_layout"]
@@ -411,6 +396,9 @@ flowchart TD
         curllm_core__dom_toolkit__analyzers__prices__PriceDetector__get_price_distribution["get_price_distribution"]
         curllm_core__dom_toolkit__analyzers__prices__PriceDetector__extract_price_from_selector["extract_price_from_selector"]
         curllm_core__dom_toolkit__analyzers__prices__PriceDetector__detect_price_format["detect_price_format"]
+        curllm_core__dom_toolkit__statistics__clustering__ElementClusterer__cluster_by_structure["cluster_by_structure"]
+        curllm_core__dom_toolkit__statistics__clustering__ElementClusterer__find_similar_elements["find_similar_elements"]
+        curllm_core__dom_toolkit__statistics__clustering__ElementClusterer__group_by_parent["group_by_parent"]
         curllm_core__dom_toolkit__analyzers__structure__DOMStructureAnalyzer__get_depth_distribution["get_depth_distribution"]
         curllm_core__dom_toolkit__analyzers__structure__DOMStructureAnalyzer__get_repeating_structures["get_repeating_structures"]
         curllm_core__dom_toolkit__analyzers__structure__DOMStructureAnalyzer__get_elements_at_depth["get_elements_at_depth"]
@@ -431,12 +419,20 @@ flowchart TD
         curllm_core__dom_utils__detect_honeypot["detect_honeypot"]
     end
     subgraph curllm_core__dynamic
+        curllm_core__dynamic__patterns__detect_price_pattern["detect_price_pattern"]
+        curllm_core__dynamic__patterns__detect_product_container["detect_product_container"]
+        curllm_core__dynamic__patterns__detect_list_pattern["detect_list_pattern"]
+        curllm_core__dynamic__patterns__detect_pagination["detect_pagination"]
         curllm_core__dynamic__urls__find_url_for_intent("find_url_for_intent CC=14")
         curllm_core__dynamic__urls__find_login_url["find_login_url"]
         curllm_core__dynamic__urls__find_contact_url["find_contact_url"]
         curllm_core__dynamic__urls__find_cart_url["find_cart_url"]
         curllm_core__dynamic__urls__discover_sitemap_urls("discover_sitemap_urls CC=8")
         curllm_core__dynamic__urls___match_url_to_intent("_match_url_to_intent CC=9")
+        curllm_core__dynamic__messages__detect_success_message("detect_success_message CC=11")
+        curllm_core__dynamic__messages__detect_error_message("detect_error_message CC=8")
+        curllm_core__dynamic__messages__detect_captcha["detect_captcha"]
+        curllm_core__dynamic__messages__detect_form_validation_error["detect_form_validation_error"]
         curllm_core__dynamic__selectors__find_form_fields["find_form_fields"]
         curllm_core__dynamic__selectors___heuristic_find_fields["_heuristic_find_fields"]
         curllm_core__dynamic__selectors___detect_field_type("_detect_field_type CC=8")
@@ -445,14 +441,6 @@ flowchart TD
         curllm_core__dynamic__selectors__find_input_by_purpose["find_input_by_purpose"]
         curllm_core__dynamic__selectors__find_clickable_by_intent["find_clickable_by_intent"]
         curllm_core__dynamic__selectors__find_container_by_content["find_container_by_content"]
-        curllm_core__dynamic__messages__detect_success_message("detect_success_message CC=11")
-        curllm_core__dynamic__messages__detect_error_message("detect_error_message CC=8")
-        curllm_core__dynamic__messages__detect_captcha["detect_captcha"]
-        curllm_core__dynamic__messages__detect_form_validation_error["detect_form_validation_error"]
-        curllm_core__dynamic__patterns__detect_price_pattern["detect_price_pattern"]
-        curllm_core__dynamic__patterns__detect_product_container["detect_product_container"]
-        curllm_core__dynamic__patterns__detect_list_pattern["detect_list_pattern"]
-        curllm_core__dynamic__patterns__detect_pagination["detect_pagination"]
     end
     subgraph curllm_core__dynamic_container_detector
         curllm_core__dynamic_container_detector__DynamicContainerDetector____init__["__init__"]
@@ -599,11 +587,11 @@ flowchart TD
         curllm_core__form_fill__js_scripts__generate_field_concepts_with_llm["generate_field_concepts_with_llm"]
         curllm_core__form_fill__js_scripts__get_default_field_concepts["get_default_field_concepts"]
         curllm_core__form_fill__js_scripts__find_form_fields_with_llm["find_form_fields_with_llm"]
+        curllm_core__form_fill__parser__parse_form_pairs("parse_form_pairs CC=11")
+        curllm_core__form_fill__parser__normalize_field_key("normalize_field_key CC=11")
         curllm_core__form_fill__field_filler__robust_fill_field["robust_fill_field"]
         curllm_core__form_fill__field_filler___trigger_field_events["_trigger_field_events"]
         curllm_core__form_fill__field_filler__check_checkbox["check_checkbox"]
-        curllm_core__form_fill__parser__parse_form_pairs("parse_form_pairs CC=11")
-        curllm_core__form_fill__parser__normalize_field_key("normalize_field_key CC=11")
         curllm_core__form_fill__filler__deterministic_form_fill("deterministic_form_fill CC=12")
         curllm_core__form_fill__filler___get_canonical_values("_get_canonical_values CC=10")
         curllm_core__form_fill__filler___fill_all_fields{{_fill_all_fields CC=33}}
@@ -621,9 +609,9 @@ flowchart TD
     subgraph curllm_core__form_fill_llm
         curllm_core__form_fill_llm___trigger_field_events___trigger_field_events["_trigger_field_events"]
         curllm_core__form_fill_llm__smart_form_fill__smart_form_fill("smart_form_fill CC=10")
-        curllm_core__form_fill_llm___simple_parse___simple_parse["_simple_parse"]
         curllm_core__form_fill_llm__llm_form_fill__llm_form_fill{{llm_form_fill CC=23}}
         curllm_core__form_fill_llm___extract_values_with_llm___extract_values_with_llm["_extract_values_with_llm"]
+        curllm_core__form_fill_llm___simple_parse___simple_parse["_simple_parse"]
     end
     subgraph curllm_core__goal_detector_llm
         curllm_core__goal_detector_llm__GoalDetectorLLM____init__["__init__"]
@@ -645,15 +633,9 @@ flowchart TD
         curllm_core__headers__normalize_headers("normalize_headers CC=9")
     end
     subgraph curllm_core__hierarchical
+        curllm_core__hierarchical__planner_llm__should_use_hierarchical_llm__should_use_hierarchical_llm["should_use_hierarchical_llm"]
         curllm_core__hierarchical__planner_llm__extract_strategic_context__extract_strategic_context["extract_strategic_context"]
         curllm_core__hierarchical__planner_llm__extract_strategic_context___detect_page_type["_detect_page_type"]
-        curllm_core__hierarchical__planner_llm__should_use_hierarchical_llm__should_use_hierarchical_llm["should_use_hierarchical_llm"]
-        curllm_core__hierarchical__planner_llm__llm_hierarchical_planner__LLMHierarchicalPlanner____init__["__init__"]
-        curllm_core__hierarchical__planner_llm__llm_hierarchical_planner__LLMHierarchicalPlanner__should_use_hierarchical["should_use_hierarchical"]
-        curllm_core__hierarchical__planner_llm__llm_hierarchical_planner__LLMHierarchicalPlanner___is_simple_task_llm["_is_simple_task_llm"]
-        curllm_core__hierarchical__planner_llm__llm_hierarchical_planner__LLMHierarchicalPlanner___is_multi_step_llm["_is_multi_step_llm"]
-        curllm_core__hierarchical__planner_llm__llm_hierarchical_planner__LLMHierarchicalPlanner__plan_strategy["plan_strategy"]
-        curllm_core__hierarchical__planner_llm__llm_hierarchical_planner__LLMHierarchicalPlanner___estimate_context_size["_estimate_context_size"]
         curllm_core__hierarchical__planner__should_use_hierarchical["should_use_hierarchical"]
         curllm_core__hierarchical__planner__is_simple_form_task["is_simple_form_task"]
         curllm_core__hierarchical__planner__requires_multi_step["requires_multi_step"]
@@ -666,6 +648,12 @@ flowchart TD
         curllm_core__hierarchical__planner__generate_tactical_prompt{{generate_tactical_prompt CC=18}}
         curllm_core__hierarchical__planner__hierarchical_plan_with_vision{{hierarchical_plan_with_vision CC=18}}
         curllm_core__hierarchical__planner__hierarchical_plan{{hierarchical_plan CC=31}}
+        curllm_core__hierarchical__planner_llm__llm_hierarchical_planner__LLMHierarchicalPlanner____init__["__init__"]
+        curllm_core__hierarchical__planner_llm__llm_hierarchical_planner__LLMHierarchicalPlanner__should_use_hierarchical["should_use_hierarchical"]
+        curllm_core__hierarchical__planner_llm__llm_hierarchical_planner__LLMHierarchicalPlanner___is_simple_task_llm["_is_simple_task_llm"]
+        curllm_core__hierarchical__planner_llm__llm_hierarchical_planner__LLMHierarchicalPlanner___is_multi_step_llm["_is_multi_step_llm"]
+        curllm_core__hierarchical__planner_llm__llm_hierarchical_planner__LLMHierarchicalPlanner__plan_strategy["plan_strategy"]
+        curllm_core__hierarchical__planner_llm__llm_hierarchical_planner__LLMHierarchicalPlanner___estimate_context_size["_estimate_context_size"]
     end
     subgraph curllm_core__human_verify
         curllm_core__human_verify__looks_like_human_verify_text["looks_like_human_verify_text"]
@@ -704,6 +692,8 @@ flowchart TD
         curllm_core__llm__SimpleOllama____init__["__init__"]
         curllm_core__llm__SimpleOllama__ainvoke["ainvoke"]
         curllm_core__llm__SimpleOllama__ainvoke_with_image["ainvoke_with_image"]
+        curllm_core__llm__SimpleOllama__generate["generate"]
+        curllm_core__llm__SimpleOllama__chat["chat"]
     end
     subgraph curllm_core__llm_config
         curllm_core__llm_config__LLMConfig____post_init__["__post_init__"]
@@ -734,25 +724,6 @@ flowchart TD
         curllm_core__llm_container_validator__StatisticalContainerRanker__rank_candidates{{rank_candidates CC=29}}
     end
     subgraph curllm_core__llm_dsl
-        curllm_core__llm_dsl__atoms__AtomicFunctions____init__["__init__"]
-        curllm_core__llm_dsl__atoms__AtomicFunctions__find_repeating_pattern["find_repeating_pattern"]
-        curllm_core__llm_dsl__atoms__AtomicFunctions__find_input_by_context("find_input_by_context CC=9")
-        curllm_core__llm_dsl__atoms__AtomicFunctions__find_clickable_by_intent["find_clickable_by_intent"]
-        curllm_core__llm_dsl__atoms__AtomicFunctions__analyze_page_structure["analyze_page_structure"]
-        curllm_core__llm_dsl__atoms__AtomicFunctions__find_url_by_intent["find_url_by_intent"]
-        curllm_core__llm_dsl__atoms__AtomicFunctions__detect_message_type("detect_message_type CC=11")
-        curllm_core__llm_dsl__atoms__AtomicFunctions__extract_data_pattern["extract_data_pattern"]
-        curllm_core__llm_dsl__atoms__AtomicFunctions___format_inputs_for_llm["_format_inputs_for_llm"]
-        curllm_core__llm_dsl__atoms__AtomicFunctions___format_clickables_for_llm["_format_clickables_for_llm"]
-        curllm_core__llm_dsl__atoms__AtomicFunctions___format_links_for_llm["_format_links_for_llm"]
-        curllm_core__llm_dsl__atoms__AtomicFunctions___format_messages_for_llm["_format_messages_for_llm"]
-        curllm_core__llm_dsl__atoms__AtomicFunctions___build_selector_from_input["_build_selector_from_input"]
-        curllm_core__llm_dsl__atoms__AtomicFunctions___build_clickable_selector["_build_clickable_selector"]
-        curllm_core__llm_dsl__generator__DSLQuery____post_init__["__post_init__"]
-        curllm_core__llm_dsl__generator__DSLQueryGenerator____init__["__init__"]
-        curllm_core__llm_dsl__generator__DSLQueryGenerator__generate_plan["generate_plan"]
-        curllm_core__llm_dsl__generator__DSLQueryGenerator__generate_single_query["generate_single_query"]
-        curllm_core__llm_dsl__generator__DSLQueryGenerator__refine_query["refine_query"]
         curllm_core__llm_dsl__element_finder__LLMElementFinder____init__["__init__"]
         curllm_core__llm_dsl__element_finder__LLMElementFinder__find_element("find_element CC=9")
         curllm_core__llm_dsl__element_finder__LLMElementFinder___analyze_page_structure["_analyze_page_structure"]
@@ -764,6 +735,11 @@ flowchart TD
         curllm_core__llm_dsl__element_finder__LLMElementFinder___generate_selector["_generate_selector"]
         curllm_core__llm_dsl__element_finder__LLMElementFinder___find_with_structural_analysis("_find_with_structural_analysis CC=11")
         curllm_core__llm_dsl__element_finder__find_element_by_purpose["find_element_by_purpose"]
+        curllm_core__llm_dsl__generator__DSLQuery____post_init__["__post_init__"]
+        curllm_core__llm_dsl__generator__DSLQueryGenerator____init__["__init__"]
+        curllm_core__llm_dsl__generator__DSLQueryGenerator__generate_plan["generate_plan"]
+        curllm_core__llm_dsl__generator__DSLQueryGenerator__generate_single_query["generate_single_query"]
+        curllm_core__llm_dsl__generator__DSLQueryGenerator__refine_query["refine_query"]
         curllm_core__llm_dsl__selector_generator__LLMSelectorGenerator____init__["__init__"]
         curllm_core__llm_dsl__selector_generator__LLMSelectorGenerator__generate_field_selector["generate_field_selector"]
         curllm_core__llm_dsl__selector_generator__LLMSelectorGenerator__generate_consent_selector["generate_consent_selector"]
@@ -785,6 +761,20 @@ flowchart TD
         curllm_core__llm_dsl__executor__DSLExecutor__find_element["find_element"]
         curllm_core__llm_dsl__executor__DSLExecutor__detect_page_state["detect_page_state"]
         curllm_core__llm_dsl__executor__DSLExecutor__execute_form_fill["execute_form_fill"]
+        curllm_core__llm_dsl__atoms__AtomicFunctions____init__["__init__"]
+        curllm_core__llm_dsl__atoms__AtomicFunctions__find_repeating_pattern["find_repeating_pattern"]
+        curllm_core__llm_dsl__atoms__AtomicFunctions__find_input_by_context("find_input_by_context CC=9")
+        curllm_core__llm_dsl__atoms__AtomicFunctions__find_clickable_by_intent["find_clickable_by_intent"]
+        curllm_core__llm_dsl__atoms__AtomicFunctions__analyze_page_structure["analyze_page_structure"]
+        curllm_core__llm_dsl__atoms__AtomicFunctions__find_url_by_intent["find_url_by_intent"]
+        curllm_core__llm_dsl__atoms__AtomicFunctions__detect_message_type("detect_message_type CC=11")
+        curllm_core__llm_dsl__atoms__AtomicFunctions__extract_data_pattern["extract_data_pattern"]
+        curllm_core__llm_dsl__atoms__AtomicFunctions___format_inputs_for_llm["_format_inputs_for_llm"]
+        curllm_core__llm_dsl__atoms__AtomicFunctions___format_clickables_for_llm["_format_clickables_for_llm"]
+        curllm_core__llm_dsl__atoms__AtomicFunctions___format_links_for_llm["_format_links_for_llm"]
+        curllm_core__llm_dsl__atoms__AtomicFunctions___format_messages_for_llm["_format_messages_for_llm"]
+        curllm_core__llm_dsl__atoms__AtomicFunctions___build_selector_from_input["_build_selector_from_input"]
+        curllm_core__llm_dsl__atoms__AtomicFunctions___build_clickable_selector["_build_clickable_selector"]
     end
     subgraph curllm_core__llm_factory
         curllm_core__llm_factory__setup_llm["setup_llm"]
@@ -870,9 +860,9 @@ flowchart TD
     end
     subgraph curllm_core__orchestration
         curllm_core__orchestration__execute__execute_command["execute_command"]
-        curllm_core__orchestration__orchestrator__execute_command__execute_command["execute_command"]
         curllm_core__orchestration__orchestrator__orchestrator_config__default_log_dir["default_log_dir"]
         curllm_core__orchestration__orchestrator__orchestrator_config__default_screenshot_dir["default_screenshot_dir"]
+        curllm_core__orchestration__orchestrator__execute_command__execute_command["execute_command"]
         curllm_core__orchestration__orchestrator__orchestrator__Orchestrator____init__["__init__"]
         curllm_core__orchestration__orchestrator__orchestrator__Orchestrator__execute{{execute CC=26}}
         curllm_core__orchestration__orchestrator__orchestrator__Orchestrator___setup_browser["_setup_browser"]
@@ -903,6 +893,24 @@ flowchart TD
         curllm_core__orchestrator_steps__StepExecutor___execute_screenshot["_execute_screenshot"]
     end
     subgraph curllm_core__orchestrators
+        curllm_core__orchestrators__auth__AuthOrchestrator____init__["__init__"]
+        curllm_core__orchestrators__auth__AuthOrchestrator___find_auth_element("_find_auth_element CC=11")
+        curllm_core__orchestrators__auth__AuthOrchestrator__orchestrate("orchestrate CC=9")
+        curllm_core__orchestrators__auth__AuthOrchestrator___parse_credentials["_parse_credentials"]
+        curllm_core__orchestrators__auth__AuthOrchestrator___detect_auth_method("_detect_auth_method CC=8")
+        curllm_core__orchestrators__auth__AuthOrchestrator___detect_platform["_detect_platform"]
+        curllm_core__orchestrators__auth__AuthOrchestrator___standard_login{{_standard_login CC=18}}
+        curllm_core__orchestrators__auth__AuthOrchestrator___two_factor_login["_two_factor_login"]
+        curllm_core__orchestrators__auth__AuthOrchestrator___oauth_login("_oauth_login CC=8")
+        curllm_core__orchestrators__auth__AuthOrchestrator___handle_2fa["_handle_2fa"]
+        curllm_core__orchestrators__auth__AuthOrchestrator___check_2fa_prompt["_check_2fa_prompt"]
+        curllm_core__orchestrators__auth__AuthOrchestrator___detect_captcha("_detect_captcha CC=8")
+        curllm_core__orchestrators__auth__AuthOrchestrator___solve_captcha["_solve_captcha"]
+        curllm_core__orchestrators__auth__AuthOrchestrator___verify_login("_verify_login CC=14")
+        curllm_core__orchestrators__auth__AuthOrchestrator___capture_session["_capture_session"]
+        curllm_core__orchestrators__auth__AuthOrchestrator___fill_field["_fill_field"]
+        curllm_core__orchestrators__auth__AuthOrchestrator___click_element["_click_element"]
+        curllm_core__orchestrators__auth__AuthOrchestrator___log["_log"]
         curllm_core__orchestrators__extraction__ExtractionOrchestrator____init__["__init__"]
         curllm_core__orchestrators__extraction__ExtractionOrchestrator__orchestrate("orchestrate CC=12")
         curllm_core__orchestrators__extraction__ExtractionOrchestrator___detect_extraction_type("_detect_extraction_type CC=13")
@@ -918,6 +926,7 @@ flowchart TD
         curllm_core__orchestrators__extraction__ExtractionOrchestrator___extract_generic["_extract_generic"]
         curllm_core__orchestrators__extraction__ExtractionOrchestrator___apply_constraints("_apply_constraints CC=14")
         curllm_core__orchestrators__extraction__ExtractionOrchestrator___log["_log"]
+        curllm_core__orchestrators__ecommerce_llm__shopping_result__ShoppingResult____post_init__["__post_init__"]
         curllm_core__orchestrators__ecommerce_llm__llme_commerce_orchestrator__LLMECommerceOrchestrator____init__["__init__"]
         curllm_core__orchestrators__ecommerce_llm__llme_commerce_orchestrator__LLMECommerceOrchestrator__orchestrate["orchestrate"]
         curllm_core__orchestrators__ecommerce_llm__llme_commerce_orchestrator__LLMECommerceOrchestrator___parse_intent_llm["_parse_intent_llm"]
@@ -927,42 +936,23 @@ flowchart TD
         curllm_core__orchestrators__ecommerce_llm__llme_commerce_orchestrator__LLMECommerceOrchestrator___get_cart_llm["_get_cart_llm"]
         curllm_core__orchestrators__ecommerce_llm__llme_commerce_orchestrator__LLMECommerceOrchestrator___extract_products_llm["_extract_products_llm"]
         curllm_core__orchestrators__ecommerce_llm__llme_commerce_orchestrator__LLMECommerceOrchestrator___log["_log"]
-        curllm_core__orchestrators__form_llm__form_result__FormResult____post_init__["__post_init__"]
-        curllm_core__orchestrators__ecommerce__ECommerceOrchestrator____init__["__init__"]
-        curllm_core__orchestrators__ecommerce__ECommerceOrchestrator__orchestrate["orchestrate"]
-        curllm_core__orchestrators__ecommerce__ECommerceOrchestrator___parse_shopping_intent{{_parse_shopping_intent CC=24}}
-        curllm_core__orchestrators__ecommerce__ECommerceOrchestrator___search_products["_search_products"]
-        curllm_core__orchestrators__ecommerce__ECommerceOrchestrator___add_to_cart["_add_to_cart"]
-        curllm_core__orchestrators__ecommerce__ECommerceOrchestrator___process_checkout("_process_checkout CC=10")
-        curllm_core__orchestrators__ecommerce__ECommerceOrchestrator___full_purchase_flow["_full_purchase_flow"]
-        curllm_core__orchestrators__ecommerce__ECommerceOrchestrator___extract_products["_extract_products"]
-        curllm_core__orchestrators__ecommerce__ECommerceOrchestrator___get_cart_contents["_get_cart_contents"]
-        curllm_core__orchestrators__ecommerce__ECommerceOrchestrator___click_first_product("_click_first_product CC=10")
-        curllm_core__orchestrators__ecommerce__ECommerceOrchestrator___select_payment_method["_select_payment_method"]
-        curllm_core__orchestrators__ecommerce__ECommerceOrchestrator___log["_log"]
-        curllm_core__orchestrators__ecommerce_llm__shopping_result__ShoppingResult____post_init__["__post_init__"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator____init__["__init__"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator__orchestrate["orchestrate"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___parse_actions["_parse_actions"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___parse_single_action{{_parse_single_action CC=19}}
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___parse_with_llm["_parse_with_llm"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___execute_action("_execute_action CC=13")
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___do_click["_do_click"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___do_double_click["_do_double_click"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___do_right_click["_do_right_click"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___do_hover["_do_hover"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___do_type["_do_type"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___do_press["_do_press"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___do_scroll["_do_scroll"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___do_wait["_do_wait"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___do_select["_do_select"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___do_focus["_do_focus"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___find_element("_find_element CC=11")
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___normalize_key["_normalize_key"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___recover_from_failure["_recover_from_failure"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___capture_state["_capture_state"]
-        curllm_core__orchestrators__live__LiveInteractionOrchestrator___log["_log"]
-        curllm_core__orchestrators__form__FormOrchestrator____init__["__init__"]
+        curllm_core__orchestrators__form_llm__llm_form_orchestrator__LLMFormOrchestrator____init__["__init__"]
+        curllm_core__orchestrators__form_llm__llm_form_orchestrator__LLMFormOrchestrator__orchestrate("orchestrate CC=11")
+        curllm_core__orchestrators__form_llm__llm_form_orchestrator__LLMFormOrchestrator___parse_form_data_llm["_parse_form_data_llm"]
+        curllm_core__orchestrators__form_llm__llm_form_orchestrator__LLMFormOrchestrator___handle_consents_llm["_handle_consents_llm"]
+        curllm_core__orchestrators__form_llm__llm_form_orchestrator__LLMFormOrchestrator___submit_form_llm["_submit_form_llm"]
+        curllm_core__orchestrators__form_llm__llm_form_orchestrator__LLMFormOrchestrator___trigger_events["_trigger_events"]
+        curllm_core__orchestrators__form_llm__llm_form_orchestrator__LLMFormOrchestrator___log["_log"]
+        curllm_core__orchestrators__auth_llm__llm_auth_orchestrator__LLMAuthOrchestrator____init__["__init__"]
+        curllm_core__orchestrators__auth_llm__llm_auth_orchestrator__LLMAuthOrchestrator__authenticate("authenticate CC=11")
+        curllm_core__orchestrators__auth_llm__llm_auth_orchestrator__LLMAuthOrchestrator___parse_credentials_llm["_parse_credentials_llm"]
+        curllm_core__orchestrators__auth_llm__llm_auth_orchestrator__LLMAuthOrchestrator___analyze_auth_page["_analyze_auth_page"]
+        curllm_core__orchestrators__auth_llm__llm_auth_orchestrator__LLMAuthOrchestrator___fill_email_llm["_fill_email_llm"]
+        curllm_core__orchestrators__auth_llm__llm_auth_orchestrator__LLMAuthOrchestrator___fill_password_llm["_fill_password_llm"]
+        curllm_core__orchestrators__auth_llm__llm_auth_orchestrator__LLMAuthOrchestrator___submit_login_llm["_submit_login_llm"]
+        curllm_core__orchestrators__auth_llm__llm_auth_orchestrator__LLMAuthOrchestrator___check_2fa_required["_check_2fa_required"]
+        curllm_core__orchestrators__auth_llm__llm_auth_orchestrator__LLMAuthOrchestrator___fill_2fa_code["_fill_2fa_code"]
+        curllm_core__orchestrators__auth_llm__llm_auth_orchestrator__LLMAuthOrchestrator___check_captcha_required["_check_captcha_required"]
     end
     subgraph curllm_core__page_context
         curllm_core__page_context__extract_page_context{{extract_page_context CC=22}}
@@ -990,19 +980,19 @@ flowchart TD
         curllm_core__planner_progress__progress_tick{{progress_tick CC=19}}
     end
     subgraph curllm_core__planning
-        curllm_core__planning__planner__TaskPlan__add_step["add_step"]
-        curllm_core__planning__planner__TaskPlan__get_pending_steps["get_pending_steps"]
-        curllm_core__planning__planner__TaskPlan__is_complete["is_complete"]
-        curllm_core__planning__planner__TaskPlan__has_failed["has_failed"]
-        curllm_core__planning__planner__TaskPlanner__plan["plan"]
-        curllm_core__planning__planner__TaskPlanner___expected_for_goal["_expected_for_goal"]
-        curllm_core__planning__planner__TaskPlanner___add_goal_steps["_add_goal_steps"]
-        curllm_core__planning__planner__TaskPlanner___add_contact_form_steps{{_add_contact_form_steps CC=17}}
-        curllm_core__planning__planner__TaskPlanner___add_cart_steps["_add_cart_steps"]
-        curllm_core__planning__planner__TaskPlanner___add_extraction_steps["_add_extraction_steps"]
-        curllm_core__planning__planner__TaskPlanner___add_pricing_steps["_add_pricing_steps"]
-        curllm_core__planning__planner__TaskPlanner___add_auth_steps["_add_auth_steps"]
         curllm_core__planning__planner__create_plan["create_plan"]
+        curllm_core__planning__task_planner__TaskPlanner__plan["plan"]
+        curllm_core__planning__task_planner__TaskPlanner___expected_for_goal["_expected_for_goal"]
+        curllm_core__planning__task_planner__TaskPlanner___add_goal_steps["_add_goal_steps"]
+        curllm_core__planning__task_planner__TaskPlanner___add_contact_form_steps{{_add_contact_form_steps CC=17}}
+        curllm_core__planning__task_planner__TaskPlanner___add_cart_steps["_add_cart_steps"]
+        curllm_core__planning__task_planner__TaskPlanner___add_extraction_steps["_add_extraction_steps"]
+        curllm_core__planning__task_planner__TaskPlanner___add_pricing_steps["_add_pricing_steps"]
+        curllm_core__planning__task_planner__TaskPlanner___add_auth_steps["_add_auth_steps"]
+        curllm_core__planning__plan_types__TaskPlan__add_step["add_step"]
+        curllm_core__planning__plan_types__TaskPlan__get_pending_steps["get_pending_steps"]
+        curllm_core__planning__plan_types__TaskPlan__is_complete["is_complete"]
+        curllm_core__planning__plan_types__TaskPlan__has_failed["has_failed"]
     end
     subgraph curllm_core__progressive_context
         curllm_core__progressive_context___is_form_task["_is_form_task"]
@@ -1116,6 +1106,7 @@ flowchart TD
     end
     subgraph curllm_core__server
         curllm_core__server__health_check["health_check"]
+        curllm_core__server__list_interfaces["list_interfaces"]
         curllm_core__server__execute["execute"]
         curllm_core__server__proxy_register{{proxy_register CC=17}}
         curllm_core__server__proxy_list("proxy_list CC=12")
@@ -1143,6 +1134,15 @@ flowchart TD
         curllm_core__stealth__StealthConfig__apply_to_context["apply_to_context"]
     end
     subgraph curllm_core__streamware
+        curllm_core__streamware__uri__StreamwareURI____init__["__init__"]
+        curllm_core__streamware__uri__StreamwareURI___parse("_parse CC=8")
+        curllm_core__streamware__uri__StreamwareURI___convert_value["_convert_value"]
+        curllm_core__streamware__uri__StreamwareURI__get_param["get_param"]
+        curllm_core__streamware__uri__StreamwareURI__has_param["has_param"]
+        curllm_core__streamware__uri__StreamwareURI__set_param["set_param"]
+        curllm_core__streamware__uri__StreamwareURI__get_full_url["get_full_url"]
+        curllm_core__streamware__uri__StreamwareURI____str__["__str__"]
+        curllm_core__streamware__uri__StreamwareURI____repr__["__repr__"]
         curllm_core__streamware__registry__register["register"]
         curllm_core__streamware__registry__get_component["get_component"]
         curllm_core__streamware__registry__create_component["create_component"]
@@ -1151,18 +1151,6 @@ flowchart TD
         curllm_core__streamware__registry__list_available_components["list_available_components"]
         curllm_core__streamware__registry__unregister["unregister"]
         curllm_core__streamware__registry__clear_registry["clear_registry"]
-        curllm_core__streamware__yaml_runner__YAMLFlowRunner____init__["__init__"]
-        curllm_core__streamware__yaml_runner__YAMLFlowRunner__load_yaml["load_yaml"]
-        curllm_core__streamware__yaml_runner__YAMLFlowRunner__set_variable["set_variable"]
-        curllm_core__streamware__yaml_runner__YAMLFlowRunner__set_variables["set_variables"]
-        curllm_core__streamware__yaml_runner__YAMLFlowRunner___replace_variables["_replace_variables"]
-        curllm_core__streamware__yaml_runner__YAMLFlowRunner__build_flow["build_flow"]
-        curllm_core__streamware__yaml_runner__YAMLFlowRunner___build_uri["_build_uri"]
-        curllm_core__streamware__yaml_runner__YAMLFlowRunner__run_yaml["run_yaml"]
-        curllm_core__streamware__yaml_runner__YAMLFlowRunner__run_yaml_stream["run_yaml_stream"]
-        curllm_core__streamware__yaml_runner__YAMLFlowRunner__validate_yaml("validate_yaml CC=8")
-        curllm_core__streamware__yaml_runner__run_yaml_flow["run_yaml_flow"]
-        curllm_core__streamware__yaml_runner__validate_yaml_flow["validate_yaml_flow"]
         curllm_core__streamware__llm_bridge__LLMDSLBridge____init__["__init__"]
         curllm_core__streamware__llm_bridge__LLMDSLBridge__execute_llm_command("execute_llm_command CC=10")
         curllm_core__streamware__llm_bridge__LLMDSLBridge___execute_analyze_form["_execute_analyze_form"]
@@ -1176,33 +1164,36 @@ flowchart TD
         curllm_core__streamware__llm_bridge__LLMDSLBridge__generate_component_list["generate_component_list"]
         curllm_core__streamware__llm_bridge__LLMDSLBridge__get_llm_prompt_context["get_llm_prompt_context"]
         curllm_core__streamware__llm_bridge__execute_llm_dsl_command["execute_llm_dsl_command"]
-        curllm_core__streamware__uri__StreamwareURI____init__["__init__"]
-        curllm_core__streamware__uri__StreamwareURI___parse("_parse CC=8")
-        curllm_core__streamware__uri__StreamwareURI___convert_value["_convert_value"]
-        curllm_core__streamware__uri__StreamwareURI__get_param["get_param"]
-        curllm_core__streamware__uri__StreamwareURI__has_param["has_param"]
-        curllm_core__streamware__uri__StreamwareURI__set_param["set_param"]
-        curllm_core__streamware__uri__StreamwareURI__get_full_url["get_full_url"]
-        curllm_core__streamware__uri__StreamwareURI____str__["__str__"]
-        curllm_core__streamware__uri__StreamwareURI____repr__["__repr__"]
-        curllm_core__streamware__flow__Flow____init__["__init__"]
-        curllm_core__streamware__flow__Flow__with_data["with_data"]
-        curllm_core__streamware__flow__Flow__with_diagnostics["with_diagnostics"]
-        curllm_core__streamware__flow__Flow____or__["__or__"]
-        curllm_core__streamware__flow__Flow__run("run CC=8")
-        curllm_core__streamware__flow__Flow__stream["stream"]
-        curllm_core__streamware__flow__Flow___apply_component_stream["_apply_component_stream"]
-        curllm_core__streamware__flow__Flow___wrap_non_stream_component["_wrap_non_stream_component"]
-        curllm_core__streamware__flow__Flow__run_async["run_async"]
-        curllm_core__streamware__flow__Flow__add["add"]
-        curllm_core__streamware__flow__Flow____len__["__len__"]
-        curllm_core__streamware__flow__Flow____repr__["__repr__"]
-        curllm_core__streamware__flow__flow["flow"]
         curllm_core__streamware__llm_client__set_llm_logger["set_llm_logger"]
         curllm_core__streamware__llm_client___log["_log"]
         curllm_core__streamware__llm_client__StreamwareLLM____init__["__init__"]
         curllm_core__streamware__llm_client__StreamwareLLM___get_client["_get_client"]
         curllm_core__streamware__llm_client__StreamwareLLM__generate["generate"]
+        curllm_core__streamware__llm_client__StreamwareLLM___generate_requests["_generate_requests"]
+        curllm_core__streamware__llm_client__StreamwareLLM__map_fields("map_fields CC=10")
+        curllm_core__streamware__llm_client__StreamwareLLM__evaluate_success["evaluate_success"]
+        curllm_core__streamware__llm_client__StreamwareLLM__find_selector["find_selector"]
+        curllm_core__streamware__llm_client__get_llm["get_llm"]
+        curllm_core__streamware__llm_client__llm_map_fields["llm_map_fields"]
+        curllm_core__streamware__llm_client__llm_evaluate_success["llm_evaluate_success"]
+        curllm_core__streamware__llm_client__llm_find_selector["llm_find_selector"]
+        curllm_core__streamware__llm_client__generate_missing_field_data{{generate_missing_field_data CC=22}}
+        curllm_core__streamware__core__Component____init__["__init__"]
+        curllm_core__streamware__core__Component__process["process"]
+        curllm_core__streamware__core__Component__process_async["process_async"]
+        curllm_core__streamware__core__Component__validate_input["validate_input"]
+        curllm_core__streamware__core__Component__validate_output["validate_output"]
+        curllm_core__streamware__core__Component__get_metadata["get_metadata"]
+        curllm_core__streamware__core__Component____or__["__or__"]
+        curllm_core__streamware__core__StreamComponent__stream["stream"]
+        curllm_core__streamware__core__StreamComponent__process["process"]
+        curllm_core__streamware__core__TransformComponent__transform["transform"]
+        curllm_core__streamware__core__TransformComponent__process["process"]
+        curllm_core__streamware__components__transform__TransformComponent__transform("transform CC=8")
+        curllm_core__streamware__components__transform__TransformComponent___transform_json["_transform_json"]
+        curllm_core__streamware__components__transform__TransformComponent___transform_jsonpath{{_transform_jsonpath CC=16}}
+        curllm_core__streamware__components__transform__TransformComponent___transform_csv["_transform_csv"]
+        curllm_core__streamware__components__transform__TransformComponent___normalize["_normalize"]
     end
     subgraph curllm_core__task_runner_early
         curllm_core__task_runner_early__smart_intent_check["smart_intent_check"]
@@ -1249,6 +1240,7 @@ flowchart TD
         curllm_core__tool_retry__ToolRetryManager__is_repetitive_failure["is_repetitive_failure"]
     end
     subgraph curllm_core__tools
+        curllm_core__tools__forms__price_filter__PriceFilterTool__execute{{execute CC=15}}
         curllm_core__tools__registry__ToolRegistry____init__["__init__"]
         curllm_core__tools__registry__ToolRegistry__register["register"]
         curllm_core__tools__registry__ToolRegistry__get["get"]
@@ -1259,13 +1251,6 @@ flowchart TD
         curllm_core__tools__registry__ToolRegistry__autodiscover("autodiscover CC=10")
         curllm_core__tools__registry__get_registry["get_registry"]
         curllm_core__tools__registry__init_tools["init_tools"]
-        curllm_core__tools__orchestrator__ToolOrchestrator____init__["__init__"]
-        curllm_core__tools__orchestrator__ToolOrchestrator__orchestrate("orchestrate CC=10")
-        curllm_core__tools__orchestrator__ToolOrchestrator___generate_plan["_generate_plan"]
-        curllm_core__tools__orchestrator__ToolOrchestrator___execute_plan("_execute_plan CC=8")
-        curllm_core__tools__orchestrator__orchestrate_with_tools["orchestrate_with_tools"]
-        curllm_core__tools__navigation__scroll_load__ScrollLoadTool__execute["execute"]
-        curllm_core__tools__forms__price_filter__PriceFilterTool__execute{{execute CC=15}}
         curllm_core__tools__base__BaseTool____init__["__init__"]
         curllm_core__tools__base__BaseTool___load_manifest["_load_manifest"]
         curllm_core__tools__base__BaseTool__execute["execute"]
@@ -1273,6 +1258,12 @@ flowchart TD
         curllm_core__tools__base__BaseTool__get_manifest["get_manifest"]
         curllm_core__tools__base__BaseTool__matches_trigger["matches_trigger"]
         curllm_core__tools__base__BaseTool____repr__["__repr__"]
+        curllm_core__tools__orchestrator__ToolOrchestrator____init__["__init__"]
+        curllm_core__tools__orchestrator__ToolOrchestrator__orchestrate("orchestrate CC=10")
+        curllm_core__tools__orchestrator__ToolOrchestrator___generate_plan["_generate_plan"]
+        curllm_core__tools__orchestrator__ToolOrchestrator___execute_plan("_execute_plan CC=8")
+        curllm_core__tools__orchestrator__orchestrate_with_tools["orchestrate_with_tools"]
+        curllm_core__tools__navigation__scroll_load__ScrollLoadTool__execute["execute"]
     end
     subgraph curllm_core__transparent
         curllm_core__transparent__orchestrator__TransparentOrchestrator____init__["__init__"]
@@ -1311,7 +1302,6 @@ flowchart TD
         curllm_core__url_patterns__detect_goal_from_instruction["detect_goal_from_instruction"]
     end
     subgraph curllm_core__url_resolution
-        curllm_core__url_resolution__goal_detector_llm__detect_navigation_goal__detect_navigation_goal["detect_navigation_goal"]
         curllm_core__url_resolution__goal_detector_llm__goal_detector_hybrid__GoalDetectorHybrid____init__["__init__"]
         curllm_core__url_resolution__goal_detector_llm__goal_detector_hybrid__GoalDetectorHybrid__detect_goal_sync["detect_goal_sync"]
         curllm_core__url_resolution__goal_detector_llm__goal_detector_hybrid__GoalDetectorHybrid__detect_goal["detect_goal"]
@@ -1319,6 +1309,7 @@ flowchart TD
         curllm_core__url_resolution__goal_detector_llm__goal_detector_hybrid__GoalDetectorHybrid___detect_goal_statistical("_detect_goal_statistical CC=13")
         curllm_core__url_resolution__goal_detector_llm__goal_detector_hybrid__GoalDetectorHybrid___get_goal_translations["_get_goal_translations"]
         curllm_core__url_resolution__goal_detector_llm__goal_detector_hybrid__GoalDetectorHybrid___normalize_polish["_normalize_polish"]
+        curllm_core__url_resolution__goal_detector_llm__detect_navigation_goal__detect_navigation_goal["detect_navigation_goal"]
         curllm_core__url_resolution__resolver__UrlResolver____init__["__init__"]
         curllm_core__url_resolution__resolver__UrlResolver__detect_goal["detect_goal"]
         curllm_core__url_resolution__resolver__UrlResolver___detect_goal_fallback["_detect_goal_fallback"]
@@ -1357,14 +1348,6 @@ flowchart TD
         curllm_core__url_resolver_llm__find_url_with_llm["find_url_with_llm"]
     end
     subgraph curllm_core__validation
-        curllm_core__validation__visual__VisualValidator____init__["__init__"]
-        curllm_core__validation__visual__VisualValidator__validate["validate"]
-        curllm_core__validation__visual__VisualValidator___vision_model_analysis["_vision_model_analysis"]
-        curllm_core__validation__visual__VisualValidator___heuristic_analysis("_heuristic_analysis CC=8")
-        curllm_core__validation__visual__VisualValidator__compare_screenshots["compare_screenshots"]
-        curllm_core__validation__visual__VisualValidator__detect_error_indicators["detect_error_indicators"]
-        curllm_core__validation__visual__VisualValidator__detect_success_indicators["detect_success_indicators"]
-        curllm_core__validation__task_validator__validate_task__validate_task["validate_task"]
         curllm_core__validation__composite__ValidationResult__to_dict["to_dict"]
         curllm_core__validation__composite__ValidationResult__to_json["to_json"]
         curllm_core__validation__composite__CompositeValidator____init__["__init__"]
@@ -1384,21 +1367,32 @@ flowchart TD
         curllm_core__validation__structural__StructuralValidator___is_form_task["_is_form_task"]
         curllm_core__validation__structural__StructuralValidator___is_extraction_task["_is_extraction_task"]
         curllm_core__validation__structural__StructuralValidator___deep_get["_deep_get"]
-        curllm_core__validation__rules__RuleValidator____init__["__init__"]
-        curllm_core__validation__rules__RuleValidator___register_builtin_rules["_register_builtin_rules"]
-        curllm_core__validation__rules__RuleValidator__validate("validate CC=11")
-        curllm_core__validation__rules__RuleValidator___select_applicable_rules("_select_applicable_rules CC=11")
-        curllm_core__validation__rules__RuleValidator___check_extraction_not_empty["_check_extraction_not_empty"]
-        curllm_core__validation__rules__RuleValidator___check_extraction_format("_check_extraction_format CC=8")
-        curllm_core__validation__rules__RuleValidator___check_no_http_error("_check_no_http_error CC=10")
-        curllm_core__validation__rules__RuleValidator___check_has_data["_check_has_data"]
-        curllm_core__validation__rules__RuleValidator___check_expected["_check_expected"]
-        curllm_core__validation__rules__RuleValidator___deep_get["_deep_get"]
-        curllm_core__validation__rules__RuleValidator__add_rule["add_rule"]
-        curllm_core__validation__rules__RuleValidator__add_price_limit_rule["add_price_limit_rule"]
-        curllm_core__validation__rules__RuleValidator___check_price_limit["_check_price_limit"]
-        curllm_core__validation__rules__RuleValidator__add_count_rule["add_count_rule"]
-        curllm_core__validation__rules__RuleValidator___check_min_count["_check_min_count"]
+        curllm_core__validation__task_validator__validate_task__validate_task["validate_task"]
+        curllm_core__validation__visual__VisualValidator____init__["__init__"]
+        curllm_core__validation__visual__VisualValidator__validate["validate"]
+        curllm_core__validation__visual__VisualValidator___vision_model_analysis["_vision_model_analysis"]
+        curllm_core__validation__visual__VisualValidator___heuristic_analysis("_heuristic_analysis CC=8")
+        curllm_core__validation__visual__VisualValidator__compare_screenshots["compare_screenshots"]
+        curllm_core__validation__visual__VisualValidator__detect_error_indicators["detect_error_indicators"]
+        curllm_core__validation__visual__VisualValidator__detect_success_indicators["detect_success_indicators"]
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator____init__["__init__"]
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator__register_custom_validator["register_custom_validator"]
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator__validate{{validate CC=22}}
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___validate_structural{{_validate_structural CC=16}}
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___validate_rules{{_validate_rules CC=30}}
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___validate_schema["_validate_schema"]
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___validate_dom_diff{{_validate_dom_diff CC=18}}
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___validate_visual["_validate_visual"]
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___validate_semantic["_validate_semantic"]
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___calculate_overall_score["_calculate_overall_score"]
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___generate_summary["_generate_summary"]
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___generate_recommendations["_generate_recommendations"]
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___detect_task_type("_detect_task_type CC=11")
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___has_field["_has_field"]
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___get_field["_get_field"]
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___check_type["_check_type"]
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___check_condition("_check_condition CC=8")
+        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___log["_log"]
         curllm_core__validation__semantic__SemanticValidator____init__["__init__"]
         curllm_core__validation__semantic__SemanticValidator__validate["validate"]
         curllm_core__validation__semantic__SemanticValidator___build_validation_prompt["_build_validation_prompt"]
@@ -1410,13 +1404,10 @@ flowchart TD
         curllm_core__validation__semantic__ExtractionSemanticValidator___detect_extraction_type("_detect_extraction_type CC=8")
         curllm_core__validation__semantic__ExtractionSemanticValidator___parse_constraints["_parse_constraints"]
         curllm_core__validation__semantic__ExtractionSemanticValidator___item_matches_constraints("_item_matches_constraints CC=8")
-        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator____init__["__init__"]
-        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator__register_custom_validator["register_custom_validator"]
-        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator__validate{{validate CC=22}}
-        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___validate_structural{{_validate_structural CC=16}}
-        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___validate_rules{{_validate_rules CC=30}}
-        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___validate_schema["_validate_schema"]
-        curllm_core__validation__task_validator__task_validator__task_validator__TaskValidator___validate_dom_diff{{_validate_dom_diff CC=18}}
+        curllm_core__validation__rules__RuleValidator____init__["__init__"]
+        curllm_core__validation__rules__RuleValidator___register_builtin_rules["_register_builtin_rules"]
+        curllm_core__validation__rules__RuleValidator__validate("validate CC=11")
+        curllm_core__validation__rules__RuleValidator___select_applicable_rules("_select_applicable_rules CC=11")
     end
     subgraph curllm_core__validation_utils
         curllm_core__validation_utils__should_validate("should_validate CC=13")
@@ -1526,29 +1517,42 @@ flowchart TD
         curllm_logs__screenshots__cleanup_old_screenshots("cleanup_old_screenshots CC=8")
         curllm_logs__screenshots__capture_page_screenshot["capture_page_screenshot"]
     end
+    subgraph curllm_mcp__server
+        curllm_mcp__server___enabled["_enabled"]
+        curllm_mcp__server___require_execute["_require_execute"]
+        curllm_mcp__server___is_public_address["_is_public_address"]
+        curllm_mcp__server___require_safe_url{{_require_safe_url CC=15}}
+    end
+    subgraph curllm_mcp__service
+        curllm_mcp__service___TitleLinksParser____init__["__init__"]
+        curllm_mcp__service___TitleLinksParser__handle_starttag["handle_starttag"]
+        curllm_mcp__service___TitleLinksParser__handle_endtag["handle_endtag"]
+        curllm_mcp__service___TitleLinksParser__handle_data["handle_data"]
+        curllm_mcp__service__CurllmService____init__["__init__"]
+        curllm_mcp__service__CurllmService__interfaces_info["interfaces_info"]
+        curllm_mcp__service__CurllmService__health["health"]
+        curllm_mcp__service__CurllmService__list_models["list_models"]
+        curllm_mcp__service__CurllmService___extract_url["_extract_url"]
+        curllm_mcp__service__CurllmService__fetch_light["fetch_light"]
+        curllm_mcp__service__CurllmService___execute_via_api["_execute_via_api"]
+        curllm_mcp__service__CurllmService___execute_in_process["_execute_in_process"]
+        curllm_mcp__service__CurllmService__execute["execute"]
+        curllm_mcp__service__CurllmService__extract["extract"]
+        curllm_mcp__service__CurllmService__fill_form["fill_form"]
+    end
+    subgraph curllm_mcp__testql_export
+        curllm_mcp__testql_export__testql_export_enabled["testql_export_enabled"]
+        curllm_mcp__testql_export___csv["_csv"]
+        curllm_mcp__testql_export___detect_environment["_detect_environment"]
+        curllm_mcp__testql_export__build_testql_scenario_text("build_testql_scenario_text CC=12")
+        curllm_mcp__testql_export___extract_url_from_instruction["_extract_url_from_instruction"]
+        curllm_mcp__testql_export__maybe_write_testql_scenario["maybe_write_testql_scenario"]
+    end
     subgraph curllm_server____main__
         curllm_server____main____main["main"]
     end
     subgraph curllm_server__agents
         curllm_server__agents__local_agent__LocalAgent____init__["__init__"]
-    end
-    subgraph curllm_server__browser
-        curllm_server__browser__browserless_context__BrowserlessContext____init__["__init__"]
-        curllm_server__browser__browserless_context__BrowserlessContext__new_page["new_page"]
-        curllm_server__browser__browserless_context__BrowserlessContext__close["close"]
-        curllm_server__browser__browserless_page__BrowserlessPage____init__["__init__"]
-        curllm_server__browser__browserless_page__BrowserlessPage__goto["goto"]
-        curllm_server__browser__browserless_page__BrowserlessPage__click["click"]
-        curllm_server__browser__browserless_page__BrowserlessPage__fill["fill"]
-        curllm_server__browser__browserless_page__BrowserlessPage__screenshot["screenshot"]
-        curllm_server__browser__browserless_page__BrowserlessPage__evaluate["evaluate"]
-        curllm_server__browser__browserless_page__BrowserlessPage__close["close"]
-    end
-    subgraph curllm_server__captcha
-        curllm_server__captcha__solver__CaptchaSolver____init__["__init__"]
-        curllm_server__captcha__solver__CaptchaSolver__solve["solve"]
-        curllm_server__captcha__solver__CaptchaSolver___solve_local["_solve_local"]
-        curllm_server__captcha__solver__CaptchaSolver___solve_2captcha["_solve_2captcha"]
     end
     subgraph curllm_server__config
         curllm_server__config__Config____post_init__["__post_init__"]
@@ -1582,20 +1586,10 @@ flowchart TD
         curllm_server__llm__simple_ollama__SimpleOllama__ainvoke["ainvoke"]
     end
     subgraph curllm_server__routes
-        curllm_server__routes__health__health_check["health_check"]
         curllm_server__routes__screenshot__get_screenshot["get_screenshot"]
-        curllm_server__routes__models__list_models["list_models"]
+        curllm_server__routes__health__health_check["health_check"]
         curllm_server__routes__execute__execute["execute"]
-    end
-    subgraph curllm_server__stealth
-        curllm_server__stealth__stealth_config__StealthConfig__get_chrome_args["get_chrome_args"]
-        curllm_server__stealth__stealth_config__StealthConfig__get_user_agent["get_user_agent"]
-        curllm_server__stealth__stealth_config__StealthConfig__apply_to_context["apply_to_context"]
-    end
-    subgraph curllm_server__vision
-        curllm_server__vision__analyzer__VisionAnalyzer__analyze["analyze"]
-        curllm_server__vision__analyzer__VisionAnalyzer___detect_captcha_pattern["_detect_captcha_pattern"]
-        curllm_server__vision__analyzer__VisionAnalyzer___has_distorted_text["_has_distorted_text"]
+        curllm_server__routes__models__list_models["list_models"]
     end
     subgraph curllm_web__api
         curllm_web__api__curllm_api__call_curllm_api["call_curllm_api"]
@@ -1608,18 +1602,18 @@ flowchart TD
         curllm_web__prompts__prompt_manager__save_prompts["save_prompts"]
     end
     subgraph curllm_web__routes
-        curllm_web__routes__static__serve_screenshot["serve_screenshot"]
-        curllm_web__routes__static__serve_upload["serve_upload"]
         curllm_web__routes__health__health["health"]
-        curllm_web__routes__execute__execute["execute"]
+        curllm_web__routes__upload__upload_file["upload_file"]
         curllm_web__routes__logs__get_logs["get_logs"]
         curllm_web__routes__logs__get_log["get_log"]
         curllm_web__routes__main__index["index"]
-        curllm_web__routes__upload__upload_file["upload_file"]
         curllm_web__routes__prompts__get_prompts["get_prompts"]
         curllm_web__routes__prompts__add_prompt["add_prompt"]
         curllm_web__routes__prompts__update_prompt["update_prompt"]
         curllm_web__routes__prompts__delete_prompt["delete_prompt"]
+        curllm_web__routes__execute__execute["execute"]
+        curllm_web__routes__static__serve_screenshot["serve_screenshot"]
+        curllm_web__routes__static__serve_upload["serve_upload"]
     end
     subgraph curllm_web__server
         curllm_web__server__pid_manager__get_pid_file["get_pid_file"]
@@ -1668,8 +1662,6 @@ flowchart TD
         examples__main["main"]
     end
     subgraph examples__api_clients
-        examples__api_clients__php_api_example__load_env["load_env"]
-        examples__api_clients__php_api_example__env_bool["env_bool"]
         examples__api_clients__node_api_example__fs["fs"]
         examples__api_clients__node_api_example__path["path"]
         examples__api_clients__node_api_example__https["https"]
@@ -1692,27 +1684,29 @@ flowchart TD
         examples__api_clients__node_api_example__mod["mod"]
         examples__api_clients__node_api_example__req["req"]
         examples__api_clients__node_api_example__endpoint["endpoint"]
+        examples__api_clients__php_api_example__load_env["load_env"]
+        examples__api_clients__php_api_example__env_bool["env_bool"]
     end
     subgraph examples__bql
-        examples__bql__contact_form__main["main"]
         examples__bql__wordpress_login__main["main"]
+        examples__bql__contact_form__main["main"]
     end
     subgraph examples__currency
         examples__currency__currency_example__main("main CC=9")
     end
     subgraph examples__detection
-        examples__detection__dynamic_detection_example__example_skapiec["example_skapiec"]
-        examples__detection__dynamic_detection_example__example_ceneo["example_ceneo"]
-        examples__detection__dynamic_detection_example__example_fake_site["example_fake_site"]
-        examples__detection__dynamic_detection_example__example_comparison["example_comparison"]
-        examples__detection__dynamic_detection_example__main["main"]
+        examples__detection__llm_heuristics_example__main("main CC=13")
         examples__detection__atomic_query_example__example_basic_query["example_basic_query"]
         examples__detection__atomic_query_example__example_product_query["example_product_query"]
         examples__detection__atomic_query_example__example_quick_functions["example_quick_functions"]
         examples__detection__atomic_query_example__example_multi_format_export["example_multi_format_export"]
         examples__detection__atomic_query_example__example_complete_workflow["example_complete_workflow"]
         examples__detection__atomic_query_example__main["main"]
-        examples__detection__llm_heuristics_example__main("main CC=13")
+        examples__detection__dynamic_detection_example__example_skapiec["example_skapiec"]
+        examples__detection__dynamic_detection_example__example_ceneo["example_ceneo"]
+        examples__detection__dynamic_detection_example__example_fake_site["example_fake_site"]
+        examples__detection__dynamic_detection_example__example_comparison["example_comparison"]
+        examples__detection__dynamic_detection_example__main["main"]
     end
     subgraph examples__extraction
         examples__extraction__products__extract_products__extract_products_basic["extract_products_basic"]
@@ -1721,11 +1715,11 @@ flowchart TD
         examples__extraction__products__extract_products__main["main"]
     end
     subgraph examples__llm_providers
+        examples__llm_providers__openai_example__extract_with_openai["extract_with_openai"]
+        examples__llm_providers__openai_example__main["main"]
         examples__llm_providers__multi_provider_benchmark__benchmark_provider["benchmark_provider"]
         examples__llm_providers__multi_provider_benchmark__run_benchmark{{run_benchmark CC=15}}
         examples__llm_providers__multi_provider_benchmark__main["main"]
-        examples__llm_providers__openai_example__extract_with_openai["extract_with_openai"]
-        examples__llm_providers__openai_example__main["main"]
     end
     subgraph examples__orchestration
         examples__orchestration__semantic_query_example__example_semantic_vs_monolithic["example_semantic_vs_monolithic"]
@@ -1738,7 +1732,6 @@ flowchart TD
         examples__orchestration__orchestrator_example__main["main"]
     end
     subgraph examples__streamware
-        examples__streamware__streamware_quickstart__main["main"]
         examples__streamware__streamware_examples__example_1_simple_browse["example_1_simple_browse"]
         examples__streamware__streamware_examples__example_2_data_extraction["example_2_data_extraction"]
         examples__streamware__streamware_examples__example_3_form_filling["example_3_form_filling"]
@@ -1754,6 +1747,7 @@ flowchart TD
         examples__streamware__streamware_examples__example_13_error_handling["example_13_error_handling"]
         examples__streamware__streamware_examples__example_14_file_operations["example_14_file_operations"]
         examples__streamware__streamware_examples__example_15_http_requests["example_15_http_requests"]
+        examples__streamware__streamware_quickstart__main["main"]
     end
     subgraph examples__url_resolver
         examples__url_resolver__example_find_products__get_llm["get_llm"]
@@ -1763,20 +1757,20 @@ flowchart TD
         examples__url_resolver__example_shopping_flow__main["main"]
         examples__url_resolver__browser_helper__create_browser["create_browser"]
         examples__url_resolver__browser_helper__close_browser["close_browser"]
-        examples__url_resolver__example_auto_detect__get_llm["get_llm"]
-        examples__url_resolver__example_auto_detect__run_example["run_example"]
-        examples__url_resolver__example_auto_detect__main["main"]
         examples__url_resolver__example_find_info__get_llm["get_llm"]
         examples__url_resolver__example_find_info__run_example["run_example"]
         examples__url_resolver__example_find_info__main["main"]
+        examples__url_resolver__example_auto_detect__get_llm["get_llm"]
+        examples__url_resolver__example_auto_detect__run_example["run_example"]
+        examples__url_resolver__example_auto_detect__main["main"]
+        examples__url_resolver__example_complete_flow__parse_command{{parse_command CC=16}}
+        examples__url_resolver__example_complete_flow__execute_command("execute_command CC=11")
+        examples__url_resolver__example_complete_flow__main("main CC=10")
         examples__url_resolver__example_find_contact__get_llm["get_llm"]
         examples__url_resolver__example_find_contact__run_example["run_example"]
         examples__url_resolver__example_find_contact__main["main"]
         examples__url_resolver__run_all__run_example["run_example"]
         examples__url_resolver__run_all__main["main"]
-        examples__url_resolver__example_complete_flow__parse_command{{parse_command CC=16}}
-        examples__url_resolver__example_complete_flow__execute_command("execute_command CC=11")
-        examples__url_resolver__example_complete_flow__main("main CC=10")
     end
     subgraph examples__v2_usage
         examples__v2_usage__example_form_fill["example_form_fill"]
@@ -1881,21 +1875,21 @@ flowchart TD
     subgraph functions__extractors
         functions__extractors__prices__normalize__normalize_price_string["normalize_price_string"]
         functions__extractors__prices__extract_usd__extract_usd_price["extract_usd_price"]
-        functions__extractors__prices__extract_euro__extract_euro_price["extract_euro_price"]
-        functions__extractors__names__extract_title__extract_title("extract_title CC=10")
-        functions__extractors__prices__extract_any__extract_any_price["extract_any_price"]
-        functions__extractors__prices__extract_range__extract_price_range["extract_price_range"]
         functions__extractors__specs__filter_specs__is_excluded["is_excluded"]
         functions__extractors__specs__filter_specs__is_technical["is_technical"]
         functions__extractors__specs__filter_specs__filter_specs["filter_specs"]
         functions__extractors__specs__filter_specs__categorize_specs["categorize_specs"]
+        functions__extractors__prices__extract_euro__extract_euro_price["extract_euro_price"]
         functions__extractors__names__extract_name__extract_product_name["extract_product_name"]
+        functions__extractors__prices__extract_range__extract_price_range["extract_price_range"]
+        functions__extractors__prices__extract_any__extract_any_price["extract_any_price"]
+        functions__extractors__names__extract_title__extract_title("extract_title CC=10")
+        functions__extractors__names__validate_name__is_valid_product_name["is_valid_product_name"]
+        functions__extractors__names__clean_name__clean_product_name["clean_product_name"]
         functions__extractors__names__extract_brand__extract_brand("extract_brand CC=12")
         functions__extractors__names__extract_brand__add_brand["add_brand"]
-        functions__extractors__names__validate_name__is_valid_product_name["is_valid_product_name"]
         functions__extractors__prices__extract_polish__extract_polish_price_adaptive("extract_polish_price_adaptive CC=11")
         functions__extractors__prices__extract_polish__extract_polish_price["extract_polish_price"]
-        functions__extractors__names__clean_name__clean_product_name["clean_product_name"]
     end
     subgraph functions__generator
         functions__generator__FunctionGenerator____init__["__init__"]
@@ -1972,9 +1966,9 @@ flowchart TD
         functions__js__safety__CircuitBreaker__recordFailure["recordFailure"]
     end
     subgraph functions__patterns
-        functions__patterns__price_euro__extract["extract"]
         functions__patterns__price_polish__extract["extract"]
         functions__patterns__price_polish__extract_with_currency["extract_with_currency"]
+        functions__patterns__price_euro__extract["extract"]
         functions__patterns__registry__AdaptivePattern____post_init__["__post_init__"]
         functions__patterns__registry__AdaptivePattern___compile["_compile"]
         functions__patterns__registry__AdaptivePattern__match["match"]
@@ -2022,15 +2016,6 @@ flowchart TD
         functions__safety__sanitize__safe_encode["safe_encode"]
         functions__safety__sanitize__safe_decode["safe_decode"]
         functions__safety__sanitize__truncate_smart["truncate_smart"]
-        functions__safety__wrapper__safe_call["safe_call"]
-        functions__safety__wrapper__safe_extract["safe_extract"]
-        functions__safety__wrapper__with_fallback["with_fallback"]
-        functions__safety__wrapper__safe_property["safe_property"]
-        functions__safety__wrapper__SafeExtractor____init__["__init__"]
-        functions__safety__wrapper__SafeExtractor____enter__["__enter__"]
-        functions__safety__wrapper__SafeExtractor____exit__["__exit__"]
-        functions__safety__wrapper__SafeExtractor__call["call"]
-        functions__safety__wrapper__guard_none["guard_none"]
         functions__safety__fallback__FallbackChain____init__["__init__"]
         functions__safety__fallback__FallbackChain__add["add"]
         functions__safety__fallback__FallbackChain__execute["execute"]
@@ -2058,6 +2043,15 @@ flowchart TD
         functions__safety__validate__is_valid_text["is_valid_text"]
         functions__safety__validate__is_valid_url["is_valid_url"]
         functions__safety__validate__is_valid_price["is_valid_price"]
+        functions__safety__wrapper__safe_call["safe_call"]
+        functions__safety__wrapper__safe_extract["safe_extract"]
+        functions__safety__wrapper__with_fallback["with_fallback"]
+        functions__safety__wrapper__safe_property["safe_property"]
+        functions__safety__wrapper__SafeExtractor____init__["__init__"]
+        functions__safety__wrapper__SafeExtractor____enter__["__enter__"]
+        functions__safety__wrapper__SafeExtractor____exit__["__exit__"]
+        functions__safety__wrapper__SafeExtractor__call["call"]
+        functions__safety__wrapper__guard_none["guard_none"]
     end
     subgraph monitoring__send_email
         monitoring__send_email__send_email{{send_email CC=15}}
@@ -2276,121 +2270,6 @@ flowchart TD
     examples__benchmark_providers --> monitoring__website_monitor__print
     examples__main --> monitoring__website_monitor__print
     examples__main --> examples__benchmark_providers
-    examples_streamware__example_1_simple_browse --> monitoring__website_monitor__print
-    examples_streamware__example_1_simple_browse --> curllm_core__streamware__flow__flow
-    examples_streamware__example_2_data_extraction --> monitoring__website_monitor__print
-    examples_streamware__example_2_data_extraction --> curllm_core__streamware__flow__flow
-    examples_streamware__example_3_form_filling --> monitoring__website_monitor__print
-    examples_streamware__example_3_form_filling --> curllm_core__streamware__flow__flow
-    examples_streamware__example_4_bql_query --> monitoring__website_monitor__print
-    examples_streamware__example_4_bql_query --> curllm_core__streamware__flow__flow
-    examples_streamware__example_5_multi_format_export --> monitoring__website_monitor__print
-    examples_streamware__example_5_multi_format_export --> curllm_core__streamware__flow__flow
-    examples_streamware__example_5_multi_format_export --> curllm_core__streamware__patterns__multicast__multicast
-    examples_streamware__example_6_batch_processing --> monitoring__website_monitor__print
-    examples_streamware__example_6_batch_processing --> curllm_core__streamware__patterns__join__join
-    examples_streamware__example_6_batch_processing --> curllm_core__streamware__patterns__split__split
-    examples_streamware__example_6_batch_processing --> curllm_core__streamware__flow__flow
-    examples_streamware__example_7_conditional_routing --> monitoring__website_monitor__print
-    examples_streamware__example_7_conditional_routing --> curllm_core__streamware__flow__flow
-    examples_streamware__example_7_conditional_routing --> curllm_core__streamware__patterns__choose__choose
-    examples_streamware__example_8_scraping_pipeline --> monitoring__website_monitor__print
-    examples_streamware__example_8_scraping_pipeline --> curllm_core__streamware__helpers__pipeline__pipeline
-    examples_streamware__example_9_yaml_flow --> monitoring__website_monitor__print
-    examples_streamware__example_9_yaml_flow --> curllm_core__streamware__yaml_runner__run_yaml_flow
-    examples_streamware__example_10_http_to_scraping --> monitoring__website_monitor__print
-    examples_streamware__example_10_http_to_scraping --> curllm_core__streamware__flow__flow
-    examples_streamware__example_11_screenshot_capture --> monitoring__website_monitor__print
-    examples_streamware__example_11_screenshot_capture --> curllm_core__streamware__flow__flow
-    examples_streamware__example_12_data_validation --> monitoring__website_monitor__print
-    examples_streamware__example_12_data_validation --> curllm_core__streamware__flow__flow
-    examples_streamware__example_13_file_operations --> monitoring__website_monitor__print
-    examples_streamware__example_13_file_operations --> curllm_core__streamware__flow__flow
-    examples_streamware__example_14_transform_pipeline --> monitoring__website_monitor__print
-    examples_streamware__example_14_transform_pipeline --> curllm_core__streamware__flow__flow
-    examples_streamware__example_15_metrics_tracking --> monitoring__website_monitor__print
-    examples_streamware__example_15_metrics_tracking --> curllm_core__streamware__flow__flow
-    examples__detection__dynamic_detection_example__example_skapiec --> monitoring__website_monitor__print
-    examples__detection__dynamic_detection_example__example_ceneo --> monitoring__website_monitor__print
-    examples__detection__dynamic_detection_example__example_ceneo --> curllm_core__detection__detector__dynamic_extract
-    examples__detection__dynamic_detection_example__example_fake_site --> monitoring__website_monitor__print
-    examples__detection__dynamic_detection_example__example_fake_site --> curllm_core__detection__detector__dynamic_extract
-    examples__detection__dynamic_detection_example__example_comparison --> monitoring__website_monitor__print
-    examples__detection__dynamic_detection_example__example_comparison --> curllm_core__detection__detector__dynamic_extract
-    examples__detection__dynamic_detection_example__main --> monitoring__website_monitor__print
-    examples__detection__dynamic_detection_example__main --> examples__detection__dynamic_detection_example__example_fake_site
-    examples__detection__dynamic_detection_example__main --> examples__detection__dynamic_detection_example__example_comparison
-    examples__detection__atomic_query_example__example_basic_query --> monitoring__website_monitor__print
-    examples__detection__atomic_query_example__example_product_query --> monitoring__website_monitor__print
-    examples__detection__atomic_query_example__example_quick_functions --> monitoring__website_monitor__print
-    examples__detection__atomic_query_example__example_quick_functions --> curllm_core__deprecated__atomic_query__quick_extract_products
-    examples__detection__atomic_query_example__example_multi_format_export --> monitoring__website_monitor__print
-    examples__detection__atomic_query_example__example_complete_workflow --> monitoring__website_monitor__print
-    examples__detection__atomic_query_example__main --> monitoring__website_monitor__print
-    examples__detection__atomic_query_example__main --> examples__detection__atomic_query_example__example_multi_format_export
-    examples__detection__atomic_query_example__main --> examples__detection__atomic_query_example__example_basic_query
-    examples__detection__atomic_query_example__main --> examples__detection__atomic_query_example__example_product_query
-    examples__detection__atomic_query_example__main --> examples__detection__atomic_query_example__example_quick_functions
-    examples__detection__atomic_query_example__main --> examples__detection__atomic_query_example__example_complete_workflow
-    captcha__playwright_bql_framework__extract_semantic_dom --> functions__registry__FunctionRegistry__list
-    captcha__playwright_bql_framework__extract_semantic_dom --> functions__js__safety__str
-    captcha__playwright_bql_framework__detect_consent_or_captcha --> captcha__playwright_bql_framework__extract_iframe_info
-    captcha__playwright_bql_framework__detect_consent_or_captcha --> functions__js__safety__str
-    captcha__playwright_bql_framework__BQLExecutor__run --> functions__js__safety__str
-    captcha__playwright_bql_framework__BQLAgent__run_instruction --> captcha__playwright_bql_framework__detect_consent_or_captcha
-    captcha__playwright_bql_framework__BQLAgent__run_instruction --> captcha__playwright_bql_framework__extract_semantic_dom
-    captcha__playwright_bql_framework__BQLAgent__run_instruction --> captcha__playwright_bql_framework__extract_interactive_elements
-    captcha__playwright_bql_framework__BQLAgent__run_instruction --> captcha__playwright_bql_framework__extract_iframe_info
-    captcha__playwright_bql_framework__BQLAgent__run_instruction --> captcha__playwright_bql_framework___parse_actions_from_llm
-    captcha__playwright_bql_framework__call_llm_ollama --> functions__js__safety__str
-    captcha__playwright_bql_framework___parse_actions_from_llm --> curllm_server__executor__curllm_executor__CurllmExecutor___strip_fences
-    examples__url_resolver__example_find_products__run_example --> monitoring__website_monitor__print
-    examples__url_resolver__example_find_products__run_example --> examples__url_resolver__example_find_products__get_llm
-    examples__url_resolver__example_find_products__run_example --> examples__url_resolver__browser_helper__create_browser
-    examples__url_resolver__example_find_products__main --> monitoring__website_monitor__print
-    examples__url_resolver__example_find_products__main --> examples__url_resolver__example_find_products__run_example
-    examples__url_resolver__example_shopping_flow__run_example --> monitoring__website_monitor__print
-    examples__url_resolver__example_shopping_flow__run_example --> examples__url_resolver__browser_helper__create_browser
-    examples__url_resolver__example_shopping_flow__run_example --> examples__url_resolver__browser_helper__close_browser
-    examples__url_resolver__example_shopping_flow__main --> monitoring__website_monitor__print
-    examples__url_resolver__example_shopping_flow__main --> examples__url_resolver__example_shopping_flow__run_example
-    examples__url_resolver__example_auto_detect__run_example --> monitoring__website_monitor__print
-    examples__url_resolver__example_auto_detect__run_example --> examples__url_resolver__example_auto_detect__get_llm
-    examples__url_resolver__example_auto_detect__run_example --> examples__url_resolver__browser_helper__create_browser
-    examples__url_resolver__example_auto_detect__main --> monitoring__website_monitor__print
-    examples__url_resolver__example_auto_detect__main --> examples__url_resolver__example_auto_detect__run_example
-    examples__streamware__streamware_quickstart__main --> monitoring__website_monitor__print
-    examples__streamware__streamware_quickstart__main --> curllm_core__streamware__helpers__enable_diagnostics__enable_diagnostics
-    examples__streamware__streamware_quickstart__main --> curllm_core__streamware__registry__list_available_components
-    examples__streamware__streamware_quickstart__main --> curllm_core__streamware__helpers__describe_component__describe_component
-    examples__url_resolver__example_find_info__run_example --> monitoring__website_monitor__print
-    examples__url_resolver__example_find_info__run_example --> examples__url_resolver__example_find_info__get_llm
-    examples__url_resolver__example_find_info__run_example --> examples__url_resolver__browser_helper__create_browser
-    examples__url_resolver__example_find_info__main --> monitoring__website_monitor__print
-    examples__url_resolver__example_find_info__main --> examples__url_resolver__example_find_info__run_example
-    examples__url_resolver__example_find_contact__run_example --> monitoring__website_monitor__print
-    examples__url_resolver__example_find_contact__run_example --> examples__url_resolver__example_find_contact__get_llm
-    examples__url_resolver__example_find_contact__run_example --> examples__url_resolver__browser_helper__create_browser
-    examples__url_resolver__example_find_contact__main --> monitoring__website_monitor__print
-    examples__url_resolver__example_find_contact__main --> examples__url_resolver__example_find_contact__run_example
-    examples__url_resolver__run_all__run_example --> monitoring__website_monitor__print
-    examples__url_resolver__run_all__main --> monitoring__website_monitor__print
-    examples__url_resolver__run_all__main --> examples__url_resolver__run_all__run_example
-    examples__url_resolver__run_all__main --> extension__extension__CurllmContentScript__input
-    examples__orchestration__semantic_query_example__example_semantic_vs_monolithic --> monitoring__website_monitor__print
-    examples__orchestration__semantic_query_example__example_custom_extraction --> monitoring__website_monitor__print
-    examples__orchestration__semantic_query_example__example_custom_extraction --> curllm_core__semantic_query__semantic_extract
-    examples__orchestration__semantic_query_example__example_iterative_extraction --> monitoring__website_monitor__print
-    examples__orchestration__semantic_query_example__example_iterative_extraction --> curllm_core__semantic_query__semantic_extract
-    examples__url_resolver__example_complete_flow__execute_command --> monitoring__website_monitor__print
-    examples__url_resolver__example_complete_flow__execute_command --> examples__url_resolver__example_complete_flow__parse_command
-    examples__url_resolver__example_complete_flow__main --> monitoring__website_monitor__print
-    examples__url_resolver__example_complete_flow__main --> examples__url_resolver__example_complete_flow__parse_command
-    wordpress_batch__batch_create_posts --> functions__registry__FunctionRegistry__list
-    wordpress_batch__batch_create_posts --> monitoring__website_monitor__print
-    examples__extraction__products__extract_products__main --> monitoring__website_monitor__print
-    examples__extraction__products__extract_products__main --> examples__extraction__products__extract_products__extract_products_basic
-    examples__extraction__products__extract_products__main --> examples__extraction__products__extract_products__extract_products_with_filter
     examples__streamware__streamware_examples__example_1_simple_browse --> monitoring__website_monitor__print
     examples__streamware__streamware_examples__example_1_simple_browse --> curllm_core__streamware__flow__flow
     examples__streamware__streamware_examples__example_2_data_extraction --> monitoring__website_monitor__print
@@ -2426,20 +2305,132 @@ flowchart TD
     examples__streamware__streamware_examples__example_14_file_operations --> curllm_core__streamware__flow__flow
     examples__streamware__streamware_examples__example_15_http_requests --> monitoring__website_monitor__print
     examples__streamware__streamware_examples__example_15_http_requests --> curllm_core__streamware__flow__flow
+    captcha__audio_solver__AudioCaptchaSolver___transcribe_wav --> functions__js__safety__str
+    examples__llm_providers__openai_example__extract_with_openai --> monitoring__website_monitor__print
+    examples__llm_providers__openai_example__main --> monitoring__website_monitor__print
+    examples__llm_providers__openai_example__main --> examples__llm_providers__openai_example__extract_with_openai
     examples__llm_providers__multi_provider_benchmark__benchmark_provider --> monitoring__website_monitor__print
     examples__llm_providers__multi_provider_benchmark__benchmark_provider --> functions__js__safety__str
     examples__llm_providers__multi_provider_benchmark__run_benchmark --> monitoring__website_monitor__print
     examples__llm_providers__multi_provider_benchmark__main --> monitoring__website_monitor__print
     examples__llm_providers__multi_provider_benchmark__main --> examples__llm_providers__multi_provider_benchmark__run_benchmark
+    examples__extraction__products__extract_products__main --> monitoring__website_monitor__print
+    examples__extraction__products__extract_products__main --> examples__extraction__products__extract_products__extract_products_basic
+    examples__extraction__products__extract_products__main --> examples__extraction__products__extract_products__extract_products_with_filter
     examples__detection__llm_heuristics_example__main --> monitoring__website_monitor__print
-    monitoring__send_email__main --> monitoring__send_email__send_email
-    examples__llm_providers__openai_example__extract_with_openai --> monitoring__website_monitor__print
-    examples__llm_providers__openai_example__main --> monitoring__website_monitor__print
-    examples__llm_providers__openai_example__main --> examples__llm_providers__openai_example__extract_with_openai
-    examples__bql__contact_form__main --> monitoring__website_monitor__print
-    examples__bql__contact_form__main --> captcha__playwright_bql_framework__select_llm_caller
+    examples__currency__currency_example__main --> monitoring__website_monitor__print
+    examples__currency__currency_example__main --> curllm_core__streamware__components__currency__translator__normalize_price_filter
+    examples__detection__atomic_query_example__example_basic_query --> monitoring__website_monitor__print
+    examples__detection__atomic_query_example__example_product_query --> monitoring__website_monitor__print
+    examples__detection__atomic_query_example__example_quick_functions --> monitoring__website_monitor__print
+    examples__detection__atomic_query_example__example_quick_functions --> curllm_core__deprecated__atomic_query__quick_extract_products
+    examples__detection__atomic_query_example__example_multi_format_export --> monitoring__website_monitor__print
+    examples__detection__atomic_query_example__example_complete_workflow --> monitoring__website_monitor__print
+    examples__detection__atomic_query_example__main --> monitoring__website_monitor__print
+    examples__detection__atomic_query_example__main --> examples__detection__atomic_query_example__example_multi_format_export
+    examples__detection__atomic_query_example__main --> examples__detection__atomic_query_example__example_basic_query
+    examples__detection__atomic_query_example__main --> examples__detection__atomic_query_example__example_product_query
+    examples__detection__atomic_query_example__main --> examples__detection__atomic_query_example__example_quick_functions
+    examples__detection__atomic_query_example__main --> examples__detection__atomic_query_example__example_complete_workflow
+    examples__detection__dynamic_detection_example__example_skapiec --> monitoring__website_monitor__print
+    examples__detection__dynamic_detection_example__example_ceneo --> monitoring__website_monitor__print
+    examples__detection__dynamic_detection_example__example_ceneo --> curllm_core__detection__detector__dynamic_extract
+    examples__detection__dynamic_detection_example__example_fake_site --> monitoring__website_monitor__print
+    examples__detection__dynamic_detection_example__example_fake_site --> curllm_core__detection__detector__dynamic_extract
+    examples__detection__dynamic_detection_example__example_comparison --> monitoring__website_monitor__print
+    examples__detection__dynamic_detection_example__example_comparison --> curllm_core__detection__detector__dynamic_extract
+    examples__detection__dynamic_detection_example__main --> monitoring__website_monitor__print
+    examples__detection__dynamic_detection_example__main --> examples__detection__dynamic_detection_example__example_fake_site
+    examples__detection__dynamic_detection_example__main --> examples__detection__dynamic_detection_example__example_comparison
+    examples__streamware__streamware_quickstart__main --> monitoring__website_monitor__print
+    examples__streamware__streamware_quickstart__main --> curllm_core__streamware__helpers__enable_diagnostics__enable_diagnostics
+    examples__streamware__streamware_quickstart__main --> curllm_core__streamware__registry__list_available_components
+    examples__streamware__streamware_quickstart__main --> curllm_core__streamware__helpers__describe_component__describe_component
+    examples__url_resolver__example_find_products__run_example --> monitoring__website_monitor__print
+    examples__url_resolver__example_find_products__run_example --> examples__url_resolver__example_find_products__get_llm
+    examples__url_resolver__example_find_products__run_example --> examples__url_resolver__browser_helper__create_browser
+    examples__url_resolver__example_find_products__main --> monitoring__website_monitor__print
+    examples__url_resolver__example_find_products__main --> examples__url_resolver__example_find_products__run_example
+    examples__url_resolver__example_shopping_flow__run_example --> monitoring__website_monitor__print
+    examples__url_resolver__example_shopping_flow__run_example --> examples__url_resolver__browser_helper__create_browser
+    examples__url_resolver__example_shopping_flow__run_example --> examples__url_resolver__browser_helper__close_browser
+    examples__url_resolver__example_shopping_flow__main --> monitoring__website_monitor__print
+    examples__url_resolver__example_shopping_flow__main --> examples__url_resolver__example_shopping_flow__run_example
+    examples__url_resolver__example_find_info__run_example --> monitoring__website_monitor__print
+    examples__url_resolver__example_find_info__run_example --> examples__url_resolver__example_find_info__get_llm
+    examples__url_resolver__example_find_info__run_example --> examples__url_resolver__browser_helper__create_browser
+    examples__url_resolver__example_find_info__main --> monitoring__website_monitor__print
+    examples__url_resolver__example_find_info__main --> examples__url_resolver__example_find_info__run_example
+    examples__url_resolver__example_auto_detect__run_example --> monitoring__website_monitor__print
+    examples__url_resolver__example_auto_detect__run_example --> examples__url_resolver__example_auto_detect__get_llm
+    examples__url_resolver__example_auto_detect__run_example --> examples__url_resolver__browser_helper__create_browser
+    examples__url_resolver__example_auto_detect__main --> monitoring__website_monitor__print
+    examples__url_resolver__example_auto_detect__main --> examples__url_resolver__example_auto_detect__run_example
+    examples__url_resolver__example_complete_flow__execute_command --> monitoring__website_monitor__print
+    examples__url_resolver__example_complete_flow__execute_command --> examples__url_resolver__example_complete_flow__parse_command
+    examples__url_resolver__example_complete_flow__main --> monitoring__website_monitor__print
+    examples__url_resolver__example_complete_flow__main --> examples__url_resolver__example_complete_flow__parse_command
+    examples__v2_usage__example_form_fill --> curllm_core__llm_factory__setup_llm
+    examples__v2_usage__example_form_fill --> monitoring__website_monitor__print
+    examples__v2_usage__example_form_fill --> curllm_core__form_fill_llm__llm_form_fill__llm_form_fill
+    examples__v2_usage__example_orchestrator --> curllm_core__llm_factory__setup_llm
+    examples__v2_usage__example_orchestrator --> monitoring__website_monitor__print
+    examples__v2_usage__example_atomic_functions --> curllm_core__llm_factory__setup_llm
+    examples__v2_usage__example_extraction --> curllm_core__llm_factory__setup_llm
+    examples__v2_usage__example_extraction --> monitoring__website_monitor__print
+    examples__v2_usage__example_api_request --> monitoring__website_monitor__print
+    examples__url_resolver__example_find_contact__run_example --> monitoring__website_monitor__print
+    examples__url_resolver__example_find_contact__run_example --> examples__url_resolver__example_find_contact__get_llm
+    examples__url_resolver__example_find_contact__run_example --> examples__url_resolver__browser_helper__create_browser
+    examples__url_resolver__example_find_contact__main --> monitoring__website_monitor__print
+    examples__url_resolver__example_find_contact__main --> examples__url_resolver__example_find_contact__run_example
+    examples__url_resolver__run_all__run_example --> monitoring__website_monitor__print
+    examples__url_resolver__run_all__main --> monitoring__website_monitor__print
+    examples__url_resolver__run_all__main --> examples__url_resolver__run_all__run_example
+    examples__url_resolver__run_all__main --> extension__extension__CurllmContentScript__input
+    examples__orchestration__semantic_query_example__example_semantic_vs_monolithic --> monitoring__website_monitor__print
+    examples__orchestration__semantic_query_example__example_custom_extraction --> monitoring__website_monitor__print
+    examples__orchestration__semantic_query_example__example_custom_extraction --> curllm_core__semantic_query__semantic_extract
+    examples__orchestration__semantic_query_example__example_iterative_extraction --> monitoring__website_monitor__print
+    examples__orchestration__semantic_query_example__example_iterative_extraction --> curllm_core__semantic_query__semantic_extract
+    examples_streamware__example_1_simple_browse --> monitoring__website_monitor__print
+    examples_streamware__example_1_simple_browse --> curllm_core__streamware__flow__flow
+    examples_streamware__example_2_data_extraction --> monitoring__website_monitor__print
+    examples_streamware__example_2_data_extraction --> curllm_core__streamware__flow__flow
+    examples_streamware__example_3_form_filling --> monitoring__website_monitor__print
+    examples_streamware__example_3_form_filling --> curllm_core__streamware__flow__flow
+    examples_streamware__example_4_bql_query --> monitoring__website_monitor__print
+    examples_streamware__example_4_bql_query --> curllm_core__streamware__flow__flow
+    examples_streamware__example_5_multi_format_export --> monitoring__website_monitor__print
+    examples_streamware__example_5_multi_format_export --> curllm_core__streamware__flow__flow
+    examples_streamware__example_5_multi_format_export --> curllm_core__streamware__patterns__multicast__multicast
+    examples_streamware__example_6_batch_processing --> monitoring__website_monitor__print
+    examples_streamware__example_6_batch_processing --> curllm_core__streamware__patterns__join__join
+    examples_streamware__example_6_batch_processing --> curllm_core__streamware__patterns__split__split
+    examples_streamware__example_6_batch_processing --> curllm_core__streamware__flow__flow
+    examples_streamware__example_7_conditional_routing --> monitoring__website_monitor__print
+    examples_streamware__example_7_conditional_routing --> curllm_core__streamware__flow__flow
+    examples_streamware__example_7_conditional_routing --> curllm_core__streamware__patterns__choose__choose
+    examples_streamware__example_8_scraping_pipeline --> monitoring__website_monitor__print
+    examples_streamware__example_8_scraping_pipeline --> curllm_core__streamware__helpers__pipeline__pipeline
+    examples_streamware__example_9_yaml_flow --> monitoring__website_monitor__print
+    examples_streamware__example_9_yaml_flow --> curllm_core__streamware__yaml_runner__run_yaml_flow
+    examples_streamware__example_10_http_to_scraping --> monitoring__website_monitor__print
+    examples_streamware__example_10_http_to_scraping --> curllm_core__streamware__flow__flow
+    examples_streamware__example_11_screenshot_capture --> monitoring__website_monitor__print
+    examples_streamware__example_11_screenshot_capture --> curllm_core__streamware__flow__flow
+    examples_streamware__example_12_data_validation --> monitoring__website_monitor__print
+    examples_streamware__example_12_data_validation --> curllm_core__streamware__flow__flow
+    examples_streamware__example_13_file_operations --> monitoring__website_monitor__print
+    examples_streamware__example_13_file_operations --> curllm_core__streamware__flow__flow
+    examples_streamware__example_14_transform_pipeline --> monitoring__website_monitor__print
+    examples_streamware__example_14_transform_pipeline --> curllm_core__streamware__flow__flow
+    examples_streamware__example_15_metrics_tracking --> monitoring__website_monitor__print
+    examples_streamware__example_15_metrics_tracking --> curllm_core__streamware__flow__flow
     examples__bql__wordpress_login__main --> monitoring__website_monitor__print
     examples__bql__wordpress_login__main --> captcha__playwright_bql_framework__select_llm_caller
+    examples__bql__contact_form__main --> monitoring__website_monitor__print
+    examples__bql__contact_form__main --> captcha__playwright_bql_framework__select_llm_caller
     extension__extension__CurllmExtension__init --> extension__extension__CurllmExtension__checkServerStatus
     extension__extension__CurllmExtension__init --> extension__extension__CurllmExtension__setupListeners
     extension__extension__CurllmExtension__init --> extension__extension__CurllmExtension__setupContextMenu
@@ -2523,29 +2514,6 @@ flowchart TD
     extension__extension__CurllmContentScript__script --> extension__extension__CurllmContentScript__setTimeout
     extension__extension__CurllmContentScript__script --> extension__extension__CurllmContentScript__reject
     extension__extension__CurllmContentScript__observer --> extension__extension__CurllmContentScript__resolve
-    examples__orchestration__orchestrator_example__example_master_orchestrator --> monitoring__website_monitor__print
-    examples__orchestration__orchestrator_example__example_master_orchestrator --> examples__url_resolver__example_find_products__get_llm
-    examples__orchestration__orchestrator_example__example_auth_orchestrator --> monitoring__website_monitor__print
-    examples__orchestration__orchestrator_example__example_auth_orchestrator --> examples__url_resolver__example_find_products__get_llm
-    examples__orchestration__orchestrator_example__example_form_orchestrator --> monitoring__website_monitor__print
-    examples__orchestration__orchestrator_example__example_form_orchestrator --> examples__url_resolver__example_find_products__get_llm
-    examples__orchestration__orchestrator_example__example_extraction_orchestrator --> monitoring__website_monitor__print
-    examples__orchestration__orchestrator_example__example_extraction_orchestrator --> examples__url_resolver__example_find_products__get_llm
-    examples__orchestration__orchestrator_example__main --> monitoring__website_monitor__print
-    examples__orchestration__orchestrator_example__main --> examples__orchestration__orchestrator_example__example_master_orchestrator
-    examples__orchestration__orchestrator_example__main --> examples__orchestration__orchestrator_example__example_auth_orchestrator
-    examples__orchestration__orchestrator_example__main --> examples__orchestration__orchestrator_example__example_form_orchestrator
-    examples__orchestration__orchestrator_example__main --> examples__orchestration__orchestrator_example__example_extraction_orchestrator
-    captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__solve_allegro_puzzle --> monitoring__website_monitor__print
-    captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__analyze_puzzle_simple --> functions__js__safety__str
-    captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__analyze_puzzle_simple --> monitoring__website_monitor__print
-    captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__drag_slider --> monitoring__website_monitor__print
-    captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__brute_force_solve --> monitoring__website_monitor__print
-    captcha__allegro_captcha_solver__main --> monitoring__website_monitor__print
-    scripts__reorganize_versions__add_deprecation_warning --> monitoring__website_monitor__print
-    scripts__reorganize_versions__main --> monitoring__website_monitor__print
-    examples__currency__currency_example__main --> monitoring__website_monitor__print
-    examples__currency__currency_example__main --> curllm_core__streamware__components__currency__translator__normalize_price_filter
     scripts__analyze_dependencies__get_module_name --> functions__js__safety__str
     scripts__analyze_dependencies__find_references --> scripts__analyze_dependencies__get_all_python_files
     scripts__analyze_dependencies__analyze_llm_versions --> scripts__analyze_dependencies__get_all_python_files
@@ -2564,20 +2532,26 @@ flowchart TD
     scripts__analyze_dependencies__main --> scripts__analyze_dependencies__build_dependency_graph
     scripts__analyze_dependencies__main --> scripts__analyze_dependencies__analyze_llm_versions
     scripts__analyze_dependencies__main --> scripts__analyze_dependencies__find_unused_files
+    scripts__fix_missing_loggers__fix_missing_logger --> scripts__fix_missing_loggers__find_import_section_end
+    scripts__fix_missing_loggers__fix_missing_logger --> monitoring__website_monitor__print
+    scripts__fix_missing_loggers__scan_project --> scripts__fix_missing_loggers__find_python_files
+    scripts__fix_missing_loggers__scan_project --> scripts__fix_missing_loggers__check_file_for_missing_logger
+    scripts__fix_missing_loggers__main --> monitoring__website_monitor__print
+    scripts__fix_missing_loggers__main --> scripts__fix_missing_loggers__scan_project
     scripts__code_quality__main --> monitoring__website_monitor__print
-    examples__v2_usage__example_form_fill --> curllm_core__llm_factory__setup_llm
-    examples__v2_usage__example_form_fill --> monitoring__website_monitor__print
-    examples__v2_usage__example_form_fill --> curllm_core__form_fill_llm__llm_form_fill__llm_form_fill
-    examples__v2_usage__example_orchestrator --> curllm_core__llm_factory__setup_llm
-    examples__v2_usage__example_orchestrator --> monitoring__website_monitor__print
-    examples__v2_usage__example_atomic_functions --> curllm_core__llm_factory__setup_llm
-    examples__v2_usage__example_extraction --> curllm_core__llm_factory__setup_llm
-    examples__v2_usage__example_extraction --> monitoring__website_monitor__print
-    examples__v2_usage__example_api_request --> monitoring__website_monitor__print
-    curllm_core__browser_setup__setup_browser --> curllm_core__browser_setup__setup_playwright
-    curllm_core__browser_setup___ensure_playwright_browsers --> functions__registry__FunctionRegistry__list
-    curllm_core__browser_setup___ensure_playwright_browsers --> monitoring__website_monitor__print
-    curllm_core__browser_setup__setup_playwright --> curllm_core__browser_setup___ensure_playwright_browsers
+    examples__orchestration__orchestrator_example__example_master_orchestrator --> monitoring__website_monitor__print
+    examples__orchestration__orchestrator_example__example_master_orchestrator --> examples__url_resolver__example_find_products__get_llm
+    examples__orchestration__orchestrator_example__example_auth_orchestrator --> monitoring__website_monitor__print
+    examples__orchestration__orchestrator_example__example_auth_orchestrator --> examples__url_resolver__example_find_products__get_llm
+    examples__orchestration__orchestrator_example__example_form_orchestrator --> monitoring__website_monitor__print
+    examples__orchestration__orchestrator_example__example_form_orchestrator --> examples__url_resolver__example_find_products__get_llm
+    examples__orchestration__orchestrator_example__example_extraction_orchestrator --> monitoring__website_monitor__print
+    examples__orchestration__orchestrator_example__example_extraction_orchestrator --> examples__url_resolver__example_find_products__get_llm
+    examples__orchestration__orchestrator_example__main --> monitoring__website_monitor__print
+    examples__orchestration__orchestrator_example__main --> examples__orchestration__orchestrator_example__example_master_orchestrator
+    examples__orchestration__orchestrator_example__main --> examples__orchestration__orchestrator_example__example_auth_orchestrator
+    examples__orchestration__orchestrator_example__main --> examples__orchestration__orchestrator_example__example_form_orchestrator
+    examples__orchestration__orchestrator_example__main --> examples__orchestration__orchestrator_example__example_extraction_orchestrator
     scripts__analyze_deps__extract_imports --> monitoring__website_monitor__print
     scripts__analyze_deps__build_dependency_graph --> scripts__analyze_deps__extract_imports
     scripts__analyze_deps__build_dependency_graph --> functions__js__safety__str
@@ -2585,22 +2559,53 @@ flowchart TD
     scripts__analyze_deps__main --> scripts__analyze_deps__find_python_files
     scripts__analyze_deps__main --> scripts__analyze_deps__build_dependency_graph
     scripts__analyze_deps__main --> scripts__analyze_deps__find_circular_deps
-    curllm_core__vision_form_analysis__analyze_form_fields_vision --> functions__js__safety__str
+    scripts__reorganize_versions__add_deprecation_warning --> monitoring__website_monitor__print
+    scripts__reorganize_versions__main --> monitoring__website_monitor__print
+    captcha__sliding_solver__SlidingPuzzleSolver__solve --> functions__js__safety__str
+    captcha__sliding_solver__SlidingPuzzleSolver__analyze_puzzle --> functions__js__safety__str
+    wordpress_batch__batch_create_posts --> functions__registry__FunctionRegistry__list
+    wordpress_batch__batch_create_posts --> monitoring__website_monitor__print
+    monitoring__send_email__main --> monitoring__send_email__send_email
+    curllm_logs__run_logger__RunLogger__log_table --> functions__registry__FunctionRegistry__list
+    captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__solve_allegro_puzzle --> monitoring__website_monitor__print
+    captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__analyze_puzzle_simple --> functions__js__safety__str
+    captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__analyze_puzzle_simple --> monitoring__website_monitor__print
+    captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__drag_slider --> monitoring__website_monitor__print
+    captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__brute_force_solve --> monitoring__website_monitor__print
+    captcha__allegro_captcha_solver__main --> monitoring__website_monitor__print
+    captcha__playwright_bql_framework__extract_semantic_dom --> functions__registry__FunctionRegistry__list
+    captcha__playwright_bql_framework__extract_semantic_dom --> functions__js__safety__str
+    captcha__playwright_bql_framework__detect_consent_or_captcha --> captcha__playwright_bql_framework__extract_iframe_info
+    captcha__playwright_bql_framework__detect_consent_or_captcha --> functions__js__safety__str
+    captcha__playwright_bql_framework__BQLExecutor__run --> functions__js__safety__str
+    captcha__playwright_bql_framework__BQLAgent__run_instruction --> captcha__playwright_bql_framework__detect_consent_or_captcha
+    captcha__playwright_bql_framework__BQLAgent__run_instruction --> captcha__playwright_bql_framework__extract_semantic_dom
+    captcha__playwright_bql_framework__BQLAgent__run_instruction --> captcha__playwright_bql_framework__extract_interactive_elements
+    captcha__playwright_bql_framework__BQLAgent__run_instruction --> captcha__playwright_bql_framework__extract_iframe_info
+    captcha__playwright_bql_framework__BQLAgent__run_instruction --> captcha__playwright_bql_framework___parse_actions_from_llm
+    captcha__playwright_bql_framework__call_llm_ollama --> functions__js__safety__str
+    captcha__playwright_bql_framework___parse_actions_from_llm --> curllm_server__executor__curllm_executor__CurllmExecutor___strip_fences
     curllm_core__runtime___env_bool --> functions__js__safety__str
     curllm_core__runtime___env_int --> functions__js__safety__str
-    curllm_logs__run_logger__RunLogger__log_table --> functions__registry__FunctionRegistry__list
+    curllm_core__vision_form_analysis__analyze_form_fields_vision --> functions__js__safety__str
     curllm_core__progressive_context__build_progressive_context --> curllm_core__progressive_context___is_form_task
     curllm_core__progressive_context__get_context_stats --> curllm_core__progressive_context__estimate_context_size
+    curllm_core__browser_setup__setup_browser --> curllm_core__browser_setup__setup_playwright
+    curllm_core__browser_setup___ensure_playwright_browsers --> functions__registry__FunctionRegistry__list
+    curllm_core__browser_setup___ensure_playwright_browsers --> monitoring__website_monitor__print
+    curllm_core__browser_setup__setup_playwright --> curllm_core__browser_setup___ensure_playwright_browsers
     curllm_core__captcha_widget__handle_widget_captcha --> functions__js__safety__str
     curllm_core__proxy___dict_to_playwright_proxy --> functions__js__safety__str
     curllm_core__proxy__resolve_proxy --> curllm_core__proxy___load_public_list
     curllm_core__proxy__resolve_proxy --> curllm_core__proxy___dict_to_playwright_proxy
-    scripts__fix_missing_loggers__fix_missing_logger --> scripts__fix_missing_loggers__find_import_section_end
-    scripts__fix_missing_loggers__fix_missing_logger --> monitoring__website_monitor__print
-    scripts__fix_missing_loggers__scan_project --> scripts__fix_missing_loggers__find_python_files
-    scripts__fix_missing_loggers__scan_project --> scripts__fix_missing_loggers__check_file_for_missing_logger
-    scripts__fix_missing_loggers__main --> monitoring__website_monitor__print
-    scripts__fix_missing_loggers__main --> scripts__fix_missing_loggers__scan_project
+    curllm_core__context_optimizer__optimize_context --> curllm_core__context_optimizer__truncate_dom
+    curllm_core__context_optimizer__optimize_context --> curllm_core__context_optimizer__deduplicate_iframes
+    curllm_core__context_optimizer__truncate_dom --> curllm_core__context_optimizer___score_dom_element
+    curllm_core__context_optimizer___score_dom_element --> functions__js__safety__str
+    curllm_core__context_optimizer__prioritize_form_context --> curllm_core__context_optimizer__is_form_task
+    curllm_core__context_optimizer__prioritize_form_context --> curllm_core__context_optimizer__filter_form_elements
+    curllm_core__context_optimizer__filter_form_elements --> functions__js__safety__str
+    curllm_core__context_optimizer__estimate_context_size --> functions__js__safety__str
     curllm_core__config_logger__get_all_config_variables --> functions__js__safety__str
     curllm_core__config_logger__log_all_config --> curllm_core__config_logger__get_all_config_variables
     curllm_core__config_logger__log_all_config --> functions__js__safety__str
@@ -2611,14 +2616,7 @@ flowchart TD
     curllm_core__llm_filter_validator__LLMFilterValidator___validate_batch_internal --> functions__js__safety__str
     curllm_core__llm__SimpleOllama__ainvoke --> functions__js__safety__str
     curllm_core__llm__SimpleOllama__ainvoke_with_image --> functions__js__safety__str
-    curllm_core__context_optimizer__optimize_context --> curllm_core__context_optimizer__truncate_dom
-    curllm_core__context_optimizer__optimize_context --> curllm_core__context_optimizer__deduplicate_iframes
-    curllm_core__context_optimizer__truncate_dom --> curllm_core__context_optimizer___score_dom_element
-    curllm_core__context_optimizer___score_dom_element --> functions__js__safety__str
-    curllm_core__context_optimizer__prioritize_form_context --> curllm_core__context_optimizer__is_form_task
-    curllm_core__context_optimizer__prioritize_form_context --> curllm_core__context_optimizer__filter_form_elements
-    curllm_core__context_optimizer__filter_form_elements --> functions__js__safety__str
-    curllm_core__context_optimizer__estimate_context_size --> functions__js__safety__str
+    curllm_core__llm__SimpleOllama__chat --> functions__js__safety__str
     curllm_core__actions___auto_scroll --> curllm_core__page_utils__auto_scroll
     curllm_core__task_runner_fallback__maybe_products_heuristics --> curllm_core__extraction__extractor__product_heuristics
     curllm_core__task_runner_fallback__maybe_articles_no_click --> curllm_core__extraction__extractor__extract_articles_eval
@@ -2626,32 +2624,33 @@ flowchart TD
     curllm_core__task_runner_fallback__finalize_fallback --> curllm_core__task_runner_fallback__maybe_articles_no_click
     curllm_core__task_runner_fallback__finalize_fallback --> curllm_core__extraction__extractor__fallback_extract
     curllm_core__llm_planner__generate_action --> curllm_server__executor__curllm_executor__CurllmExecutor___strip_fences
-    captcha__captcha_solver__SlidingPuzzleSolver__solve --> functions__js__safety__str
-    captcha__captcha_solver__SlidingPuzzleSolver__analyze_puzzle --> functions__js__safety__str
-    curllm_core__planner_progress__progress_tick --> curllm_core__rerun_cmd__build_rerun_curl
+    forms__app__BulkFormFiller__detect_fields --> functions__js__safety__str
+    forms__app__BulkFormFiller__fill_form --> functions__js__safety__str
+    forms__app__api_detect --> forms__app__get_filler
+    forms__app__api_detect --> forms__app__run_async
+    forms__app__api_detect --> functions__js__safety__str
+    forms__app__api_fill --> forms__app__get_filler
+    forms__app__api_fill --> forms__app__run_async
+    forms__app__api_bulk_stream --> forms__app__get_filler
+    forms__app__api_bulk_stream --> tools__generate_examples__generate
+    scripts__dev_watcher__FileHashCache__has_changed --> functions__js__safety__str
+    scripts__dev_watcher__FileHashCache__remove --> functions__js__safety__str
+    scripts__dev_watcher__DevWatcher__log --> monitoring__website_monitor__print
+    scripts__dev_watcher__DevWatcher__classify_change --> functions__js__safety__str
+    scripts__dev_watcher__DevWatcher__run_quick_tests --> functions__js__safety__str
+    scripts__dev_watcher__DevWatcher__watch --> functions__js__safety__str
+    curllm_core__iterative_extractor__IterativeExtractor___validate_results --> functions__js__safety__str
     curllm_core__error_handler__format_user_friendly_error --> functions__js__safety__str
     curllm_core__error_handler__get_error_category --> functions__js__safety__str
     curllm_core__error_handler__should_retry_error --> curllm_core__error_handler__format_user_friendly_error
     curllm_core__error_handler__format_error_for_logging --> curllm_core__error_handler__format_user_friendly_error
     curllm_core__error_handler__create_error_response --> curllm_core__error_handler__format_user_friendly_error
     curllm_core__error_handler__create_error_response --> curllm_core__error_handler__get_error_category
-    curllm_core__iterative_extractor__IterativeExtractor___validate_results --> functions__js__safety__str
+    curllm_core__planner_progress__progress_tick --> curllm_core__rerun_cmd__build_rerun_curl
     curllm_core__server__proxy_register --> functions__registry__FunctionRegistry__list
     curllm_core__server__proxy_list --> functions__registry__FunctionRegistry__list
     curllm_core__server__proxy_health --> functions__registry__FunctionRegistry__list
     curllm_core__server__get_screenshot --> functions__js__safety__str
-    scripts__refactor_to_llm_dsl__print_analysis_report --> monitoring__website_monitor__print
-    scripts__refactor_to_llm_dsl__main --> functions__js__safety__str
-    scripts__refactor_to_llm_dsl__main --> scripts__refactor_to_llm_dsl__print_analysis_report
-    scripts__refactor_to_llm_dsl__main --> monitoring__website_monitor__print
-    scripts__refactor_to_llm_dsl__main --> scripts__refactor_to_llm_dsl__generate_migration_plan
-    curllm_core__task_runner_early__smart_intent_check --> curllm_core__intent_detector__IntentDetector__detect_intent
-    curllm_core__task_runner_early__try_early_articles --> curllm_core__extraction__extractor__extract_articles_eval
-    curllm_core__task_runner_early__try_selector_links --> curllm_core__extraction__extractor__extract_links_by_selectors
-    curllm_core__task_runner_early__try_fastpaths --> curllm_core__extraction__extractor__direct_fastpath
-    curllm_core__task_runner_early__try_fastpaths --> curllm_core__extraction__extractor__generic_fastpath
-    curllm_core__task_runner_early__try_product_extraction --> curllm_core__extraction__extractor__product_heuristics
-    curllm_core__atomic_functions__AtomicFunctionExecutor___discover_selectors_with_llm --> examples__url_resolver__example_find_products__get_llm
     scripts__find_hardcoded__analyze_file --> scripts__find_hardcoded__get_severity
     scripts__find_hardcoded__scan_directory --> scripts__find_hardcoded__should_skip
     scripts__find_hardcoded__scan_directory --> scripts__find_hardcoded__analyze_file
@@ -2660,6 +2659,12 @@ flowchart TD
     scripts__find_hardcoded__main --> scripts__find_hardcoded__scan_directory
     scripts__find_hardcoded__main --> scripts__find_hardcoded__generate_report
     scripts__find_hardcoded__main --> scripts__find_hardcoded__generate_json
+    curllm_core__task_runner_early__smart_intent_check --> curllm_core__intent_detector__IntentDetector__detect_intent
+    curllm_core__task_runner_early__try_early_articles --> curllm_core__extraction__extractor__extract_articles_eval
+    curllm_core__task_runner_early__try_selector_links --> curllm_core__extraction__extractor__extract_links_by_selectors
+    curllm_core__task_runner_early__try_fastpaths --> curllm_core__extraction__extractor__direct_fastpath
+    curllm_core__task_runner_early__try_fastpaths --> curllm_core__extraction__extractor__generic_fastpath
+    curllm_core__task_runner_early__try_product_extraction --> curllm_core__extraction__extractor__product_heuristics
     curllm_core__result_store__compute_key --> curllm_core__result_store___sanitize_key
     curllm_core__result_store__compute_key --> functions__js__safety__str
     curllm_core__result_store___store_dir_for --> curllm_core__result_store___ensure_base
@@ -2677,15 +2682,15 @@ flowchart TD
     curllm_core__result_store__apply_diff_and_store --> curllm_core__result_store__diff
     curllm_core__result_store__apply_diff_and_store --> curllm_core__result_store__save_snapshot
     curllm_core__tool_retry__ToolRetryManager__get_failure_summary --> functions__registry__FunctionRegistry__list
-    curllm_core__navigation__open_page_with_prechecks --> curllm_server__executor__curllm_executor__CurllmExecutor___accept_cookies
-    curllm_core__navigation__open_page_with_prechecks --> curllm_core__diagnostics__diagnose_url_issue
-    curllm_core__navigation__open_page_with_prechecks --> curllm_core__human_verify__handle_human_verification
     curllm_core__dom_statistics__DOMStatistics___calculate_optimal_depths --> functions__registry__FunctionRegistry__list
     curllm_core__dom_statistics__DOMStatistics___find_repeating_patterns --> functions__registry__FunctionRegistry__list
     curllm_core__dom_statistics__DOMStatistics___generate_insights --> functions__registry__FunctionRegistry__list
-    curllm_logs__screenshots__ScreenshotManager__capture --> functions__js__safety__str
+    curllm_core__atomic_functions__AtomicFunctionExecutor___discover_selectors_with_llm --> examples__url_resolver__example_find_products__get_llm
     curllm_core__human_verify__handle_human_verification --> curllm_core__human_verify__looks_like_human_verify_text
     curllm_core__human_verify__handle_human_verification --> functions__js__safety__str
+    curllm_core__navigation__open_page_with_prechecks --> curllm_server__executor__curllm_executor__CurllmExecutor___accept_cookies
+    curllm_core__navigation__open_page_with_prechecks --> curllm_core__diagnostics__diagnose_url_issue
+    curllm_core__navigation__open_page_with_prechecks --> curllm_core__human_verify__handle_human_verification
     curllm_core__captcha_slider__attempt_slider_challenge --> curllm_core__captcha_slider___frame_has_slider
     curllm_core__page_context__extract_page_context --> functions__js__safety__str
     curllm_core__task_runner_steps__remediate_if_empty --> curllm_server__executor__curllm_executor__CurllmExecutor___accept_cookies
@@ -2694,40 +2699,15 @@ flowchart TD
     curllm_core__slider_plugin___detect_slider --> curllm_core__captcha_slider___frame_has_slider
     curllm_core__slider_plugin__try_external_slider_solver --> curllm_core__slider_plugin___detect_slider
     curllm_core__slider_plugin__try_external_slider_solver --> functions__js__safety__str
-    curllm_core__universal_field_extractor__UniversalFieldExtractor__extract_attributes --> functions__registry__FunctionRegistry__list
-    curllm_core__form_fill__deterministic_form_fill --> curllm_core__form_fill__parser__parse_form_pairs
+    curllm_core__result_corrector__correct_with_llm --> curllm_core__result_corrector__generate_correction_prompt
+    curllm_core__result_corrector__analyze_and_report --> curllm_core__result_corrector__detect_required_fields
+    curllm_core__result_corrector__analyze_and_report --> curllm_core__result_corrector__check_fields_present
+    curllm_core__result_corrector__analyze_and_report --> curllm_core__result_corrector__validate_field_values
     curllm_core__screenshots__take_screenshot --> functions__js__safety__str
     curllm_core__screenshots__take_screenshot_organized --> curllm_core__screenshots__get_run_screenshot_dir
     curllm_core__screenshots__take_screenshot_organized --> functions__js__safety__str
+    curllm_core__form_fill__deterministic_form_fill --> curllm_core__form_fill__parser__parse_form_pairs
     curllm_core__headers__normalize_headers --> functions__js__safety__str
-    curllm_core__remediation__remediate_if_empty --> curllm_core__human_verify__looks_like_human_verify_text
-    curllm_core__remediation__maybe_solve_slider_block --> curllm_core__captcha_slider__attempt_slider_challenge
-    curllm_core__remediation__maybe_solve_slider_block --> curllm_core__slider_plugin__try_external_slider_solver
-    curllm_core__remediation__maybe_solve_slider_block --> functions__js__safety__str
-    curllm_core__llm_container_validator__LLMContainerValidator__validate_containers --> functions__js__safety__str
-    curllm_core__llm_container_validator__LLMContainerValidator__validate_single_container --> functions__js__safety__str
-    curllm_core__shortcuts__try_early_articles --> curllm_core__extraction__extractor__extract_articles_eval
-    curllm_core__shortcuts__try_early_articles --> curllm_core__extraction__extractor__validate_with_llm
-    curllm_core__shortcuts__try_selector_links --> curllm_core__extraction__extractor__extract_links_by_selectors
-    curllm_core__shortcuts__try_fastpaths --> curllm_core__extraction__extractor__generic_fastpath
-    curllm_core__shortcuts__try_fastpaths --> curllm_core__extraction__extractor__direct_fastpath
-    curllm_core__shortcuts__try_fastpaths --> functions__js__safety__str
-    curllm_core__shortcuts__try_product_extraction --> curllm_core__page_context__extract_page_context
-    curllm_core__shortcuts__try_product_extraction --> curllm_core__extraction__extractor__validate_with_llm
-    curllm_core__shortcuts__maybe_products_heuristics --> curllm_core__extraction__extractor__product_heuristics
-    curllm_core__shortcuts__maybe_articles_no_click --> curllm_core__extraction__extractor__extract_articles_eval
-    curllm_core__shortcuts__maybe_articles_no_click --> functions__js__safety__str
-    curllm_core__shortcuts__maybe_articles_no_click --> curllm_core__extraction__extractor__validate_with_llm
-    forms__app__BulkFormFiller__detect_fields --> functions__js__safety__str
-    forms__app__BulkFormFiller__fill_form --> functions__js__safety__str
-    forms__app__api_detect --> forms__app__get_filler
-    forms__app__api_detect --> forms__app__run_async
-    forms__app__api_detect --> functions__js__safety__str
-    forms__app__api_fill --> forms__app__get_filler
-    forms__app__api_fill --> forms__app__run_async
-    forms__app__api_bulk_stream --> forms__app__get_filler
-    forms__app__api_bulk_stream --> tools__generate_examples__generate
-    curllm_core__multi_criteria_filter__MultiCriteriaFilter__print_filtering_report --> monitoring__website_monitor__print
     curllm_core__task_runner_tools__execute_tool --> curllm_core__task_runner_tools___handle_extract_emails
     curllm_core__task_runner_tools__execute_tool --> curllm_core__task_runner_tools___handle_extract_links
     curllm_core__task_runner_tools__execute_tool --> curllm_core__task_runner_tools___handle_extract_phones
@@ -2752,31 +2732,35 @@ flowchart TD
     curllm_core__task_runner_tools___handle_browser_cookies --> functions__js__safety__str
     curllm_core__task_runner_tools___handle_form_fill --> functions__js__safety__str
     curllm_core__task_runner_tools___handle_form_detect --> functions__js__safety__str
-    curllm_core__retry__navigate_with_retry --> functions__js__safety__str
+    curllm_core__llm_container_validator__LLMContainerValidator__validate_containers --> functions__js__safety__str
+    curllm_core__llm_container_validator__LLMContainerValidator__validate_single_container --> functions__js__safety__str
+    curllm_core__shortcuts__try_early_articles --> curllm_core__extraction__extractor__extract_articles_eval
+    curllm_core__shortcuts__try_early_articles --> curllm_core__extraction__extractor__validate_with_llm
+    curllm_core__shortcuts__try_selector_links --> curllm_core__extraction__extractor__extract_links_by_selectors
+    curllm_core__shortcuts__try_fastpaths --> curllm_core__extraction__extractor__generic_fastpath
+    curllm_core__shortcuts__try_fastpaths --> curllm_core__extraction__extractor__direct_fastpath
+    curllm_core__shortcuts__try_fastpaths --> functions__js__safety__str
+    curllm_core__shortcuts__try_product_extraction --> curllm_core__page_context__extract_page_context
+    curllm_core__shortcuts__try_product_extraction --> curllm_core__extraction__extractor__validate_with_llm
+    curllm_core__shortcuts__maybe_products_heuristics --> curllm_core__extraction__extractor__product_heuristics
+    curllm_core__shortcuts__maybe_articles_no_click --> curllm_core__extraction__extractor__extract_articles_eval
+    curllm_core__shortcuts__maybe_articles_no_click --> functions__js__safety__str
+    curllm_core__shortcuts__maybe_articles_no_click --> curllm_core__extraction__extractor__validate_with_llm
     curllm_core__llm_heuristics__LLMHeuristicsDiscovery__discover_product_link_patterns --> functions__js__safety__str
-    curllm_core__llm_factory__setup_llm --> curllm_core__llm_factory__create_llm_client
-    curllm_core__llm_factory__setup_llm --> curllm_core__llm_factory___setup_ollama_legacy
-    curllm_core__llm_factory__create_llm_client --> curllm_core__llm_factory___create_ollama_client
-    curllm_core__llm_factory__create_llm_client --> curllm_core__llm_factory___create_openai_client
-    curllm_core__llm_factory__create_llm_client --> curllm_core__llm_factory___create_anthropic_client
-    curllm_core__llm_factory__create_llm_client --> curllm_core__llm_factory___create_gemini_client
-    curllm_core__llm_factory__create_llm_client --> curllm_core__llm_factory___create_groq_client
-    curllm_core__llm_factory__create_llm_client --> curllm_core__llm_factory___create_deepseek_client
+    curllm_core__multi_criteria_filter__MultiCriteriaFilter__print_filtering_report --> monitoring__website_monitor__print
+    curllm_core__universal_field_extractor__UniversalFieldExtractor__extract_attributes --> functions__registry__FunctionRegistry__list
+    curllm_core__bql_extraction_orchestrator__BQLExtractionOrchestrator___phase_bql_generation --> functions__js__safety__str
+    curllm_core__bql_extraction_orchestrator__BQLExtractionOrchestrator___phase_execution --> functions__js__safety__str
+    curllm_core__bql_extraction_orchestrator__BQLExtractionOrchestrator___llm_invoke --> functions__js__safety__str
+    curllm_core__url_resolution__goal_detector_llm__goal_detector_hybrid__GoalDetectorHybrid__detect_goal_sync --> functions__js__safety__str
+    curllm_core__url_resolution__goal_detector_llm__goal_detector_hybrid__GoalDetectorHybrid__detect_goal --> functions__js__safety__str
+    curllm_core__metrics__MetricsCollector__get_domain_stats --> functions__registry__FunctionRegistry__list
+    curllm_core__metrics__record_extraction --> curllm_core__metrics__get_metrics_collector
+    curllm_core__retry__navigate_with_retry --> functions__js__safety__str
     curllm_core__streamware__registry__create_component --> curllm_core__streamware__registry__get_component
     curllm_core__streamware__registry__create_component --> curllm_core__streamware__registry__list_schemes
     curllm_core__streamware__registry__list_schemes --> functions__registry__FunctionRegistry__list
     curllm_core__streamware__registry__list_available_components --> curllm_core__streamware__registry__list_schemes
-    curllm_core__bql_extraction_orchestrator__BQLExtractionOrchestrator___phase_bql_generation --> functions__js__safety__str
-    curllm_core__bql_extraction_orchestrator__BQLExtractionOrchestrator___phase_execution --> functions__js__safety__str
-    curllm_core__bql_extraction_orchestrator__BQLExtractionOrchestrator___llm_invoke --> functions__js__safety__str
-    scripts__dev_watcher__FileHashCache__has_changed --> functions__js__safety__str
-    scripts__dev_watcher__FileHashCache__remove --> functions__js__safety__str
-    scripts__dev_watcher__DevWatcher__log --> monitoring__website_monitor__print
-    scripts__dev_watcher__DevWatcher__classify_change --> functions__js__safety__str
-    scripts__dev_watcher__DevWatcher__run_quick_tests --> functions__js__safety__str
-    scripts__dev_watcher__DevWatcher__watch --> functions__js__safety__str
-    curllm_core__streamware__yaml_runner__YAMLFlowRunner___replace_variables --> functions__js__safety__str
-    curllm_core__streamware__yaml_runner__YAMLFlowRunner__build_flow --> curllm_core__streamware__flow__flow
     curllm_core__streamware__llm_bridge__LLMDSLBridge__execute_llm_command --> functions__js__safety__str
     curllm_core__streamware__llm_bridge__LLMDSLBridge___execute_analyze_form --> curllm_core__streamware__flow__flow
     curllm_core__streamware__llm_bridge__LLMDSLBridge___execute_fill_field --> curllm_core__streamware__flow__flow
@@ -2787,29 +2771,69 @@ flowchart TD
     curllm_core__streamware__llm_bridge__LLMDSLBridge___execute_generic --> curllm_core__streamware__flow__flow
     curllm_core__streamware__llm_bridge__LLMDSLBridge__generate_component_list --> curllm_core__streamware__registry__list_available_components
     curllm_core__streamware__llm_bridge__LLMDSLBridge__get_llm_prompt_context --> curllm_core__streamware__registry__list_available_components
-    curllm_core__url_resolution__goal_detector_llm__goal_detector_hybrid__GoalDetectorHybrid__detect_goal_sync --> functions__js__safety__str
-    curllm_core__url_resolution__goal_detector_llm__goal_detector_hybrid__GoalDetectorHybrid__detect_goal --> functions__js__safety__str
-    curllm_core__streamware__flow__Flow____init__ --> curllm_core__streamware__registry__create_component
-    curllm_core__streamware__flow__Flow____or__ --> curllm_core__streamware__registry__create_component
-    curllm_core__streamware__flow__Flow__add --> curllm_core__streamware__registry__create_component
-    curllm_core__streamware__flow__flow --> curllm_core__streamware__registry__create_component
     curllm_core__streamware__llm_client___log --> monitoring__website_monitor__print
-    curllm_core__streamware__llm_client__StreamwareLLM___get_client --> curllm_core__llm_guided_extractor__LLMGuidedExtractor___log
-    curllm_core__streamware__llm_client__StreamwareLLM__generate --> curllm_core__llm_guided_extractor__LLMGuidedExtractor___log
+    curllm_core__streamware__llm_client__StreamwareLLM___get_client --> curllm_core__llm_filter_validator__LLMFilterValidator___log
+    curllm_core__streamware__llm_client__StreamwareLLM__generate --> curllm_core__llm_filter_validator__LLMFilterValidator___log
     curllm_core__streamware__llm_client__StreamwareLLM__map_fields --> functions__registry__FunctionRegistry__list
     curllm_core__streamware__llm_client__llm_map_fields --> curllm_core__streamware__llm_client__get_llm
     curllm_core__streamware__llm_client__llm_evaluate_success --> curllm_core__streamware__llm_client__get_llm
     curllm_core__streamware__llm_client__llm_find_selector --> curllm_core__streamware__llm_client__get_llm
     curllm_core__streamware__llm_client__generate_missing_field_data --> curllm_core__streamware__llm_client__get_llm
     curllm_core__streamware__llm_client__generate_missing_field_data --> curllm_core__streamware__llm_client___log
+    curllm_core__llm_factory__setup_llm --> curllm_core__llm_factory__create_llm_client
+    curllm_core__llm_factory__setup_llm --> curllm_core__llm_factory___setup_ollama_legacy
+    curllm_core__llm_factory__create_llm_client --> curllm_core__llm_factory___create_ollama_client
+    curllm_core__llm_factory__create_llm_client --> curllm_core__llm_factory___create_openai_client
+    curllm_core__llm_factory__create_llm_client --> curllm_core__llm_factory___create_anthropic_client
+    curllm_core__llm_factory__create_llm_client --> curllm_core__llm_factory___create_gemini_client
+    curllm_core__llm_factory__create_llm_client --> curllm_core__llm_factory___create_groq_client
+    curllm_core__llm_factory__create_llm_client --> curllm_core__llm_factory___create_deepseek_client
     curllm_core__streamware__core__Component____or__ --> curllm_core__streamware__registry__create_component
     curllm_core__streamware__core__StreamComponent__process --> functions__registry__FunctionRegistry__list
+    curllm_core__streamware__components__transform__TransformComponent___transform_csv --> functions__registry__FunctionRegistry__list
+    curllm_core__streamware__flow__Flow____init__ --> curllm_core__streamware__registry__create_component
+    curllm_core__streamware__flow__Flow____or__ --> curllm_core__streamware__registry__create_component
+    curllm_core__streamware__flow__Flow__add --> curllm_core__streamware__registry__create_component
+    curllm_core__streamware__flow__flow --> curllm_core__streamware__registry__create_component
+    curllm_core__streamware__yaml_runner__YAMLFlowRunner___replace_variables --> functions__js__safety__str
+    curllm_core__streamware__yaml_runner__YAMLFlowRunner__build_flow --> curllm_core__streamware__flow__flow
+    curllm_core__streamware__components__curllm__CurLLMStreamComponent__stream --> functions__js__safety__str
+    curllm_core__streamware__components__curllm__browse --> curllm_core__streamware__registry__create_component
+    curllm_core__streamware__components__curllm__extract_data --> curllm_core__streamware__registry__create_component
+    curllm_core__streamware__components__curllm__fill_form --> curllm_core__streamware__registry__create_component
+    curllm_core__streamware__components__curllm__execute_bql --> curllm_core__streamware__registry__create_component
+    curllm_core__streamware__components__decision__DecisionTreeComponent__process --> curllm_core__streamware__flow__flow
+    curllm_core__streamware__components__file__FileComponent___write_file --> functions__js__safety__str
+    curllm_core__streamware__components__file__FileStreamComponent___write_lines --> functions__js__safety__str
+    curllm_core__streamware__components__captcha__solve__CaptchaSolver__solve --> functions__js__safety__str
+    curllm_core__streamware__components__captcha__solve__CaptchaSolver__solve --> curllm_core__streamware__components__captcha__detect__detect_captcha
+    curllm_core__streamware__components__dom_fix__FieldMapperComponent___extract_from_instruction --> curllm_core__streamware__components__llm_decision__extract_fields_from_instruction_llm
+    curllm_core__streamware__components__decision_llm__llm_action_planner__LLMActionPlanner__plan_next_action --> functions__js__safety__str
+    curllm_core__streamware__components__captcha__vision_solve__solve_captcha_visual --> functions__js__safety__str
+    curllm_core__streamware__components__captcha__vision_solve__solve_captcha_visual --> curllm_core__streamware__components__captcha__vision_solve___solve_checkbox_captcha
+    curllm_core__streamware__components__captcha__vision_solve__solve_captcha_visual --> curllm_core__streamware__components__captcha__vision_solve___solve_slider_captcha
+    curllm_core__streamware__components__captcha__vision_solve__solve_captcha_visual --> curllm_core__streamware__components__captcha__vision_solve___solve_image_captcha
+    curllm_core__streamware__components__captcha__vision_solve__solve_captcha_visual --> curllm_core__streamware__components__captcha__vision_solve___solve_generic_captcha
+    curllm_core__streamware__components__captcha__vision_solve___solve_checkbox_captcha --> curllm_core__streamware__components__captcha__vision_solve___get_vision_llm
+    curllm_core__streamware__components__captcha__vision_solve___solve_checkbox_captcha --> curllm_core__streamware__components__captcha__vision_solve___check_for_challenge
+    curllm_core__streamware__components__captcha__vision_solve___solve_checkbox_captcha --> curllm_core__streamware__components__captcha__vision_solve___solve_image_selection
+    curllm_core__streamware__components__captcha__vision_solve___solve_slider_captcha --> curllm_core__streamware__components__captcha__vision_solve___get_vision_llm
+    curllm_core__streamware__components__captcha__vision_solve___solve_image_captcha --> curllm_core__streamware__components__captcha__vision_solve___get_vision_llm
+    curllm_core__streamware__components__captcha__vision_solve___solve_generic_captcha --> curllm_core__streamware__components__captcha__vision_solve___get_vision_llm
+    curllm_core__streamware__components__decision_llm__llm_field_analyzer__LLMFieldAnalyzer__is_fillable_field --> functions__js__safety__str
+    curllm_core__streamware__components__decision_llm__llm_field_analyzer__LLMFieldAnalyzer__extract_fields_from_instruction --> functions__js__safety__str
+    curllm_core__streamware__components__form__fill__fill_field --> functions__js__safety__str
+    curllm_core__streamware__components__form__fill__fill_fields --> curllm_core__streamware__components__form__fill__fill_field
+    curllm_core__streamware__components__form__detect__detect_forms --> functions__js__safety__str
+    curllm_core__streamware__components__form__detect__detect_form --> curllm_core__streamware__components__form__detect__detect_forms
+    curllm_core__streamware__components__currency__translator__normalize_price_filter --> curllm_core__streamware__components__currency__translator__convert_price
+    curllm_core__streamware__components__form__tools__get_function_signature --> functions__js__safety__str
+    curllm_core__streamware__components__form__tools__generate_tool_registry --> curllm_core__streamware__components__form__tools__get_function_signature
+    curllm_core__streamware__components__form__tools__get_tools_prompt --> curllm_core__streamware__components__form__tools__generate_tool_registry
+    curllm_core__streamware__components__form__tools__execute_tool --> scripts__dev_watcher__DevWatcher__log
+    curllm_core__streamware__components__form__tools__execute_tool --> functions__js__safety__str
     curllm_core__url_resolution__resolver__UrlResolver___llm_find_link --> functions__js__safety__str
     curllm_core__url_resolution__resolver__UrlResolver___extract_search_term --> functions__js__safety__str
-    curllm_core__streamware__components__transform__TransformComponent___transform_csv --> functions__registry__FunctionRegistry__list
-    curllm_core__streamware__components__dom_fix__FieldMapperComponent___extract_from_instruction --> curllm_core__streamware__components__llm_decision__extract_fields_from_instruction_llm
-    curllm_core__streamware__components__decision__DecisionTreeComponent__process --> curllm_core__streamware__flow__flow
-    curllm_core__streamware__components__decision_llm__llm_action_planner__LLMActionPlanner__plan_next_action --> functions__js__safety__str
     curllm_core__streamware__components__llm_decision__extract_fields_from_instruction_llm --> curllm_core__streamware__components__llm_decision___parse_json_response
     curllm_core__streamware__components__llm_decision__extract_fields_from_instruction_llm --> curllm_core__streamware__components__llm_decision___llm_generate
     curllm_core__streamware__components__llm_decision__parse_selector_name_llm --> curllm_core__streamware__components__llm_decision___llm_generate
@@ -2822,38 +2846,8 @@ flowchart TD
     curllm_core__streamware__components__llm_decision__generate_selector_for_field_llm --> curllm_core__streamware__components__llm_decision___parse_json_response
     curllm_core__streamware__components__llm_decision__generate_selector_for_field_llm --> curllm_core__streamware__components__llm_decision___llm_generate
     curllm_core__streamware__components__llm_decision___llm_generate --> functions__js__safety__str
-    curllm_core__streamware__components__decision_llm__llm_field_analyzer__LLMFieldAnalyzer__is_fillable_field --> functions__js__safety__str
-    curllm_core__streamware__components__decision_llm__llm_field_analyzer__LLMFieldAnalyzer__extract_fields_from_instruction --> functions__js__safety__str
-    curllm_core__streamware__components__file__FileComponent___write_file --> functions__js__safety__str
-    curllm_core__streamware__components__file__FileStreamComponent___write_lines --> functions__js__safety__str
-    curllm_core__streamware__components__form__fill__fill_field --> functions__js__safety__str
-    curllm_core__streamware__components__form__fill__fill_fields --> curllm_core__streamware__components__form__fill__fill_field
-    curllm_core__streamware__components__curllm__CurLLMStreamComponent__stream --> functions__js__safety__str
-    curllm_core__streamware__components__curllm__browse --> curllm_core__streamware__registry__create_component
-    curllm_core__streamware__components__curllm__extract_data --> curllm_core__streamware__registry__create_component
-    curllm_core__streamware__components__curllm__fill_form --> curllm_core__streamware__registry__create_component
-    curllm_core__streamware__components__curllm__execute_bql --> curllm_core__streamware__registry__create_component
-    curllm_core__streamware__components__captcha__solve__CaptchaSolver__solve --> functions__js__safety__str
-    curllm_core__streamware__components__captcha__solve__CaptchaSolver__solve --> curllm_core__streamware__components__captcha__detect__detect_captcha
-    curllm_core__streamware__components__captcha__vision_solve__solve_captcha_visual --> functions__js__safety__str
-    curllm_core__streamware__components__captcha__vision_solve__solve_captcha_visual --> curllm_core__streamware__components__captcha__vision_solve___solve_checkbox_captcha
-    curllm_core__streamware__components__captcha__vision_solve__solve_captcha_visual --> curllm_core__streamware__components__captcha__vision_solve___solve_slider_captcha
-    curllm_core__streamware__components__captcha__vision_solve__solve_captcha_visual --> curllm_core__streamware__components__captcha__vision_solve___solve_image_captcha
-    curllm_core__streamware__components__captcha__vision_solve__solve_captcha_visual --> curllm_core__streamware__components__captcha__vision_solve___solve_generic_captcha
-    curllm_core__streamware__components__captcha__vision_solve___solve_checkbox_captcha --> curllm_core__streamware__components__captcha__vision_solve___get_vision_llm
-    curllm_core__streamware__components__captcha__vision_solve___solve_checkbox_captcha --> curllm_core__streamware__components__captcha__vision_solve___check_for_challenge
-    curllm_core__streamware__components__captcha__vision_solve___solve_checkbox_captcha --> curllm_core__streamware__components__captcha__vision_solve___solve_image_selection
-    curllm_core__streamware__components__captcha__vision_solve___solve_slider_captcha --> curllm_core__streamware__components__captcha__vision_solve___get_vision_llm
-    curllm_core__streamware__components__captcha__vision_solve___solve_image_captcha --> curllm_core__streamware__components__captcha__vision_solve___get_vision_llm
-    curllm_core__streamware__components__captcha__vision_solve___solve_generic_captcha --> curllm_core__streamware__components__captcha__vision_solve___get_vision_llm
-    curllm_core__streamware__components__form__detect__detect_forms --> functions__js__safety__str
-    curllm_core__streamware__components__form__detect__detect_form --> curllm_core__streamware__components__form__detect__detect_forms
-    curllm_core__streamware__components__form__submit_llm__llm_submit_detector__LLMSubmitDetector__find_submit_button --> functions__js__safety__str
-    curllm_core__metrics__MetricsCollector__get_domain_stats --> functions__registry__FunctionRegistry__list
-    curllm_core__metrics__record_extraction --> curllm_core__metrics__get_metrics_collector
-    curllm_core__streamware__components__form__map_fields__map_user_data_to_fields --> curllm_core__streamware__components__form__map_fields__classify_field
 
     classDef highCC fill:#ff6b6b,stroke:#c92a2a,color:#fff
     classDef medCC fill:#ffd43b,stroke:#f08c00,color:#000
-    class captcha__playwright_bql_framework__BQLExecutor___run_action,captcha__playwright_bql_framework___parse_actions_from_llm,examples__url_resolver__example_complete_flow__parse_command,wordpress_batch__batch_create_posts,examples__llm_providers__multi_provider_benchmark__run_benchmark,monitoring__send_email__send_email,extension__extension__CurllmExtension__curllmExtension,scripts__atomize_module__Atomizer__atomize,curllm_core__browser_setup__setup_playwright,curllm_core__llm_guided_extractor__LLMGuidedExtractor___parse_prices_with_llm,scripts__analyze_deps__main,curllm_core__vision_form_analysis__analyze_form_fields_vision,curllm_core__vision_form_analysis__build_vision_enhanced_field_list,curllm_core__vision_form_analysis__create_vision_decision_tree,curllm_core__runtime__parse_runtime_from_instruction,curllm_logs__run_logger__RunLogger__log_form_summary,curllm_core__progressive_context__build_progressive_context,curllm_core__proxy___load_public_list,curllm_core__proxy__resolve_proxy,scripts__fix_missing_loggers__find_import_section_end,scripts__fix_missing_loggers__fix_missing_logger,curllm_core__context_optimizer__optimize_context,curllm_core__task_runner_fallback__finalize_fallback,curllm_core__llm_planner__generate_action,curllm_core__instruction_parser__InstructionParser___parse_numeric_criteria,curllm_core__planner_progress__progress_tick,curllm_core__iterative_extractor__IterativeExtractor__run,curllm_core__server__proxy_register,curllm_core__server__proxy_health,scripts__find_hardcoded__analyze_file highCC
-    class examples__benchmark_providers,captcha__playwright_bql_framework__detect_consent_or_captcha,captcha__playwright_bql_framework__call_llm_placeholder,examples__url_resolver__example_complete_flow__execute_command,examples__url_resolver__example_complete_flow__main,examples__detection__llm_heuristics_example__main,extension__extension__CurllmExtension__handleMessage,extension__extension__CurllmExtension__executeAutomation,extension__extension__CurllmExtension__optimizeActions,extension__extension__CurllmContentScript__handleMessage,extension__extension__CurllmContentScript__executeAction,captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__solve_allegro_puzzle,captcha__allegro_captcha_solver__main,examples__currency__currency_example__main,scripts__analyze_dependencies__get_all_python_files,scripts__analyze_dependencies__extract_imports,scripts__analyze_dependencies__build_dependency_graph,scripts__analyze_dependencies__analyze_function_usage,scripts__analyze_dependencies__main,scripts__code_quality__analyze_file,scripts__code_quality__main,curllm_core__browser_setup___ensure_playwright_browsers,curllm_core__llm_guided_extractor__LLMGuidedExtractor__step6_apply_filter,scripts__analyze_deps__extract_imports,curllm_core__validation_utils__should_validate,curllm_logs__run_logger__RunLogger__log_table,curllm_core__captcha_widget__handle_widget_captcha,curllm_logs__log_writer__MarkdownLogWriter___write_parsed_section,curllm_logs__log_writer__MarkdownLogWriter___write_steps_table,curllm_logs__log_writer__MarkdownLogWriter___write_domains_section medCC
+    class examples__llm_providers__multi_provider_benchmark__run_benchmark,examples__url_resolver__example_complete_flow__parse_command,extension__extension__CurllmExtension__curllmExtension,scripts__fix_missing_loggers__find_import_section_end,scripts__fix_missing_loggers__fix_missing_logger,scripts__atomize_module__Atomizer__atomize,scripts__analyze_deps__main,wordpress_batch__batch_create_posts,monitoring__send_email__send_email,curllm_logs__run_logger__RunLogger__log_form_summary,captcha__playwright_bql_framework__BQLExecutor___run_action,captcha__playwright_bql_framework___parse_actions_from_llm,curllm_core__runtime__parse_runtime_from_instruction,curllm_core__vision_form_analysis__analyze_form_fields_vision,curllm_core__vision_form_analysis__build_vision_enhanced_field_list,curllm_core__vision_form_analysis__create_vision_decision_tree,curllm_core__progressive_context__build_progressive_context,curllm_core__browser_setup__setup_playwright,curllm_core__proxy___load_public_list,curllm_core__proxy__resolve_proxy,curllm_core__context_optimizer__optimize_context,curllm_core__llm_guided_extractor__LLMGuidedExtractor___parse_prices_with_llm,curllm_core__task_runner_fallback__finalize_fallback,curllm_core__instruction_parser__InstructionParser___parse_numeric_criteria,curllm_core__llm_planner__generate_action,curllm_core__iterative_extractor__IterativeExtractor__run,curllm_core__planner_progress__progress_tick,curllm_core__server__proxy_register,curllm_core__server__proxy_health,scripts__find_hardcoded__analyze_file highCC
+    class examples__benchmark_providers,examples__detection__llm_heuristics_example__main,examples__currency__currency_example__main,examples__url_resolver__example_complete_flow__execute_command,examples__url_resolver__example_complete_flow__main,extension__extension__CurllmExtension__handleMessage,extension__extension__CurllmExtension__executeAutomation,extension__extension__CurllmExtension__optimizeActions,extension__extension__CurllmContentScript__handleMessage,extension__extension__CurllmContentScript__executeAction,scripts__analyze_dependencies__get_all_python_files,scripts__analyze_dependencies__extract_imports,scripts__analyze_dependencies__build_dependency_graph,scripts__analyze_dependencies__analyze_function_usage,scripts__analyze_dependencies__main,scripts__fix_missing_loggers__main,scripts__code_quality__analyze_file,scripts__code_quality__main,scripts__analyze_deps__extract_imports,captcha__captcha_orchestrator__CaptchaSolver__solve_with_service,curllm_logs__run_logger__RunLogger__log_table,captcha__allegro_captcha_solver__AllegroSlidingPuzzleSolver__solve_allegro_puzzle,captcha__allegro_captcha_solver__main,captcha__playwright_bql_framework__detect_consent_or_captcha,captcha__playwright_bql_framework__call_llm_placeholder,curllm_core__validation_utils__should_validate,curllm_core__browser_setup___ensure_playwright_browsers,curllm_core__captcha_widget__handle_widget_captcha,curllm_logs__log_writer__MarkdownLogWriter___write_parsed_section,curllm_logs__log_writer__MarkdownLogWriter___write_steps_table medCC

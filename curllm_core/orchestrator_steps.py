@@ -6,8 +6,10 @@ Each step type has its own executor function for better maintainability.
 """
 
 import asyncio
+import json
 import logging
-from typing import Any, Dict, Optional
+import re
+from typing import Any, Dict, Optional, Tuple
 
 from .task_planner import StepType, TaskStep
 from .command_parser import ParsedCommand
@@ -30,6 +32,183 @@ class StepExecutor:
         self.element_finder = element_finder
         self.llm = llm
         self._log = log_fn or (lambda *args: None)
+
+    def _get_fallback_llm(self):
+        """Resolve LLM instance from self or streamware fallback"""
+        if self.llm:
+            return self.llm
+        try:
+            from .streamware.llm_client import get_llm
+            return get_llm()
+        except Exception:
+            return None
+
+    async def _find_search_input_llm_fallback(self) -> Tuple[Optional[Any], Optional[str]]:
+        """Find search input using LLM/VLM discovery when standard finder yields no result."""
+        try:
+            llm = self._get_fallback_llm()
+            inputs_meta = await self.page.evaluate("""
+                () => {
+                    const candidates = [];
+                    const elements = document.querySelectorAll('input, textarea, [contenteditable="true"]');
+                    for (let idx = 0; idx < elements.length; idx++) {
+                        const el = elements[idx];
+                        const style = window.getComputedStyle(el);
+                        if (style.display === 'none' || style.visibility === 'hidden' || el.offsetParent === null) continue;
+                        const type = (el.getAttribute('type') || 'text').toLowerCase();
+                        if (['hidden', 'password', 'checkbox', 'radio', 'file', 'image', 'submit', 'button'].includes(type)) continue;
+                        
+                        let selector = '';
+                        if (el.id) selector = '#' + el.id;
+                        else if (el.name) selector = `[name="${el.name}"]`;
+                        else selector = `input:nth-of-type(${idx + 1})`;
+                        
+                        candidates.push({
+                            selector: selector,
+                            type: type,
+                            placeholder: (el.getAttribute('placeholder') || '').substring(0, 50),
+                            name: (el.getAttribute('name') || '').substring(0, 50),
+                            aria_label: (el.getAttribute('aria-label') || '').substring(0, 50),
+                            tag: el.tagName.toLowerCase()
+                        });
+                        if (candidates.length >= 25) break;
+                    }
+                    return candidates;
+                }
+            """)
+            if not inputs_meta:
+                return None, None
+            
+            if llm:
+                prompt = (
+                    "Given the following candidate web inputs, identify the CSS selector of the main search input field.\\n"
+                    f"Inputs:\\n{json.dumps(inputs_meta, indent=2)}\\n\\n"
+                    'Reply ONLY with a JSON object: {"selector": "<css_selector>"} or {"selector": null}'
+                )
+                response = ""
+                try:
+                    if hasattr(llm, "aquery"):
+                        response = await llm.aquery(prompt)
+                    elif hasattr(llm, "generate"):
+                        response = await llm.generate(prompt)
+                    elif hasattr(llm, "ainvoke"):
+                        res = await llm.ainvoke(prompt)
+                        response = res.content if hasattr(res, "content") else str(res)
+                    elif callable(llm):
+                        response = str(llm(prompt))
+                except Exception as ex:
+                    logger.debug(f"LLM call in search discovery failed: {ex}")
+                
+                if response:
+                    match = re.search(r'\{[^{}]*"selector"\s*:\s*"([^"]+)"[^{}]*\}', response)
+                    if match:
+                        sel = match.group(1)
+                        if sel and sel != "null":
+                            el = await self.page.query_selector(sel)
+                            if el and await el.is_visible():
+                                return el, sel
+            
+            # Structural fallback: first search-typed or search-labeled input
+            for item in inputs_meta:
+                text_hints = (item.get("placeholder", "") + " " + item.get("aria_label", "") + " " + item.get("name", "")).lower()
+                if item.get("type") == "search" or any(w in text_hints for w in ["search", "szuk", "find", "query"]):
+                    sel = item.get("selector")
+                    if sel:
+                        el = await self.page.query_selector(sel)
+                        if el and await el.is_visible():
+                            return el, sel
+            
+            # As last resort, return first visible text input
+            if inputs_meta:
+                first_sel = inputs_meta[0].get("selector")
+                if first_sel:
+                    el = await self.page.query_selector(first_sel)
+                    if el and await el.is_visible():
+                        return el, first_sel
+        except Exception as e:
+            logger.debug(f"Error in _find_search_input_llm_fallback: {e}")
+        return None, None
+
+    async def _find_submit_button_llm_fallback(self, form_context: str = "form"):
+        """Find submit button using LLM discovery when standard finder fails."""
+        try:
+            llm = self._get_fallback_llm()
+            buttons_meta = await self.page.evaluate("""
+                () => {
+                    const candidates = [];
+                    const elements = document.querySelectorAll('button, input[type="submit"], [role="button"]');
+                    for (let idx = 0; idx < elements.length; idx++) {
+                        const el = elements[idx];
+                        const style = window.getComputedStyle(el);
+                        if (style.display === 'none' || style.visibility === 'hidden' || el.offsetParent === null) continue;
+                        
+                        let selector = '';
+                        if (el.id) selector = '#' + el.id;
+                        else if (el.name) selector = `[name="${el.name}"]`;
+                        else selector = `${el.tagName.toLowerCase()}:nth-of-type(${idx + 1})`;
+                        
+                        candidates.push({
+                            selector: selector,
+                            text: (el.innerText || el.value || '').trim().substring(0, 50),
+                            type: el.getAttribute('type') || '',
+                            tag: el.tagName.toLowerCase()
+                        });
+                        if (candidates.length >= 20) break;
+                    }
+                    return candidates;
+                }
+            """)
+            if not buttons_meta:
+                return None
+            
+            if llm:
+                prompt = (
+                    f"Given these candidate buttons for context '{form_context}', which CSS selector is the submit button?\\n"
+                    f"Buttons:\\n{json.dumps(buttons_meta, indent=2)}\\n\\n"
+                    'Reply ONLY with JSON: {"selector": "<css_selector>"} or {"selector": null}'
+                )
+                response = ""
+                try:
+                    if hasattr(llm, "aquery"):
+                        response = await llm.aquery(prompt)
+                    elif hasattr(llm, "generate"):
+                        response = await llm.generate(prompt)
+                    elif hasattr(llm, "ainvoke"):
+                        res = await llm.ainvoke(prompt)
+                        response = res.content if hasattr(res, "content") else str(res)
+                except Exception:
+                    pass
+                
+                if response:
+                    match = re.search(r'\{[^{}]*"selector"\s*:\s*"([^"]+)"[^{}]*\}', response)
+                    if match:
+                        sel = match.group(1)
+                        if sel and sel != "null":
+                            el = await self.page.query_selector(sel)
+                            if el and await el.is_visible():
+                                from .element_finder.finder.element_match import ElementMatch
+                                return ElementMatch(
+                                    selector=sel,
+                                    confidence=0.85,
+                                    reasoning="Discovered via LLM fallback",
+                                    element_type="button",
+                                    attributes={"selector": sel}
+                                )
+            
+            # Structural fallback
+            for item in buttons_meta:
+                if item.get("type") == "submit":
+                    from .element_finder.finder.element_match import ElementMatch
+                    return ElementMatch(
+                        selector=item["selector"],
+                        confidence=0.75,
+                        reasoning="Discovered submit type",
+                        element_type="button",
+                        attributes=item
+                    )
+        except Exception as e:
+            logger.debug(f"Error in _find_submit_button_llm_fallback: {e}")
+        return None
     
     async def execute(
         self,
@@ -113,9 +292,16 @@ class StepExecutor:
         """Fill search input and submit"""
         query = params.get("query", "")
         
-        self._log("step", f"  🔍 Finding search input using {'LLM' if self.llm else 'heuristics'}...")
+        has_llm = bool(self.llm or self._get_fallback_llm())
+        self._log("step", f"  🔍 Finding search input using {'LLM' if has_llm else 'heuristics'}...")
         
-        search_match = await self.element_finder.find_search_input()
+        search_match = None
+        if self.element_finder:
+            try:
+                search_match = await self.element_finder.find_search_input()
+            except Exception as e:
+                self._log("step", f"  Element finder error: {e}")
+        
         search_input = None
         
         if search_match and search_match.selector:
@@ -126,6 +312,22 @@ class StepExecutor:
                     await search_input.scroll_into_view_if_needed()
             except Exception as e:
                 self._log("step", f"  Selector failed: {e}")
+        
+        # Model-driven / vision search input discovery fallback
+        if not search_input:
+            self._log("step", "  🤖 Trying model-driven / vision search input discovery fallback...")
+            search_input, discovered_sel = await self._find_search_input_llm_fallback()
+            if search_input and discovered_sel:
+                self._log("step", f"  Discovered search input: {discovered_sel}")
+                if not search_match:
+                    from .element_finder.finder.element_match import ElementMatch
+                    search_match = ElementMatch(
+                        selector=discovered_sel,
+                        confidence=0.85,
+                        reasoning="Discovered via LLM/VLM discovery fallback",
+                        element_type="input",
+                        attributes={"selector": discovered_sel}
+                    )
         
         if search_input:
             await search_input.click()
@@ -143,7 +345,7 @@ class StepExecutor:
                 "query": query,
                 "filled": True,
                 "url": self.page.url,
-                "method": "llm" if self.llm else "heuristic",
+                "method": "llm" if has_llm else "heuristic",
                 "selector": search_match.selector if search_match else None
             }
         else:
@@ -303,9 +505,18 @@ class StepExecutor:
         wait_after = params.get("wait_after_ms", 2000)
         form_context = params.get("form_context", "form")
         
-        self._log("step", f"  🔍 Finding submit button using {'LLM' if self.llm else 'heuristics'}...")
+        has_llm = bool(self.llm or self._get_fallback_llm())
+        self._log("step", f"  🔍 Finding submit button using {'LLM' if has_llm else 'heuristics'}...")
         
-        button_match = await self.element_finder.find_submit_button(form_context)
+        button_match = None
+        if self.element_finder:
+            try:
+                button_match = await self.element_finder.find_submit_button(form_context)
+            except Exception as e:
+                self._log("step", f"  Submit finder error: {e}")
+        
+        if not (button_match and button_match.selector):
+            button_match = await self._find_submit_button_llm_fallback(form_context)
         
         if button_match and button_match.selector:
             self._log("step", f"  Found: {button_match.selector} (confidence: {button_match.confidence:.0%})")
@@ -317,7 +528,7 @@ class StepExecutor:
                     return {
                         "submitted": True,
                         "selector": button_match.selector,
-                        "method": "llm" if self.llm else "heuristic"
+                        "method": "llm" if has_llm else "heuristic"
                     }
             except Exception as e:
                 self._log("step", f"  Submit failed: {e}")
@@ -375,6 +586,19 @@ class StepExecutor:
             """)
             return {"pricing": pricing, "count": len(pricing), "method": "intelligent"}
         
+        elif extract_type in {"bql", "entities", "items"}:
+            entity_type = params.get("entity_type", "product")
+            from .atomic_functions import AtomicFunctionExecutor
+            atomic_exec = AtomicFunctionExecutor(self.page, llm=self._get_fallback_llm())
+            containers = await atomic_exec.find_containers(entity_type=entity_type)
+            items = []
+            for c in containers[:50]:
+                items.append({
+                    "text": c.get("preview_text", ""),
+                    "selector": c.get("selector")
+                })
+            return {"items": items, "count": len(items), "method": "atomic_model"}
+        
         else:
             content = await self.page.evaluate("() => document.body.innerText.slice(0, 5000)")
             return {"content": content}
@@ -396,7 +620,8 @@ class StepExecutor:
         page_text = await self.page.evaluate("() => document.body.innerText.substring(0, 3000)")
         
         # LLM-based verification if available
-        if self.llm:
+        llm = self._get_fallback_llm()
+        if llm:
             try:
                 prompt = f"""Analyze this webpage text after a form submission attempt.
 
@@ -411,7 +636,15 @@ Determine:
 Reply with exactly one line in format:
 RESULT: [SUCCESS|ERROR|SECURITY|UNKNOWN] - [brief reason]"""
 
-                response = await self.llm.aquery(prompt)
+                if hasattr(llm, "aquery"):
+                    response = await llm.aquery(prompt)
+                elif hasattr(llm, "generate"):
+                    response = await llm.generate(prompt)
+                elif hasattr(llm, "ainvoke"):
+                    res = await llm.ainvoke(prompt)
+                    response = res.content if hasattr(res, "content") else str(res)
+                else:
+                    response = str(llm(prompt))
                 response_text = response.strip().upper()
                 
                 if "SUCCESS" in response_text:

@@ -3,14 +3,14 @@
 
 ## Overview
 
-- **Project**: /home/tom/github/wronai/curllm
+- **Project**: /home/tom/github/autogrammar/curllm
 - **Primary Language**: python
-- **Languages**: python: 516, shell: 28, yaml: 13, json: 5, javascript: 5
+- **Languages**: python: 527, shell: 30, yaml: 14, json: 5, javascript: 5
 - **Analysis Mode**: static
-- **Total Functions**: 2552
-- **Total Classes**: 322
-- **Modules**: 585
-- **Entry Points**: 2043
+- **Total Functions**: 2484
+- **Total Classes**: 309
+- **Modules**: 600
+- **Entry Points**: 1967
 
 ## Architecture by Module
 
@@ -105,10 +105,10 @@
 - **Classes**: 1
 - **File**: `run_logger.py`
 
-### curllm_core.streamware.components.bql.parser
+### curllm_core.extraction_orchestrator.extraction_orchestrator
 - **Functions**: 18
-- **Classes**: 3
-- **File**: `parser.py`
+- **Classes**: 1
+- **File**: `extraction_orchestrator.py`
 
 ## Key Entry Points
 
@@ -167,6 +167,10 @@ Args:
 > Legacy log saving (fallback when package not available)
 - **Calls**: logger.info, open, f.write, f.write, f.write, f.write, f.write, result.command.replace
 
+### curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator._validate_rules
+> Validate against business rules
+- **Calls**: instruction.lower, re.search, re.search, any, any, ValidationCheck, int, isinstance
+
 ### curllm_core.dom_toolkit.orchestrator.task_router.ExtractionOrchestrator.extract
 > Main extraction pipeline with minimal LLM usage.
 
@@ -175,10 +179,6 @@ Args:
     instruction: User's extraction instruction
     use_llm_selection
 - **Calls**: self._log, task.get, task.get, self._log, self._log, self._log, self._log, self._log
-
-### curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator._validate_rules
-> Validate against business rules
-- **Calls**: instruction.lower, re.search, re.search, any, any, ValidationCheck, int, isinstance
 
 ### examples.detection.llm_heuristics_example.main
 > Example: Discover heuristics for any e-commerce site
@@ -230,18 +230,18 @@ Args:
 Uses dom_helpers module for efficient, reusable operations.
 - **Calls**: criteria.get, criteria.get, criteria.get, candidates.sort, set, sorted, self._atomic_extract_links, None.lower
 
-### pricing.app.api_compare_stream
-> Streaming API endpoint for price comparison with real-time logs.
-
-Uses Server-Sent Events (SSE) to stream progress updates.
-- **Calls**: app.route, request.get_json, data.get, data.get, data.get, data.get, Response, pricing.app.get_comparator
-
 ### curllm_core.orchestration.orchestrator.orchestrator.Orchestrator._execute_with_captcha_handling
 > Execute plan in visible mode with CAPTCHA handling.
 
 Opens visible browser, navigates to form, and waits for user
 to solve CAPTCHA before continuing.
 - **Calls**: OrchestratorResult, self._log, enumerate, self._log, self._log, self._log, self._log, self._log
+
+### pricing.app.api_compare_stream
+> Streaming API endpoint for price comparison with real-time logs.
+
+Uses Server-Sent Events (SSE) to stream progress updates.
+- **Calls**: app.route, request.get_json, data.get, data.get, data.get, data.get, Response, pricing.app.get_comparator
 
 ### curllm_core.orchestrators.live.LiveInteractionOrchestrator._parse_single_action
 > Parse a single action from text
@@ -254,8 +254,14 @@ to solve CAPTCHA before continuing.
 ### curllm_core.wordpress.WordPressAutomation._create_gutenberg_post
 - **Calls**: self.page.locator, content.split, title_input.first.click, title_input.first.fill, self.page.keyboard.press, paragraph.strip, self.page.locator, self.run_logger.log_text
 
-### curllm_core.planner_progress.progress_tick
-- **Calls**: page_context.get, page_context.get, len, len, int, page_context.get, page_context.get, min
+### forms.app.api_bulk_stream
+> Streaming API for bulk form filling with real-time logs.
+
+Request body:
+{
+    "urls": ["url1", "url2", ...],
+    "data": {"field1": "value1", "field2"
+- **Calls**: app.route, request.get_json, data.get, data.get, data.get, data.get, Response, forms.app.get_filler
 
 ## Process Flows
 
@@ -326,9 +332,9 @@ batch_create_posts [wordpress_batch]
 _save_log_legacy [curllm_core.orchestration.orchestrator.orchestrator.Orchestrator]
 ```
 
-### Flow 10: extract
+### Flow 10: _validate_rules
 ```
-extract [curllm_core.dom_toolkit.orchestrator.task_router.ExtractionOrchestrator]
+_validate_rules [curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator]
 ```
 
 ## Key Classes
@@ -427,15 +433,6 @@ Usage:
 - **Methods**: 18
 - **Key Methods**: curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator.__init__, curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator.register_custom_validator, curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator.validate, curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator._validate_structural, curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator._validate_rules, curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator._validate_schema, curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator._validate_dom_diff, curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator._validate_visual, curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator._validate_semantic, curllm_core.validation.task_validator.task_validator.task_validator.TaskValidator._calculate_overall_score
 
-### curllm_core.streamware.components.bql.parser.BQLParser
-> Parser for Browser Query Language.
-
-Supports:
-- GraphQL-like query syntax
-- Mutation blocks for acti
-- **Methods**: 17
-- **Key Methods**: curllm_core.streamware.components.bql.parser.BQLParser.__init__, curllm_core.streamware.components.bql.parser.BQLParser.parse, curllm_core.streamware.components.bql.parser.BQLParser._preprocess, curllm_core.streamware.components.bql.parser.BQLParser._tokenize, curllm_core.streamware.components.bql.parser.BQLParser._match, curllm_core.streamware.components.bql.parser.BQLParser._consume, curllm_core.streamware.components.bql.parser.BQLParser._parse_query_block, curllm_core.streamware.components.bql.parser.BQLParser._parse_mutation_block, curllm_core.streamware.components.bql.parser.BQLParser._parse_operation, curllm_core.streamware.components.bql.parser.BQLParser._parse_action
-
 ### curllm_core.orchestrators.social.SocialMediaOrchestrator
 > Specialized orchestrator for social media automation.
 
@@ -447,11 +444,6 @@ Features:
 ### curllm_core.bql.bql_parser.BQLParser
 - **Methods**: 17
 - **Key Methods**: curllm_core.bql.bql_parser.BQLParser.__init__, curllm_core.bql.bql_parser.BQLParser.parse, curllm_core.bql.bql_parser.BQLParser._preprocess, curllm_core.bql.bql_parser.BQLParser._tokenize, curllm_core.bql.bql_parser.BQLParser._match, curllm_core.bql.bql_parser.BQLParser._consume, curllm_core.bql.bql_parser.BQLParser._parse_query_block, curllm_core.bql.bql_parser.BQLParser._parse_mutation_block, curllm_core.bql.bql_parser.BQLParser._parse_operation, curllm_core.bql.bql_parser.BQLParser._parse_action
-
-### bql.parser.bql_parser.BQLParser
-> Parser for Browser Query Language
-- **Methods**: 17
-- **Key Methods**: bql.parser.bql_parser.BQLParser.__init__, bql.parser.bql_parser.BQLParser.parse, bql.parser.bql_parser.BQLParser._preprocess, bql.parser.bql_parser.BQLParser._tokenize, bql.parser.bql_parser.BQLParser._match, bql.parser.bql_parser.BQLParser._consume, bql.parser.bql_parser.BQLParser._parse_query_block, bql.parser.bql_parser.BQLParser._parse_mutation_block, bql.parser.bql_parser.BQLParser._parse_operation, bql.parser.bql_parser.BQLParser._parse_action
 
 ### scripts.dev_watcher.DevWatcher
 > Development file watcher with auto-reload capabilities
@@ -467,9 +459,35 @@ Example:
 - **Methods**: 16
 - **Key Methods**: functions.safety.validate.InputValidator.__init__, functions.safety.validate.InputValidator.validate, functions.safety.validate.InputValidator.not_none, functions.safety.validate.InputValidator.is_string, functions.safety.validate.InputValidator.not_empty, functions.safety.validate.InputValidator.min_length, functions.safety.validate.InputValidator.max_length, functions.safety.validate.InputValidator.matches, functions.safety.validate.InputValidator.not_matches, functions.safety.validate.InputValidator.is_numeric
 
+### curllm_core.streamware.components.extraction.llm_extractor.LLMIterativeExtractor
+> Pure LLM-based iterative product extraction.
+
+Every decision is made by LLM, no regex or hardcoded p
+- **Methods**: 15
+- **Key Methods**: curllm_core.streamware.components.extraction.llm_extractor.LLMIterativeExtractor.__init__, curllm_core.streamware.components.extraction.llm_extractor.LLMIterativeExtractor._log, curllm_core.streamware.components.extraction.llm_extractor.LLMIterativeExtractor.run, curllm_core.streamware.components.extraction.llm_extractor.LLMIterativeExtractor._step_analyze_page, curllm_core.streamware.components.extraction.llm_extractor.LLMIterativeExtractor._step_find_containers, curllm_core.streamware.components.extraction.llm_extractor.LLMIterativeExtractor._step_detect_fields, curllm_core.streamware.components.extraction.llm_extractor.LLMIterativeExtractor._step_extract_products, curllm_core.streamware.components.extraction.llm_extractor.LLMIterativeExtractor._extract_single_product, curllm_core.streamware.components.extraction.llm_extractor.LLMIterativeExtractor._parse_price_with_llm, curllm_core.streamware.components.extraction.llm_extractor.LLMIterativeExtractor._step_filter_products
+
+### curllm_core.orchestrators.extraction.ExtractionOrchestrator
+> Specialized orchestrator for data extraction tasks.
+
+Workflow:
+1. Detect extraction type from instru
+- **Methods**: 15
+- **Key Methods**: curllm_core.orchestrators.extraction.ExtractionOrchestrator.__init__, curllm_core.orchestrators.extraction.ExtractionOrchestrator.orchestrate, curllm_core.orchestrators.extraction.ExtractionOrchestrator._detect_extraction_type, curllm_core.orchestrators.extraction.ExtractionOrchestrator._parse_constraints, curllm_core.orchestrators.extraction.ExtractionOrchestrator._needs_scroll, curllm_core.orchestrators.extraction.ExtractionOrchestrator._scroll_page, curllm_core.orchestrators.extraction.ExtractionOrchestrator._extract_products, curllm_core.orchestrators.extraction.ExtractionOrchestrator._extract_links, curllm_core.orchestrators.extraction.ExtractionOrchestrator._extract_articles, curllm_core.orchestrators.extraction.ExtractionOrchestrator._extract_emails
+
 ## Data Transformation Functions
 
 Key functions that process and transform data:
+
+### examples.detection.atomic_query_example.example_multi_format_export
+> Example 4: Export to multiple formats
+- **Output to**: monitoring.website_monitor.print, monitoring.website_monitor.print, DataExporter, Path, output_dir.mkdir
+
+### examples.url_resolver.example_complete_flow.parse_command
+> Parsuje polecenie użytkownika i wyciąga:
+- domenę
+- cel (kontakt, formularz, etc.)
+- dane do wypełni
+- **Output to**: command.lower, re.search, re.search, any, re.search
 
 ### examples_streamware.example_5_multi_format_export
 > Example 5: Extract data and export in multiple formats
@@ -489,25 +507,10 @@ New: Advanced pattern for batch operations
 New: Multiple transformations in sequence
 - **Output to**: monitoring.website_monitor.print, None.run, monitoring.website_monitor.print, None.with_data, curllm_core.streamware.flow.flow
 
-### examples.detection.atomic_query_example.example_multi_format_export
-> Example 4: Export to multiple formats
-- **Output to**: monitoring.website_monitor.print, monitoring.website_monitor.print, DataExporter, Path, output_dir.mkdir
-
 ### captcha.playwright_bql_framework._parse_actions_from_llm
 > Robustly parse a JSON array of action dicts from an LLM output string or list.
 - Accepts list direct
 - **Output to**: isinstance, curllm_server.executor.curllm_executor.CurllmExecutor._strip_fences, enumerate, isinstance, s.strip
-
-### examples.url_resolver.example_complete_flow.parse_command
-> Parsuje polecenie użytkownika i wyciąga:
-- domenę
-- cel (kontakt, formularz, etc.)
-- dane do wypełni
-- **Output to**: command.lower, re.search, re.search, any, re.search
-
-### curllm_core.llm_guided_extractor.LLMGuidedExtractor._parse_prices_with_llm
-> Parse prices using LLM - NO REGEX
-- **Output to**: isinstance, p.get, json.dumps, self.llm.ainvoke, response.find
 
 ### curllm_core.runtime.parse_runtime_from_instruction
 > Extract runtime params from JSON-like instruction.
@@ -556,6 +559,10 @@ Returns list of validation results for each product.
 > Format product data for LLM analysis
 - **Output to**: None.join, parts.append, product.get, parts.append, parts.append
 
+### curllm_core.llm_guided_extractor.LLMGuidedExtractor._parse_prices_with_llm
+> Parse prices using LLM - NO REGEX
+- **Output to**: isinstance, p.get, json.dumps, self.llm.ainvoke, response.find
+
 ### curllm_core.instruction_parser.InstructionParser.parse
 > Parse instruction into structured criteria
 
@@ -577,6 +584,17 @@ Returns:
 > Generate human-readable summary of criteria
 - **Output to**: None.join, parts.append, parts.append, parts.append, parts.append
 
+### scripts.dev_watcher.DevWatcher.process_changes
+> Process detected changes
+- **Output to**: changes.items, None.append, self.handle_source_change, self.handle_dependency_change, self.handle_config_change
+
+### curllm_core.iterative_extractor.IterativeExtractor._validate_results
+> Validate extracted results against instruction criteria.
+
+Checks:
+1. Products have required fields (
+- **Output to**: set, enumerate, None.strip, product.get, any
+
 ### curllm_core.error_handler.format_user_friendly_error
 > Convert technical error to user-friendly message.
 
@@ -593,22 +611,12 @@ Args:
     context: Additional context
 - **Output to**: curllm_core.error_handler.format_user_friendly_error, None.join, lines.insert
 
-### curllm_core.iterative_extractor.IterativeExtractor._validate_results
-> Validate extracted results against instruction criteria.
+### curllm_core.semantic_query.SemanticQueryEngine.parse_natural_language
+> Convert natural language instruction to structured SemanticQuery.
 
-Checks:
-1. Products have required fields (
-- **Output to**: set, enumerate, None.strip, product.get, any
-
-### curllm_core.atomic_functions.AtomicFunctionExecutor._transform_value
-> Transform extracted value according to type and transform spec
-- **Output to**: self._extract_price, float, value.startswith, self._extract_url, re.sub
-
-### curllm_core.atomic_functions.AtomicFunctionExecutor.validate_entities
-> Validate extracted entities against field specifications.
-
-Returns only entities that pass validatio
-- **Output to**: self._log, validated.append, entity.get, len, len
+Example:
+    "Find products under
+- **Output to**: response.get, text.find, text.rfind, page_context.get, self.llm.ainvoke
 
 ## Behavioral Patterns
 
@@ -676,16 +684,16 @@ Functions exposed as public API (no underscore prefix):
 - `curllm_core.url_resolution.resolver.UrlResolver.resolve` - 44 calls
 - `pricing.app.api_compare_stream` - 43 calls
 - `curllm_core.vision_form_analysis.analyze_form_fields_vision` - 42 calls
+- `curllm_mcp.testql_export.build_testql_scenario_text` - 42 calls
 - `scripts.find_hardcoded.generate_report` - 41 calls
 - `captcha.allegro_captcha_solver.main` - 40 calls
 - `curllm_core.progressive_context.build_progressive_context` - 40 calls
 - `examples.url_resolver.example_complete_flow.execute_command` - 39 calls
-- `curllm_core.planner_progress.progress_tick` - 39 calls
 - `forms.app.api_bulk_stream` - 39 calls
-- `examples.orchestration.semantic_query_example.example_semantic_vs_monolithic` - 37 calls
+- `curllm_core.planner_progress.progress_tick` - 39 calls
 - `examples.llm-providers.multi_provider_benchmark.run_benchmark` - 37 calls
+- `examples.orchestration.semantic_query_example.example_semantic_vs_monolithic` - 37 calls
 - `examples.benchmark_providers` - 36 calls
-- `scripts.fix_missing_loggers.fix_missing_logger` - 36 calls
 
 ## System Interactions
 

@@ -69,6 +69,7 @@ py-modules = ["curllm_server", "bql_parser", "curllm_web"]
 include = ["curllm_core*", "curllm_logs*", "curllm_mcp*", "functions*"]
 
 [tool.pytest.ini_options]
+addopts = "-p wellmanifest_governance"
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 markers = [
@@ -102,3 +103,8 @@ dev = [
     "goal>=2.1.0",
     "costs>=0.1.20",
 ]
+
+[tool.wellmanifest]
+standard = "0.20.35"
+revision = "cfaa0bf0ea6b0e7349fed0bb62b5ce15792d687d"
+gate = "project/governance-check.sh"

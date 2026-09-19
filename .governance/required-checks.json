@@ -1,0 +1,15 @@
+{
+  "repository": "autogrammar/curllm",
+  "requiredChecks": [
+    {
+      "name": "governance / remote lifecycle",
+      "workflowFile": ".github/workflows/new-project-governance.yml"
+    },
+    {
+      "name": "governance / enforce",
+      "workflowFile": ".github/workflows/new-project-governance.yml"
+    }
+  ],
+  "schema": "new-project.required-checks/v1",
+  "version": 1
+}

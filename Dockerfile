@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.11-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
 
 # Install minimal system dependencies; Playwright will install browser deps
 RUN apt-get update && apt-get install -y \

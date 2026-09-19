@@ -1,0 +1,269 @@
+{
+  "$schema": "./manifest.schema.json",
+  "approvalEvidence": {
+    "requiredBindings": [
+      "repository",
+      "pullRequest",
+      "headSha",
+      "ticket",
+      "actor"
+    ],
+    "reviewVerificationMethod": "github-api-allowlist",
+    "schema": "new-project.approval-evidence/v1",
+    "signedAttestationPredicateType": "https://wellmanifest.com/attestations/validator/v1"
+  },
+  "coordination": {
+    "integration": {
+      "requiredForPaths": [
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "yarn.lock",
+        "uv.lock",
+        "poetry.lock",
+        "go.sum",
+        "Cargo.lock",
+        "operations/**",
+        "events/**",
+        "error/**",
+        "models/**",
+        "proto/**"
+      ],
+      "workstream": "integration"
+    },
+    "maxActiveTicketsPerWorkstream": 3,
+    "mode": "workstreams",
+    "rejectActiveScopeOverlap": true,
+    "workstreams": {
+      "application": {
+        "ownedPaths": [
+          "src/**",
+          "app/**",
+          "lib/**",
+          "packages/**",
+          "test/**",
+          "tests/**"
+        ]
+      },
+      "governance": {
+        "ownedPaths": [
+          ".aider.conf.yml",
+          ".cursor/rules/**",
+          ".githooks/**",
+          ".github/copilot-instructions.md",
+          ".github/workflows/new-project-governance.yml",
+          ".gitignore",
+          ".governance/**",
+          ".subactor/**",
+          "AGENTS.md",
+          "CLAUDE.md",
+          "GEMINI.md",
+          "README.md",
+          "TODO.md",
+          "CHANGELOG.md",
+          ".env.example",
+          "goal.yaml",
+          "project.sh",
+          "project.bat",
+          "project/**",
+          "scripts/install-agent-hosts.sh",
+          "scripts/runtime.sh",
+          "wellmanifest_governance.py",
+          "worktree-guard.yaml",
+          "pyproject.toml",
+          "package.json",
+          "scripts/**",
+          ".cursor/**",
+          ".gitattributes",
+          ".github/**",
+          "project/new-ticket.sh",
+          "project/governance-check.*",
+          "project/TICKETS.md",
+          "project/ticket-*/**",
+          "Dockerfile*",
+          "compose*.yml",
+          "compose*.yaml",
+          "compose*.y*ml",
+          "docker-compose*.y*ml",
+          "docker-compose*.yml"
+        ]
+      },
+      "infrastructure": {
+        "ownedPaths": [
+          "Dockerfile*",
+          "compose*.yml",
+          "compose*.yaml",
+          "infra/**"
+        ]
+      },
+      "integration": {
+        "ownedPaths": [
+          "VERSION",
+          "package.json",
+          "package-lock.json",
+          "pnpm-lock.yaml",
+          "yarn.lock",
+          "pyproject.toml",
+          "uv.lock",
+          "poetry.lock",
+          "go.mod",
+          "go.sum",
+          "Cargo.toml",
+          "Cargo.lock",
+          "pom.xml",
+          "docs/**",
+          "operations/**",
+          "events/**",
+          "error/**",
+          "models/**",
+          "proto/**"
+        ]
+      },
+      "interfaces": {
+        "ownedPaths": [
+          "api/**",
+          "sdk/**",
+          "clients/**"
+        ]
+      }
+    }
+  },
+  "delivery": {
+    "allowedComplexityClasses": [
+      "XS",
+      "S",
+      "M",
+      "L"
+    ],
+    "checkpointMinutes": 30,
+    "dependencyManifestPaths": [
+      "package.json",
+      "package-lock.json",
+      "pnpm-lock.yaml",
+      "yarn.lock",
+      "pyproject.toml",
+      "uv.lock",
+      "poetry.lock",
+      "go.mod",
+      "go.sum",
+      "Cargo.toml",
+      "Cargo.lock",
+      "pom.xml"
+    ],
+    "maxActiveMinutes": 120,
+    "maxAffectedComponents": 5,
+    "maxImplementationFiles": 15,
+    "maxPublicInterfaceChanges": 3,
+    "maxRuntimeDependencies": 3,
+    "profiles": {
+      "L": {
+        "maxAffectedComponents": 5,
+        "maxImplementationFiles": 15,
+        "maxPublicInterfaceChanges": 3,
+        "maxRuntimeDependencies": 3
+      },
+      "M": {
+        "maxAffectedComponents": 3,
+        "maxImplementationFiles": 9,
+        "maxPublicInterfaceChanges": 2,
+        "maxRuntimeDependencies": 2
+      },
+      "S": {
+        "maxAffectedComponents": 2,
+        "maxImplementationFiles": 5,
+        "maxPublicInterfaceChanges": 1,
+        "maxRuntimeDependencies": 1
+      },
+      "XS": {
+        "maxAffectedComponents": 1,
+        "maxImplementationFiles": 2,
+        "maxPublicInterfaceChanges": 0,
+        "maxRuntimeDependencies": 0
+      }
+    },
+    "publicInterfacePaths": [
+      "api/**",
+      "sdk/**",
+      "src/public/**"
+    ],
+    "requiredForImplementation": false,
+    "targetBranches": [
+      "main"
+    ]
+  },
+  "docker": {
+    "composeFiles": [
+      "compose.yml",
+      "compose.yaml",
+      "docker-compose.yml",
+      "docker-compose.yaml",
+      "compose.e2e.yml"
+    ],
+    "dockerfiles": [
+      "Dockerfile",
+      "Dockerfile.e2e"
+    ],
+    "required": false
+  },
+  "domainContracts": {
+    "mode": "none"
+  },
+  "governancePaths": [
+    "TODO.md",
+    "project/TICKETS.md",
+    "project/ticket-*/**",
+    ".governance/standard-adoption.json",
+    "config/artifact-registry.json"
+  ],
+  "repository": {
+    "componentRoots": [],
+    "mode": "standalone"
+  },
+  "requiredFiles": [
+    "README.md",
+    "VERSION",
+    "CHANGELOG.md",
+    "TODO.md",
+    "AGENTS.md",
+    "project/TICKETS.md",
+    "project/new-ticket.sh",
+    "project/readme.sh"
+  ],
+  "schema": "new-project.governance/v2",
+  "stacks": [],
+  "standard": {
+    "id": "wellmanifest/new-project",
+    "version": "0.20.35"
+  },
+  "ticket": {
+    "activeStatuses": [
+      "IN_PROGRESS"
+    ],
+    "closedStatuses": [
+      "DONE",
+      "CANCELLED"
+    ],
+    "directoryPattern": "^ticket-[0-9]{3,}$",
+    "implementationStates": [
+      "EDIT",
+      "VALIDATION",
+      "PUBLICATION"
+    ],
+    "intentFile": "intent.json",
+    "nonActiveStatuses": [
+      "BACKLOG",
+      "PLAN",
+      "BLOCKED"
+    ],
+    "requiredAgentFiles": [],
+    "requiredFiles": [
+      "README.md",
+      "intent.json"
+    ],
+    "root": "project"
+  },
+  "trustedApprovalSources": [
+    "github-review",
+    "github-app-review",
+    "signed-attestation"
+  ]
+}

@@ -1,7 +1,7 @@
 services:
   # Browserless Chrome with stealth mode and BQL support
   browserless:
-    image: browserless/chrome:latest
+    image: browserless/chrome:latest@sha256:23ce9dcf631f34c55649fcfcad8d6713a402c759c0f4aea5e75e1b2a8a386b1a
     container_name: curllm_browserless
     restart: unless-stopped
     ports:
@@ -46,7 +46,7 @@ services:
 
   # Ollama service for local LLM
   ollama:
-    image: ollama/ollama:latest
+    image: ollama/ollama:latest@sha256:b55ab6b9df99781186bb6cd909b5a379e7eb707f86556bb7c68542daefa9e5c7
     container_name: curllm_ollama
     restart: unless-stopped
     ports:
@@ -73,7 +73,7 @@ services:
 
   # Redis for caching and session management
   redis:
-    image: redis:alpine
+    image: redis:alpine@sha256:60bf1752561c4ac1dbcd036a1e395409766a02d8d60e2e92aed14d458395241a
     container_name: curllm_redis
     restart: unless-stopped
     ports:

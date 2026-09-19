@@ -1,0 +1,70 @@
+{
+  "$schema": "../../.governance/intent.schema.json",
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-001",
+  "workstream": "governance",
+  "classification": {
+    "workType": "standard-adoption"
+  },
+  "allowedPaths": [
+    "**"
+  ],
+  "forbiddenPaths": [
+    ".env",
+    ".env.*"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "1f5b08dd32fdb98f556c6896f0708ce233ca76e3",
+    "targetBranch": "main",
+    "outcome": "Adopt wellmanifest/new-project 0.20.35.",
+    "nonGoals": [
+      "No production logic modifications"
+    ],
+    "complexity": "L",
+    "estimatedMinutes": 45,
+    "standardAdoption": {
+      "sourceRepository": "wellmanifest/new-project",
+      "fromRevision": null,
+      "toRevision": "cfaa0bf0ea6b0e7349fed0bb62b5ce15792d687d"
+    },
+    "budgets": {
+      "maxImplementationFiles": 15,
+      "maxAffectedComponents": 5,
+      "maxPublicInterfaceChanges": 3,
+      "maxRuntimeDependencies": 3
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Adopt governance standards 0.20.35.",
+      "components": [
+        {
+          "name": "governance",
+          "paths": [
+            "**"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "git revert"
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "command": "bash project/governance-check.sh",
+        "purpose": "Verify governance compliance",
+        "verifies": "governance"
+      }
+    ]
+  }
+}

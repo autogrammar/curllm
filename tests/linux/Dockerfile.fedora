@@ -1,5 +1,5 @@
 # Fedora Test Environment for curllm
-FROM fedora:39
+FROM fedora:39@sha256:d539ac1be7869775c73980e571eea4cf44ca33068a04b96f9b1244c344164933
 
 ENV PYTHONUNBUFFERED=1
 

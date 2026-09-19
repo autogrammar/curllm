@@ -1,7 +1,7 @@
 services:
   # Test web server with sample pages
   test-webserver:
-    image: nginx:alpine
+    image: nginx:alpine@sha256:83075afea33660ca1911ce1905dee384079ed856397e0e5a9249435b22c35dc8
     volumes:
       - ./tests/test_pages:/usr/share/nginx/html:ro
     # No host port mapping - tests access via internal Docker network
@@ -12,7 +12,7 @@ services:
 
   # Mock Ollama server for testing
   mock-ollama:
-    image: python:3.11-slim
+    image: python:3.11-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
     command: sh -c "pip install --quiet flask && python /app/mock_ollama_server.py"
     volumes:
       - ./tests/mocks:/app:ro

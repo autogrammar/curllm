@@ -1,5 +1,5 @@
 # Debian Test Environment for curllm
-FROM debian:12
+FROM debian:12@sha256:3be3c43cd7ee541bb601f8131132ed025ff97406130f73774fe3ffcf6ee8b86d
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1

@@ -1,0 +1,7 @@
+{
+  "schema": "wellmanifest.docs/adoption/v1",
+  "repository": "autogrammar/curllm",
+  "standard": "wellmanifest/docs",
+  "source_revision": "aa92136b4e94f48355c39fb206286aba024c6aa4",
+  "policy_sha256": "af5fde2d52e1c292e569cd47a4068f0e42181a8f8fb9fc21737a569bee9a206f"
+}

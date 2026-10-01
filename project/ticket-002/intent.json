@@ -1,0 +1,94 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-002",
+  "summary": "Adopt pinned Wellman requirements and Docs validation",
+  "workstream": "governance",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-002/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    ".github/workflows/wellman.yml",
+    ".governance/docs.json",
+    ".governance/local-ci-publication.json",
+    ".governance/standard-requirements.json",
+    "scripts/check-wellman.py"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "2b20dbbb7c6adf857b632b85b7f8ce7829851c9d",
+    "targetBranch": "main",
+    "outcome": "Register pinned Wellman requirements and repository-bound Docs adoption; enforce metadata validation in CI without replacing existing governance.",
+    "nonGoals": [
+      "No product source changes",
+      "No bypass of protected publication",
+      "No claim of unimplemented S3-S5 conformance"
+    ],
+    "complexity": "M",
+    "estimatedMinutes": 45,
+    "budgets": {
+      "maxImplementationFiles": 9,
+      "maxAffectedComponents": 3,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 1
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Compose the published Wellman runtime with the existing pinned new-project gate. Validate exact dependency-free Wellman source revision 58d7ae1ba768ead256e0e9a05fd641a0d8faec28 through Python -S; verify the source SHA and avoid floating pip build dependencies.",
+      "components": [
+        {
+          "name": "governance",
+          "paths": [
+            ".governance/**",
+            "scripts/check-wellman.py",
+            ".github/workflows/wellman.yml"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [
+        {
+          "kind": "component-local-state",
+          "component": "governance",
+          "description": "Repository-bound requirements and Docs metadata; no application data migration."
+        }
+      ],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Revert the adoption commit; preserve existing immutable governance pin."
+    },
+    "runtimeDependencies": [
+      "wellman@58d7ae1ba768ead256e0e9a05fd641a0d8faec28"
+    ],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "python -S scripts/check-wellman.py"
+        ],
+        "evidence": "No Wellman errors; registration is idempotent and Docs metadata validates."
+      },
+      {
+        "criterion": "AC-02",
+        "commands": [
+          "bash project/governance-check.sh --actor agent"
+        ],
+        "evidence": "Existing managed gate accepts the scoped adoption."
+      }
+    ]
+  }
+}

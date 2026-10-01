@@ -11,12 +11,24 @@ permissions:
 jobs:
   metadata:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.12"
-      - name: Install immutable Wellman runtime
-        run: python -m pip install 'wellman @ git+https://github.com/wellmanifest/wellman.git@747eff3c5c6d435eed64c6635c4663a79e163635'
+      - name: Check out dependency-free Wellman source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: wellmanifest/wellman
+          ref: 58d7ae1ba768ead256e0e9a05fd641a0d8faec28
+          path: .wellman-runtime
+          persist-credentials: false
+      - name: Verify the Wellman source revision
+        run: test "$(git -C .wellman-runtime rev-parse HEAD)" = '58d7ae1ba768ead256e0e9a05fd641a0d8faec28'
       - name: Validate adopted requirements and Docs metadata
-        run: python scripts/check-wellman.py
+        env:
+          PYTHONPATH: ${{ github.workspace }}/.wellman-runtime/src
+        run: python -S scripts/check-wellman.py

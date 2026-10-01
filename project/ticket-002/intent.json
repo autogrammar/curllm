@@ -44,7 +44,7 @@
     },
     "architecture": {
       "status": "accepted",
-      "decision": "Compose the published Wellman runtime with the existing pinned new-project gate.",
+      "decision": "Compose the published Wellman runtime with the existing pinned new-project gate. Validate exact dependency-free Wellman source revision 58d7ae1ba768ead256e0e9a05fd641a0d8faec28 through Python -S; verify the source SHA and avoid floating pip build dependencies.",
       "components": [
         {
           "name": "governance",
@@ -72,13 +72,13 @@
       "rollback": "Revert the adoption commit; preserve existing immutable governance pin."
     },
     "runtimeDependencies": [
-      "wellman@0.20.37"
+      "wellman@58d7ae1ba768ead256e0e9a05fd641a0d8faec28"
     ],
     "validation": [
       {
         "criterion": "AC-01",
         "commands": [
-          "python scripts/check-wellman.py"
+          "python -S scripts/check-wellman.py"
         ],
         "evidence": "No Wellman errors; registration is idempotent and Docs metadata validates."
       },

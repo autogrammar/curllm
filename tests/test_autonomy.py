@@ -172,7 +172,9 @@ def test_concurrent_cycle_cannot_run_probe(tmp_path):
 
 
 @pytest.mark.parametrize("output", ['{"success":false}', '{"success":true,"errors":["bad"]}',
-                                  '{"success":true,"failed":1}', '{"status":"ok"}', 'not json'])
+                                  '{"success":true,"failed":1}', '{"status":"ok"}', 'not json',
+                                  '{"success":true,"status":[]}', '{"success":true,"status":{}}',
+                                  '{"success":true,"status":0}', '{"success":true,"status":false}'])
 def test_semantic_failure_with_zero_exit(output, tmp_path):
     spec = {"argv": [sys.executable, "-c", f"print({output!r})"], "oracle": "json"}
     result = run_command(spec, tmp_path)

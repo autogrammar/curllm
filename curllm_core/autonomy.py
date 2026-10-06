@@ -151,11 +151,13 @@ def run_command(spec: dict, repository: Path) -> dict:
     if ok and spec.get("oracle", "exit") == "json":
         try:
             result = json.loads(raw)
+            status = result.get("status") if isinstance(result, dict) else None
             # A zero exit code does not prove the application's semantic result.
             ok = (isinstance(result, dict) and result.get("success") is True
                   and not result.get("error") and not result.get("errors")
                   and not result.get("failed")
-                  and result.get("status") not in {"failed", "error"})
+                  and (status is None or (isinstance(status, str)
+                                         and status not in {"failed", "error"})))
         except (ValueError, UnicodeError):
             ok = False
         code = "passed" if ok else "semantic_failed"

@@ -41,7 +41,11 @@
           "lib/**",
           "packages/**",
           "test/**",
-          "tests/**"
+          "tests/**",
+          "curllm_core/**",
+          "curllm_mcp/**",
+          "curllm_server/**",
+          "functions/**"
         ]
       },
       "governance": {

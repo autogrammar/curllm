@@ -1,0 +1,108 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-006",
+  "summary": "Continuous diagnostics and verified autonomy runtime",
+  "workstream": "application",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-006/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "curllm_core/autonomy.py",
+    "curllm_core/cli/autonomy.py",
+    "tests/test_autonomy.py"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [
+    "ticket-005"
+  ],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "fe6c772c9b80e51a99eb27f4a391cfb209d1bf0b",
+    "targetBranch": "main",
+    "outcome": "Publish and deploy continuous bounded curllm probes, durable incident deduplication, verified operator-authorized repair and Planfile handoff for protected development (STARTER-019).",
+    "nonGoals": [
+      "No self-authorized source changes or review bypass",
+      "No edits to reference repositories",
+      "No interaction with user browser pages"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 50,
+    "budgets": {
+      "maxImplementationFiles": 3,
+      "maxAffectedComponents": 2,
+      "maxPublicInterfaceChanges": 1,
+      "maxRuntimeDependencies": 1
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Use operator-owned configuration, serialized SQLite incident/outbox state, explicit argv probes and repairs, effect verification, and optional Planfile intake; source development stays with the protected controller.",
+      "components": [
+        {
+          "name": "autonomy-runtime",
+          "paths": [
+            "curllm_core/autonomy.py",
+            "tests/test_autonomy.py"
+          ]
+        },
+        {
+          "name": "operator-cli",
+          "paths": [
+            "curllm_core/cli/autonomy.py"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [
+        "Add python -m curllm_core.cli.autonomy cycle/status"
+      ],
+      "dataChanges": [
+        {
+          "kind": "component-local-state",
+          "component": "autonomy-runtime",
+          "description": "New private incident database and event log owned by this monitor; no existing state or responsibility is migrated."
+        }
+      ],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Disable deployed timer and revert feature commit."
+    },
+    "runtimeDependencies": [
+      "planfile (optional installed intake adapter)"
+    ],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "python -m pytest tests/test_autonomy.py -q"
+        ],
+        "evidence": "Dedupe, backoff, semantic failures, recovery, crashes and verified repairs tested."
+      },
+      {
+        "criterion": "AC-02",
+        "commands": [
+          "python -m pytest tests/test_browser_control.py tests/test_curllm_compat.py -q"
+        ],
+        "evidence": "Existing browser control and MCP protocol remain functional."
+      },
+      {
+        "criterion": "AC-03",
+        "commands": [
+          "bash project/governance-check.sh --actor agent"
+        ],
+        "evidence": "Native governance passes and CLI cycle/status retain evidence."
+      }
+    ]
+  }
+}

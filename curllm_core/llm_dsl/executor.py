@@ -84,21 +84,18 @@ class DSLExecutor:
             
             try:
                 result = await self.execute_query(query)
-                results[query_id] = result
-                
                 if not result.success:
-                    errors.append(f"{query.function}: No result")
-                    
                     # Try to refine and retry
                     refined = await self.generator.refine_query(
                         query, 
                         f"Function returned no result"
                     )
                     if refined:
-                        retry_result = await self.execute_query(refined)
-                        if retry_result.success:
-                            results[query_id] = retry_result
-                            errors.pop()  # Remove error if retry succeeded
+                        result = await self.execute_query(refined)
+
+                results[query_id] = result
+                if not result.success:
+                    errors.append(f"{query.function}: No result")
                             
             except Exception as e:
                 error_msg = f"{query.function}: {str(e)}"
@@ -106,7 +103,7 @@ class DSLExecutor:
                 results[query_id] = AtomResult(success=False)
         
         # Determine overall success
-        success = any(r.success for r in results.values())
+        success = bool(results) and all(r.success for r in results.values())
         
         # Extract final data from successful results
         final_data = None

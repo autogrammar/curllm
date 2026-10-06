@@ -135,6 +135,69 @@ ollama pull qwen2.5:7b
 
 ## 📖 Examples
 
+### Continuous verification and autonomy (Linux user service)
+
+Use an environment with the declared MCP SDK 1.x, pytest, Playwright Chromium
+and Planfile installed. Stage a version already merged into `origin/main`, then
+activate its user timer explicitly:
+
+```bash
+python scripts/install-autonomy.py --python /absolute/path/to/venv/bin/python --activate
+systemctl --user status curllm-autonomy.timer
+journalctl --user -u curllm-autonomy.service -n 20 --no-pager
+```
+
+The installer exports the merged revision into
+`~/.local/share/curllm-autonomy/releases/<sha>`, preserving uncommitted primary
+files. Each cycle checks source digests, then runs real Chromium field/DSL,
+MCP transport/v2 and monitoring regressions. The next cycle starts five minutes
+after completion. Source checksums are checked before Python starts. Omit
+`--activate` to stage without changing running services. Existing differing
+operator files are retained; reconcile version/configuration changes before
+reinstalling. To stop: `systemctl --user disable --now curllm-autonomy.timer`.
+Disabling the timer lets an already running bounded cycle finish; incident
+state, development intake and versioned releases remain available.
+
+Configuration lives in `~/.config/curllm-autonomy/config.json`. Status is available
+through the deployed interpreter, from the release directory:
+
+```bash
+python -m curllm_core.cli.autonomy status --config ~/.config/curllm-autonomy/config.json
+```
+
+The private state directory `~/.local/state/curllm-autonomy/` contains
+`incidents.sqlite`, structured DSL events in `events.jsonl` (one retained rotated
+file), and a dedicated `development-intake/` Planfile queue. Two consecutive
+failures open an incident; two successful observations resolve it. Diagnostics
+retain output hashes, sizes, exit codes and timing, without raw output. For a
+JSON probe use `"oracle": "json"`; it requires explicit `success: true` without
+errors or a malformed/failing status, in addition to a zero exit code.
+
+Automatic runtime repairs must be explicitly configured on a probe:
+
+```json
+"repair": {
+  "argv": ["/usr/bin/systemctl", "--user", "restart", "your-owned-service.service"],
+  "authority_ref": "operator:your-owned-service-restart",
+  "timeout_seconds": 30,
+  "max_attempts": 1,
+  "cooldown_seconds": 300
+}
+```
+
+No repairs are inferred from test output. Attempts are reserved before execution,
+limited across recurring incidents for that probe configuration, and confirmed
+by rerunning the probe. An interrupted effect remains `unknown` for operator
+reconciliation and is never automatically replayed. A command's zero exit code
+alone never confirms repair. The default installation only runs tests and intake.
+
+Development findings are deduplicated Planfile tickets with state
+`awaiting_controller`. The observer does not edit source or approve/merge PRs.
+Autonomous coding needs a separately admitted repository profile, canonical
+ticket/worktree, protected fenced lease and independent Validator. Monitor
+recovery does not close a development ticket as delivered. A missing intake
+dependency leaves a durable `outbox_pending` for the next cycle.
+
 ### Extract Data
 
 ```bash

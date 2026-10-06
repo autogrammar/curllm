@@ -1,0 +1,108 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-008",
+  "summary": "Install pinned curllm continuous monitoring with user timer",
+  "workstream": "governance",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-008/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "scripts/install-autonomy.py",
+    "scripts/test_install_autonomy.py",
+    "README.md"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [
+    "ticket-007"
+  ],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "13574ac8bfc62221d3192e2a0e29bb8988658732",
+    "targetBranch": "main",
+    "outcome": "Publish reproducible installer and activate continuous curllm monitoring from a merged source revision; preserve foreign primary files and operator configuration (STARTER-019).",
+    "nonGoals": [
+      "No self-authorized source changes or review bypass",
+      "No edits to reference repositories",
+      "No interaction with user browser pages"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 30,
+    "budgets": {
+      "maxImplementationFiles": 3,
+      "maxAffectedComponents": 2,
+      "maxPublicInterfaceChanges": 1,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Export a merged source revision into a private versioned runtime, verify source checksums and install a serialized user systemd timer. Explicit activation is separate from staging; existing foreign configurations are retained.",
+      "components": [
+        {
+          "name": "runtime-deployment",
+          "paths": [
+            "scripts/install-autonomy.py",
+            "scripts/test_install_autonomy.py"
+          ]
+        },
+        {
+          "name": "operator-documentation",
+          "paths": [
+            "README.md"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [
+        "Add staged installation and explicit timer activation CLI"
+      ],
+      "dataChanges": [
+        {
+          "kind": "component-local-state",
+          "component": "runtime-deployment",
+          "description": "Private release export, external operator configuration, service units and deployment receipt owned by curllm deployment; no foreign data migration."
+        }
+      ],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Disable curllm-autonomy.timer; retain state/intake and previous versioned release."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "python -m unittest discover -s scripts -p test_install_autonomy.py -v"
+        ],
+        "evidence": "Merged-ref enforcement, source integrity, interpreter path preservation and existing-file preservation verified."
+      },
+      {
+        "criterion": "AC-02",
+        "commands": [
+          "python scripts/install-autonomy.py --help",
+          "bash project/governance-check.sh --actor agent"
+        ],
+        "evidence": "Installer and native gate pass; actual staged runtime probes succeed."
+      },
+      {
+        "criterion": "AC-03",
+        "commands": [
+          "systemctl --user status curllm-autonomy.timer",
+          "journalctl --user -u curllm-autonomy.service -n 5 --no-pager"
+        ],
+        "evidence": "After independent merge, timer activation and actual probe outcomes read back."
+      }
+    ]
+  }
+}

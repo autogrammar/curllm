@@ -18,7 +18,7 @@ import sqlite3
 import subprocess
 import tempfile
 import time
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from pathlib import Path
 
 
@@ -311,6 +311,19 @@ class Monitor:
             return summary
 
     def status(self) -> dict:
-        with self._locked() as db:
-            return {"schema": "curllm.autonomy-status/v1", "config_sha256": self.config.sha256,
-                    "incidents": [json.loads(row[0]) for row in db.execute("SELECT data FROM incidents ORDER BY key")]}
+        self.config.guard()
+        database = plain_path(self.config.state / "incidents.sqlite")
+        incidents = []
+        if database.exists():
+            try:
+                # A reader observes committed rows without taking the cycle's
+                # execution lock or initializing any persistent monitor state.
+                with closing(sqlite3.connect(database.as_uri() + "?mode=ro", uri=True,
+                                             timeout=1)) as db:
+                    incidents = [json.loads(row[0]) for row in
+                                 db.execute("SELECT data FROM incidents ORDER BY key")]
+            except sqlite3.Error as exc:
+                raise RuntimeError("autonomy state cannot be read") from exc
+        self.config.guard()
+        return {"schema": "curllm.autonomy-status/v1", "config_sha256": self.config.sha256,
+                "incidents": incidents}

@@ -1,6 +1,7 @@
 """Exercise the durable loop and real process/Planfile boundaries."""
 import fcntl
 import json
+import sqlite3
 import sys
 import time
 from pathlib import Path
@@ -169,6 +170,44 @@ def test_concurrent_cycle_cannot_run_probe(tmp_path):
         fcntl.flock(lock, fcntl.LOCK_EX)
         with pytest.raises(RuntimeError, match="another"):
             Monitor(cfg, runner=lambda *_: pytest.fail("probe ran")).cycle()
+
+
+def test_status_reads_committed_snapshot_while_cycle_owns_state(tmp_path):
+    cfg = make_config(tmp_path)
+    monitor = Monitor(cfg, runner=sequence(True))
+    monitor.cycle()
+    expected = monitor.status()
+    events = (cfg.state / "events.jsonl").read_bytes()
+    with (cfg.state / "cycle.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        with sqlite3.connect(cfg.state / "incidents.sqlite") as writer:
+            writer.execute("UPDATE incidents SET data = ?", ('{"uncommitted":true}',))
+            assert monitor.status() == expected
+            writer.rollback()
+    assert (cfg.state / "events.jsonl").read_bytes() == events
+
+
+def test_status_before_first_cycle_does_not_create_state(tmp_path):
+    cfg = make_config(tmp_path)
+    assert Monitor(cfg).status()["incidents"] == []
+    assert not cfg.state.exists()
+
+
+def test_status_rejects_changed_operator_configuration(tmp_path):
+    cfg = make_config(tmp_path)
+    cfg.path.write_text(cfg.path.read_text() + "\n")
+    with pytest.raises(RuntimeError, match="changed"):
+        Monitor(cfg).status()
+
+
+def test_status_reports_corrupt_database_without_changing_it(tmp_path):
+    cfg = make_config(tmp_path)
+    cfg.state.mkdir()
+    database = cfg.state / "incidents.sqlite"
+    database.write_bytes(b"invalid sqlite database")
+    with pytest.raises(RuntimeError, match="state cannot be read"):
+        Monitor(cfg).status()
+    assert database.read_bytes() == b"invalid sqlite database"
 
 
 @pytest.mark.parametrize("output", ['{"success":false}', '{"success":true,"errors":["bad"]}',

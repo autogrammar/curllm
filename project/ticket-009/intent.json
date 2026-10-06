@@ -1,0 +1,88 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-009",
+  "summary": "Read autonomy status during running verification cycles",
+  "workstream": "application",
+  "classification": {
+    "kind": "BUG",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-009/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "curllm_core/autonomy.py",
+    "tests/test_autonomy.py"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "802d9f74e1c8480aeae8d7e16645e483331c956e",
+    "targetBranch": "main",
+    "outcome": "Publish and deploy a read-only status snapshot available during bounded verification cycles (STARTER-021); preserve separately blocked automatic controller admission STARTER-020.",
+    "nonGoals": [
+      "No source-execution admission or policy changes",
+      "No edits to foreign repositories or browser pages"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 25,
+    "budgets": {
+      "maxImplementationFiles": 2,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Keep the exclusive writer lock for cycles; query SQLite through a read-only connection for operator status. Validate configuration before and after snapshot and do not initialize state from reads.",
+      "components": [
+        {
+          "name": "autonomy-monitor",
+          "paths": [
+            "curllm_core/autonomy.py",
+            "tests/test_autonomy.py"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Restore the prior deployed release, configuration and user unit from exact verified pre-update backups."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "python -m pytest tests/test_autonomy.py -q"
+        ],
+        "evidence": "Status snapshot works during a real held writer lock, before initialization, and on protected paths; concurrent cycles remain rejected."
+      },
+      {
+        "criterion": "AC-02",
+        "commands": [
+          "bash project/governance-check.sh --actor agent"
+        ],
+        "evidence": "Native gate and independent exact-head publication pass."
+      },
+      {
+        "criterion": "AC-03",
+        "commands": [
+          "python -m curllm_core.cli.autonomy status --config \"$CURLLM_AUTONOMY_CONFIG\""
+        ],
+        "evidence": "Merged runtime installed and live status returns during the systemd verification cycle."
+      }
+    ]
+  }
+}

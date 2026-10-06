@@ -1,0 +1,99 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-005",
+  "summary": "Restore documented v2 execution and keep MCP stdout as JSON-RPC",
+  "workstream": "application",
+  "classification": {
+    "kind": "BUG",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-005/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "curllm_core/dsl/executor_llm.py",
+    "curllm_mcp/server.py",
+    "tests/test_curllm_compat.py"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [
+    "ticket-004"
+  ],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "cd4c07b015d5acb27861b2e9e605cae845a59b24",
+    "targetBranch": "main",
+    "outcome": "Publish a working documented v2 execute(instruction) entrypoint using the existing LLM-DSL executor, and keep MCP diagnostics off the JSON-RPC stdout channel (STARTER-018).",
+    "nonGoals": [
+      "No new executor engine",
+      "No dependency upgrades or global environment changes",
+      "No live user browser actions"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 40,
+    "budgets": {
+      "maxImplementationFiles": 3,
+      "maxAffectedComponents": 2,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Restore the already declared v2 API with a thin adapter over the existing LLM-DSL executor; configure stderr logging only at the dedicated MCP process entrypoint.",
+      "components": [
+        {
+          "name": "v2-api",
+          "paths": [
+            "curllm_core/dsl/executor_llm.py",
+            "tests/test_curllm_compat.py"
+          ]
+        },
+        {
+          "name": "mcp-transport",
+          "paths": [
+            "curllm_mcp/server.py"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Revert the compatibility/transport repair commit."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "python -m pytest tests/test_v2_imports.py tests/test_v2_functionality.py tests/test_curllm_compat.py -q"
+        ],
+        "evidence": "Existing API v2 imports and real adapter execution pass; baseline had 30 failures."
+      },
+      {
+        "criterion": "AC-02",
+        "commands": [
+          "python -m pytest tests/test_curllm_compat.py -q"
+        ],
+        "evidence": "MCP 1.x stdio handshake, tool discovery and tool response have no non-JSON protocol output."
+      },
+      {
+        "criterion": "AC-03",
+        "commands": [
+          "bash project/governance-check.sh --actor agent",
+          "python -m pytest tests -q -k \"not fetch_light_example_com\" --ignore=tests/integration --ignore=tests/e2e"
+        ],
+        "evidence": "Native governance and broad unit suite pass with the declared MCP 1.x dependency."
+      }
+    ]
+  }
+}

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import ipaddress
 import json
+import logging
 import os
 import socket
 import sys
@@ -164,6 +165,13 @@ try:
         )
 
     def main() -> None:
+        # Product imports may install a stdout handler before FastMCP configures
+        # logging. Reserve stdout for JSON-RPC at this dedicated process boundary.
+        logging.basicConfig(
+            level=mcp.settings.log_level,
+            stream=sys.stderr,
+            force=True,
+        )
         mcp.run()
 
 except ImportError:

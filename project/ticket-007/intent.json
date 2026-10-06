@@ -1,0 +1,84 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-007",
+  "summary": "Classify malformed probe status without interrupting autonomy",
+  "workstream": "application",
+  "classification": {
+    "kind": "BUG",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-007/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "curllm_core/autonomy.py",
+    "tests/test_autonomy.py"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [
+    "ticket-006"
+  ],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "473dcf782d67452a81da879830fde9927a4630b1",
+    "targetBranch": "main",
+    "outcome": "Publish malformed-result regression fix before continuous monitor deployment (STARTER-019).",
+    "nonGoals": [
+      "No self-authorized source changes or review bypass",
+      "No edits to reference repositories",
+      "No interaction with user browser pages"
+    ],
+    "complexity": "XS",
+    "estimatedMinutes": 8,
+    "budgets": {
+      "maxImplementationFiles": 2,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Validate JSON status type before semantic evaluation; malformed application results are failures, not monitor exceptions.",
+      "components": [
+        {
+          "name": "autonomy-runtime",
+          "paths": [
+            "curllm_core/autonomy.py",
+            "tests/test_autonomy.py"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Revert malformed-result guard."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "python -m pytest tests/test_autonomy.py -q"
+        ],
+        "evidence": "Malformed list, object, number and boolean status returns semantic_failed; monitor lifecycle remains functional."
+      },
+      {
+        "criterion": "AC-02",
+        "commands": [
+          "bash project/governance-check.sh --actor agent"
+        ],
+        "evidence": "Native gate passes."
+      }
+    ]
+  }
+}

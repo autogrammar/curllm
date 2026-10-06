@@ -98,19 +98,55 @@ class AtomicFunctions:
         # Get all inputs with their context
         inputs = await self.page.evaluate("""() => {
             const inputs = [];
-            document.querySelectorAll('input, textarea, select').forEach((el, idx) => {
-                if (el.offsetParent === null || el.type === 'hidden') return;
+            const selectorFor = el => {
+                if (el.id) {
+                    const selector = '#' + CSS.escape(el.id);
+                    if (document.querySelectorAll(selector).length === 1) return selector;
+                }
+                if (el.name) {
+                    const selector = el.localName + '[name="' + CSS.escape(el.name) + '"]';
+                    if (document.querySelectorAll(selector).length === 1) return selector;
+                }
+                const parts = [];
+                for (let node = el; node; node = node.parentElement) {
+                    const siblings = node.parentElement
+                        ? Array.from(node.parentElement.children).filter(s => s.localName === node.localName)
+                        : [node];
+                    parts.unshift(node.localName + ':nth-of-type(' + (siblings.indexOf(node) + 1) + ')');
+                }
+                return parts.join(' > ');
+            };
+            // Context must not include typed values, including rich-text editor content.
+            const contextText = root => {
+                if (!root) return '';
+                const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+                    acceptNode: node => node.parentElement?.closest(
+                        'input, textarea, select, [contenteditable], script, style'
+                    ) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+                });
+                let text = '', node;
+                while (text.length < 200 && (node = walker.nextNode())) text += node.textContent;
+                return text.trim().substring(0, 200);
+            };
+            document.querySelectorAll('input, textarea, select, [contenteditable]').forEach((el, idx) => {
+                const isControl = el.matches('input, textarea, select');
+                if (!isControl && (!el.isContentEditable || el.parentElement?.isContentEditable)) return;
+                const style = getComputedStyle(el);
+                if (!el.getClientRects().length || style.visibility === 'hidden' || style.visibility === 'collapse'
+                    || el.type === 'hidden' || el.matches(':disabled') || el.readOnly
+                    || el.closest('[inert], [hidden], [aria-hidden="true"], [aria-disabled="true"]')) return;
                 
                 // Gather context
-                const labels = Array.from(el.labels || []).map(l => l.textContent.trim());
+                const labels = Array.from(el.labels || []).map(contextText);
                 const parent = el.parentElement;
-                const siblings = parent ? Array.from(parent.children).map(c => c.textContent?.trim().substring(0, 50)) : [];
-                const nearbyText = parent?.textContent?.trim().substring(0, 200) || '';
+                const nearbyText = contextText(parent);
                 
                 inputs.push({
                     index: idx,
+                    selector: selectorFor(el),
+                    focused: el === document.activeElement || (el.isContentEditable && el.contains(document.activeElement)),
                     tagName: el.tagName.toLowerCase(),
-                    type: el.type || 'text',
+                    type: el.isContentEditable ? 'contenteditable' : (el.type || 'text'),
                     name: el.name,
                     id: el.id,
                     placeholder: el.placeholder,
@@ -120,7 +156,7 @@ class AtomicFunctions:
                     autocomplete: el.autocomplete,
                 });
             });
-            return inputs;
+            return inputs.sort((a, b) => Number(b.focused) - Number(a.focused));
         }""")
         
         if not inputs:
@@ -133,6 +169,7 @@ class AtomicFunctions:
 Inputs:
 {self._format_inputs_for_llm(inputs)}
 
+Prefer the focused input when it matches the requested purpose. Focus alone does not imply a match.
 Respond with ONLY the index number (0-based) of the best matching input, or -1 if none match."""
 
             try:
@@ -155,9 +192,12 @@ Respond with ONLY the index number (0-based) of the best matching input, or -1 i
             except Exception as e:
                 logger.debug(f"LLM query failed: {e}")
         
-        # Fallback: statistical matching based on type attribute
+        # Prefer focus among matching candidates without changing browser focus.
         for inp in inputs:
-            if purpose_description.lower() in str(inp).lower():
+            context = {key: inp.get(key) for key in (
+                'tagName', 'type', 'name', 'id', 'placeholder', 'ariaLabel', 'labels', 'nearbyText', 'autocomplete'
+            )}
+            if purpose_description.strip() and purpose_description.lower() in str(context).lower():
                 selector = self._build_selector_from_input(inp)
                 return AtomResult(
                     success=True,
@@ -483,6 +523,8 @@ Return extracted data as JSON. If no matching data found, return {{"found": fals
                 ctx.append(f"aria: {inp['ariaLabel']}")
             if inp.get('type'):
                 ctx.append(f"type: {inp['type']}")
+            if inp.get('focused'):
+                ctx.append("focused: true")
             
             lines.append(f"[{i}] {inp['tagName']} - {', '.join(ctx)}")
         return '\n'.join(lines)
@@ -510,6 +552,8 @@ Return extracted data as JSON. If no matching data found, return {{"found": fals
         return '\n'.join(lines)
     
     def _build_selector_from_input(self, inp: Dict) -> str:
+        if inp.get('selector'):
+            return inp['selector']
         if inp.get('id'):
             return f"#{inp['id']}"
         if inp.get('name'):

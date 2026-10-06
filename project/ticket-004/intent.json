@@ -1,0 +1,99 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-004",
+  "summary": "Respect editable field identity and report complete DSL plan outcomes",
+  "workstream": "application",
+  "classification": {
+    "kind": "BUG",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "allowedPaths": [
+    "project/ticket-004/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "curllm_core/llm_dsl/atoms.py",
+    "curllm_core/llm_dsl/executor.py",
+    "tests/test_browser_control.py"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [
+    "ticket-003"
+  ],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "db48d06f6d5e48d5b3653d60343d69d4e50115d0",
+    "targetBranch": "main",
+    "outcome": "Publish browser field detection that includes focused rich-text editors, excludes unavailable fields and returns exact selectors; DSL plans report failure if any required query fails (STARTER-017).",
+    "nonGoals": [
+      "No live Willmux integration or user browser mutation",
+      "No automatic form submission",
+      "No new runtime dependencies"
+    ],
+    "complexity": "M",
+    "estimatedMinutes": 65,
+    "budgets": {
+      "maxImplementationFiles": 3,
+      "maxAffectedComponents": 2,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Keep the existing atomic detection and DSL result interfaces. Capture DOM identity in the same passive evaluation as metadata; honor focus among matching candidates. Aggregate final per-query outcomes truthfully.",
+      "components": [
+        {
+          "name": "input-detection",
+          "paths": [
+            "curllm_core/llm_dsl/atoms.py",
+            "tests/test_browser_control.py"
+          ]
+        },
+        {
+          "name": "plan-execution",
+          "paths": [
+            "curllm_core/llm_dsl/executor.py"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Revert the product repair commit."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "python -m pytest tests/test_browser_control.py -q"
+        ],
+        "evidence": "Real Chromium regressions cover focus, contenteditable, disabled/readonly/hidden/inert and selector identity; no field values disclosed."
+      },
+      {
+        "criterion": "AC-02",
+        "commands": [
+          "python -m pytest tests/test_browser_control.py -q"
+        ],
+        "evidence": "Multi-query failures and retry recovery report accurate status/errors."
+      },
+      {
+        "criterion": "AC-03",
+        "commands": [
+          "bash project/governance-check.sh --actor agent",
+          "python -m pytest tests -q -k \"not fetch_light_example_com\" --ignore=tests/integration --ignore=tests/e2e"
+        ],
+        "evidence": "Native gate and available unit suite checked, failures classified."
+      }
+    ]
+  }
+}

@@ -5,6 +5,11 @@ import sys
 import os
 
 def main():
+    try:
+        from .autoupdate import check_for_updates
+        check_for_updates("curllm")
+    except Exception:
+        pass
     """Main entry point for curllm-web command."""
     # Import the actual web module
     try:

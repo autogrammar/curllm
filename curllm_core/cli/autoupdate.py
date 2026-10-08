@@ -1,10 +1,9 @@
-"""Autonomous non-blocking background update checker and auto-upgrader for CLI tools.
+"""Non-blocking background update checker for CLI tools (notice only).
 
 Checks PyPI for package updates at most once every TTL interval (default: 24h).
 Spawns a detached background process with zero network delay on the CLI invocation.
-If an update is available:
-- If AUTO_UPGRADE=1 or <PKG>_AUTO_UPGRADE=1: spawns a background pip install --upgrade.
-- Otherwise, reports cleanly on stderr.
+If an update is available, prints a notice on stderr. It never installs anything:
+upgrading stays an explicit, reviewed action outside the running tool.
 """
 
 from __future__ import annotations
@@ -97,20 +96,6 @@ except Exception:
         pass
 
 
-def _spawn_background_upgrade(pkg_name: str) -> None:
-    """Spawn background pip install --upgrade if auto-upgrade is enabled."""
-    try:
-        subprocess.Popen(
-            [sys.executable, "-m", "pip", "install", "--upgrade", "--quiet", "--disable-pip-version-check", pkg_name],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            stdin=subprocess.DEVNULL,
-            start_new_session=True,
-        )
-    except Exception:
-        pass
-
-
 def check_for_updates(
     pkg_name: str,
     ttl_seconds: int = 86400,  # 24 hours
@@ -118,9 +103,7 @@ def check_for_updates(
     """Non-blocking check for package updates.
 
     Reads previous check result from disk (fast, ~0.1ms). If an update was found
-    in a previous run:
-    - If AUTO_UPGRADE=1 or <PKG>_AUTO_UPGRADE=1, triggers a silent background pip upgrade.
-    - Otherwise, displays a friendly notice on stderr.
+    in a previous run, displays a notice on stderr.
     Spawns a detached process to query PyPI in the background only when the cache is expired.
     """
     if os.environ.get("CI") or os.environ.get("NO_AUTOUPDATE"):
@@ -150,27 +133,12 @@ def check_for_updates(
     if cached_latest and cached_latest != current_version:
         try:
             if _is_newer(cached_latest, current_version):
-                safe_pkg = pkg_name.upper().replace("-", "_")
-                env_pkg_key = safe_pkg + "_AUTO_UPGRADE"
-                auto_upgrade_enabled = (
-                    os.environ.get("AUTO_UPGRADE") == "1" or
-                    os.environ.get(env_pkg_key) == "1"
+                sys.stderr.write(
+                    "\n💡 [" + pkg_name + "] Nowa wersja dostępna: "
+                    + current_version + " → " + cached_latest + "\n"
+                    + "   Aby zaktualizować, uruchom: pip install --upgrade " + pkg_name + "\n\n"
                 )
-                if auto_upgrade_enabled:
-                    sys.stderr.write(
-                        "\n⚡ [" + pkg_name + "] Automatyczna aktualizacja w tle: "
-                        + current_version + " → " + cached_latest + "...\n"
-                    )
-                    sys.stderr.flush()
-                    _spawn_background_upgrade(pkg_name)
-                else:
-                    sys.stderr.write(
-                        "\n💡 [" + pkg_name + "] Nowa wersja dostępna: "
-                        + current_version + " → " + cached_latest + "\n"
-                        + "   Aby zaktualizować, uruchom: pip install --upgrade " + pkg_name + "\n"
-                        + "   (lub ustaw AUTO_UPGRADE=1)\n\n"
-                    )
-                    sys.stderr.flush()
+                sys.stderr.flush()
         except Exception:
             pass
 

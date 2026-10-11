@@ -6,6 +6,11 @@ import os
 
 def main():
     """Main entry point for curllm-web command."""
+    try:
+        from .autoupdate import check_for_updates
+        check_for_updates("curllm")
+    except Exception:
+        pass
     # Import the actual web module
     try:
         from curllm_web import main as web_main

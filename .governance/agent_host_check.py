@@ -100,7 +100,60 @@ def check_hosts(root: Path, contract: dict[str, Any]) -> list[Finding]:
     return findings
 
 
-def check_source_links(root: Path, contract: dict[str, Any]) -> list[Finding]:
+LOCAL_SOURCE_SETS = {
+    "governance/agent-hosts.json": {
+        "hub-manifest": "governance/manifest.hub.json",
+        "hub-package": "governance/package-manifest.json",
+    },
+    ".governance/agent-hosts.json": {
+        "adopter-manifest": ".governance/manifest.json",
+        "adopter-lock": ".governance/manifest.lock.json",
+        "adopter-package": ".governance/package-manifest.json",
+    },
+}
+
+
+def _local_source_paths(
+    root: Path, local: Any, contract_path: str | None,
+) -> tuple[list[str], list[Finding]]:
+    """Check the selected layout; missing files must never select a weaker one."""
+    def fail(message: str, paths: list[str]) -> tuple[list[str], list[Finding]]:
+        return [], [Finding(
+            "GOV-AGENT-HOST-004", message,
+            "Restore the complete local source contract through pinned standard adoption.", paths,
+        )]
+
+    selected = first_existing(root, CONTRACT_CANDIDATES) if contract_path is None else Path(contract_path)
+    if selected is not None and contract_path is not None and not selected.is_absolute():
+        selected = root / selected
+    try:
+        layout = selected.relative_to(root).as_posix() if selected is not None else ""
+    except ValueError:
+        layout = ""
+    expected = LOCAL_SOURCE_SETS.get(layout)
+    if expected is None:
+        return fail("Local sources require a canonical hub or adopter host-contract location.", ["sourceLinks"])
+    if not isinstance(local, list) or any(
+        not isinstance(item, dict) or not isinstance(item.get("id"), str)
+        or not item["id"] or not isinstance(item.get("path"), str) or not item["path"]
+        for item in local
+    ):
+        return fail("Agent host local source declaration is malformed.", ["sourceLinks"])
+    by_id = {item["id"]: item["path"] for item in local}
+    if len(by_id) != len(local):
+        return fail("Agent host local source declaration contains duplicate ids.", ["sourceLinks"])
+    missing = [path for identifier, path in expected.items() if by_id.get(identifier) != path]
+    if missing:
+        return fail("Agent host local source declaration omits or changes required layout sources.", missing)
+    inactive = {identifier for candidate, group in LOCAL_SOURCE_SETS.items() if candidate != layout for identifier in group}
+    paths = [item["path"] for item in local if item["id"] not in inactive]
+    unsafe = [path for path in paths if not safe_declared_gate(root, path)]
+    if unsafe:
+        return fail("Declared local sources are missing, unsafe or not regular checkout files.", unsafe)
+    return paths, []
+
+
+def check_source_links(root: Path, contract: dict[str, Any], *, contract_path: str | None = None) -> list[Finding]:
     """Require every managed host projection to expose its bounded sources.
 
     The local files prove which package is adopted. Remote links are deliberately
@@ -168,21 +221,9 @@ def check_source_links(root: Path, contract: dict[str, Any]) -> list[Finding]:
         ))
         return findings
 
-    local_paths = [
-        str(item["path"])
-        for item in local
-        if isinstance(item, dict)
-        and isinstance(item.get("path"), str)
-        and (root / str(item["path"])).is_file()
-    ]
-    if not local_paths:
-        findings.append(Finding(
-            "GOV-AGENT-HOST-004",
-            "No declared local source link resolves in this checkout.",
-            "Restore the local adoption lock/package or the hub manifest/package before using host instructions.",
-            ["sourceLinks"],
-        ))
-        return findings
+    local_paths, local_findings = _local_source_paths(root, local, contract_path)
+    if local_findings:
+        return findings + local_findings
 
     for host in contract["hosts"]:
         relative = str(host["file"])
@@ -245,6 +286,27 @@ def check_hook(root: Path, contract: dict[str, Any], actor: str) -> list[Finding
             f"Restore the executable bit with chmod +x {hook_relative}.",
             [hook_relative],
         ))
+
+    additional = contract["hook"].get("additionalHooks", [])
+    if (not isinstance(additional, list)
+            or any(not isinstance(path, str) or path not in {
+                ".githooks/commit-msg", ".githooks/prepare-commit-msg",
+            } for path in additional)
+            or len(additional) != len(set(additional))):
+        findings.append(Finding(
+            "GOV-AGENT-HOST-004", "Invalid additional hook declaration.",
+            "Restore the pinned host contract.", ["hook.additionalHooks"],
+        ))
+        return findings
+    for relative in additional:
+        path = root / relative
+        if not path.is_file() or (os.name != "nt" and not path.stat().st_mode & 0o111):
+            findings.append(Finding(
+                "GOV-AGENT-HOST-005",
+                f"Managed additional hook is missing or not executable: {relative}",
+                "Adopt the complete pinned package and run scripts/install-agent-hosts.sh.",
+                [relative],
+            ))
 
     # A CI checkout never runs local hooks; only a developer or agent clone can.
     if actor == "ci" or not is_work_tree(root):
@@ -340,6 +402,27 @@ def check_packaging(root: Path, contract: dict[str, Any]) -> list[Finding]:
     return findings
 
 
+def safe_declared_gate(root: Path, relative: str) -> bool:
+    """Observe an existing repository-relative regular file without link escapes.
+
+    This is a path/declaration check, not permission to execute the gate.
+    """
+    if re.fullmatch('^(?!.*(?:^|/)\\.\\.(?:/|$))[^/\\\\:\\x00-\\x1f\\x7f]+(?:/[^/\\\\:\\x00-\\x1f\\x7f]+)*$', relative) is None:
+        return False
+    try:
+        base = root.resolve(strict=True)
+        path = base
+        for part in relative.split("/"):
+            path = path / part
+            if path.is_symlink():
+                return False
+        resolved = path.resolve(strict=True)
+        resolved.relative_to(base)
+        return resolved.is_file()
+    except (OSError, ValueError):
+        return False
+
+
 def check_declaration(
     root: Path,
     marker_relative: str,
@@ -355,6 +438,14 @@ def check_declaration(
                 "Declare the adopted standard version, revision and gate in the package metadata.",
                 [marker_relative],
             ))
+    gate = declaration.get("gate")
+    if isinstance(gate, str) and gate.strip() and not safe_declared_gate(root, gate):
+        findings.append(Finding(
+            "GOV-PACKAGING-002",
+            f"{marker_relative} declares gate '{gate}', which is missing or unsafe.",
+            "Point the declaration at an existing repository-relative regular governance gate without parent traversal, drive paths or symbolic links.",
+            [marker_relative, gate],
+        ))
     if not standard:
         return findings
     for key, locked in (("standard", "version"), ("revision", "sourceRevision")):
@@ -367,63 +458,25 @@ def check_declaration(
                 "Regenerate the package declaration from .governance/manifest.lock.json.",
                 [marker_relative],
             ))
-    gate = declaration.get("gate")
-    if isinstance(gate, str) and gate.strip():
-        gate_path = root / gate
-        if not gate_path.is_file():
-            findings.append(Finding(
-                "GOV-PACKAGING-002",
-                f"{marker_relative} declares gate '{gate}', which does not exist.",
-                "Point the declaration at the managed governance gate in this repository.",
-                [marker_relative, gate],
-            ))
     return findings
 
 
 def workflow_job_names(path: Path) -> list[str]:
-    """Parse the small, stable subset of GitHub workflow YAML we need.
+    """Use the adjacent managed validator for the offline workflow contract.
 
-    The required-checks validator owns the complete workflow contract. This
-    deliberately remains a narrow, dependency-free preflight so an agent-host
-    audit can flag an impossible CI declaration before a long session starts.
+    Load by the package path, never by a target-controlled import search path.
+    This shares direct-job names and digest-bound reusable callee resolution.
+    Missing or unsupported contracts remain refusals, not guessed check names.
     """
-    lines = path.read_text(encoding="utf-8").splitlines()
-    in_jobs = False
-    jobs: list[str] = []
-    current_key: str | None = None
-    current_name: str | None = None
+    import importlib.util
 
-    def flush() -> None:
-        nonlocal current_key, current_name
-        if current_key is not None:
-            jobs.append(current_name or current_key)
-        current_key = None
-        current_name = None
-
-    for line in lines:
-        if re.match(r"^jobs:\s*(?:#.*)?$", line):
-            in_jobs = True
-            continue
-        if not in_jobs:
-            continue
-        if (line and not line.startswith((" ", "\t"))
-                and line.strip() and not line.lstrip().startswith("#")):
-            break
-        match = re.match(r"^  ([A-Za-z0-9][A-Za-z0-9_-]*):\s*(?:#.*)?$", line)
-        if match:
-            flush()
-            current_key = match.group(1)
-            continue
-        name = re.match(r"^    name:\s*(.+?)\s*$", line)
-        if name and current_key is not None and current_name is None:
-            value = name.group(1).strip()
-            if " #" in value:
-                value = value.split(" #", 1)[0].rstrip()
-            if len(value) >= 2 and value[0] in {"'", '"'} and value[-1] == value[0]:
-                value = value[1:-1]
-            current_name = value
-    flush()
-    return jobs
+    checker_path = Path(__file__).resolve().with_name("check_required_checks.py")
+    spec = importlib.util.spec_from_file_location("agent_host_required_checks", checker_path)
+    if spec is None or spec.loader is None:
+        raise ImportError("managed required-checks validator is missing")
+    checker = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checker)
+    return checker.workflow_job_names(path)
 
 
 def check_guidance_anomalies(root: Path, contract: dict[str, Any]) -> list[Finding]:
@@ -565,8 +618,14 @@ def check_guidance_anomalies(root: Path, contract: dict[str, Any]) -> list[Findi
             continue
         try:
             published = workflow_job_names(workflow_path)
-        except (OSError, UnicodeDecodeError):
-            published = []
+        except (OSError, UnicodeDecodeError, ImportError, ValueError, SystemExit):
+            findings.append(Finding(
+                "GOV-AGENT-HOST-004",
+                f"CI workflow contract cannot be resolved: {workflow}.",
+                "Restore the managed validator and an immutable digest-bound reusable source; run check_required_checks.py for the precise refusal.",
+                [workflow, str(checks_path.relative_to(root))],
+            ))
+            continue
         for name, declared_workflow in pairs:
             if declared_workflow != workflow:
                 continue
@@ -625,7 +684,7 @@ def audit(root: Path, actor: str = "agent", contract_path: str | None = None) ->
     else:
         findings = (
             check_hosts(root, contract)
-            + check_source_links(root, contract)
+            + check_source_links(root, contract, contract_path=contract_path)
             + check_hook(root, contract, actor)
             + check_packaging(root, contract)
             + check_guidance_anomalies(root, contract)

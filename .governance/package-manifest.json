@@ -2,6 +2,18 @@
   "schema": "new-project.package-manifest/v1",
   "files": [
     {
+      "source": "scripts/snapshot_allocation.py",
+      "target": ".governance/snapshot_allocation.py",
+      "strategy": "managed",
+      "executable": false
+    },
+    {
+      "source": "scripts/ticket_recovery.py",
+      "target": ".governance/ticket_recovery.py",
+      "strategy": "managed",
+      "executable": false
+    },
+    {
       "source": "scripts/work_start_check.py",
       "target": ".governance/work_start_check.py",
       "strategy": "managed",
@@ -224,6 +236,18 @@
       "executable": false
     },
     {
+      "source": "error/GOV-PHYS.md",
+      "target": ".governance/error/GOV-PHYS.md",
+      "strategy": "managed",
+      "executable": false
+    },
+    {
+      "source": "governance/physical-contracts.schema.json",
+      "target": ".governance/physical-contracts.schema.json",
+      "strategy": "managed",
+      "executable": false
+    },
+    {
       "source": "subprojects/change-lease/change-lease.schema.json",
       "target": ".governance/change-lease.schema.json",
       "strategy": "managed",
@@ -302,7 +326,7 @@
       "executable": true
     },
     {
-      "source": "worktree-guard.yaml",
+      "source": "template/files/worktree-guard.template.yaml",
       "target": "worktree-guard.yaml",
       "strategy": "managed",
       "executable": false
@@ -422,6 +446,12 @@
       "executable": true
     },
     {
+      "source": "scripts/repository_policy.py",
+      "target": ".governance/repository_policy.py",
+      "strategy": "managed",
+      "executable": true
+    },
+    {
       "source": "template/files/new-project-governance.workflow.yml",
       "target": ".github/workflows/new-project-governance.yml",
       "strategy": "managed",
@@ -514,6 +544,12 @@
     {
       "source": "template/files/pre-commit.template.sh",
       "target": ".githooks/pre-commit",
+      "strategy": "managed",
+      "executable": true
+    },
+    {
+      "source": "template/files/commit-msg.template.sh",
+      "target": ".githooks/commit-msg",
       "strategy": "managed",
       "executable": true
     },
@@ -644,8 +680,26 @@
       "executable": false
     },
     {
+      "source": "governance/managed-copies.json",
+      "target": ".governance/managed-copies.json",
+      "strategy": "managed",
+      "executable": false
+    },
+    {
       "source": "error/GOV-ARCHITECTURE-001.md",
       "target": ".governance/error/GOV-ARCHITECTURE-001.md",
+      "strategy": "managed",
+      "executable": false
+    },
+    {
+      "source": "governance/reusable-workflows.schema.json",
+      "target": ".governance/reusable-workflows.schema.json",
+      "strategy": "managed",
+      "executable": false
+    },
+    {
+      "source": "error/GOV-VERSION.md",
+      "target": ".governance/error/GOV-VERSION.md",
       "strategy": "managed",
       "executable": false
     }

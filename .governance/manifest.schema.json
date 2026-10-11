@@ -40,6 +40,9 @@
         }
       ]
     },
+    "repositoryPolicy": {
+      "$ref": "#/$defs/repositoryPolicy"
+    },
     "domainContracts": {
       "oneOf": [
         {
@@ -230,6 +233,37 @@
         "maxAffectedComponents": { "type": "integer", "minimum": 1 },
         "maxPublicInterfaceChanges": { "type": "integer", "minimum": 0 },
         "maxRuntimeDependencies": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "repositoryPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "enforcement", "delivery", "tickets"],
+      "properties": {
+        "profile": { "enum": ["ticket-worktree", "main-only-planfile", "main-only-files", "protected-pr", "local-audit"] },
+        "enforcement": { "enum": ["audit", "enforce"] },
+        "delivery": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "checkout", "targetBranches"],
+          "properties": {
+            "mode": { "enum": ["ticket-branch", "main-only"] },
+            "checkout": { "enum": ["linked-worktree", "primary"] },
+            "targetBranches": { "type": "array", "items": { "$ref": "#/$defs/branch" }, "minItems": 1, "uniqueItems": true }
+          }
+        },
+        "tickets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["backend", "idPattern", "referenceRequired"],
+          "properties": {
+            "backend": { "enum": ["files", "sqlite", "planfile"] },
+            "idPattern": { "type": "string", "minLength": 1 },
+            "referenceRequired": { "type": "boolean" },
+            "adapterPath": { "$ref": "#/$defs/path" },
+            "sourcePaths": { "type": "array", "items": { "$ref": "#/$defs/path" }, "minItems": 1, "uniqueItems": true }
+          }
+        }
       }
     },
     "path": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?![A-Za-z]:[\\\\/])(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$)).+$" },

@@ -15,7 +15,7 @@
     "integration": {
       "workstream": "integration"
     },
-    "maxActiveTicketsPerWorkstream": 3,
+    "maxActiveTicketsPerWorkstream": 8,
     "mode": "workstreams",
     "rejectActiveScopeOverlap": true
   },
@@ -103,6 +103,22 @@
     "componentRoots": [],
     "mode": "standalone"
   },
+  "repositoryPolicy": {
+    "delivery": {
+      "checkout": "linked-worktree",
+      "mode": "ticket-branch",
+      "targetBranches": [
+        "main"
+      ]
+    },
+    "enforcement": "enforce",
+    "profile": "ticket-worktree",
+    "tickets": {
+      "backend": "files",
+      "idPattern": "^ticket-[0-9]{3,}$",
+      "referenceRequired": true
+    }
+  },
   "requiredFiles": [
     "README.md",
     "VERSION",
@@ -117,7 +133,7 @@
   "stacks": [],
   "standard": {
     "id": "wellmanifest/new-project",
-    "version": "0.20.35"
+    "version": "0.20.92"
   },
   "ticket": {
     "activeStatuses": [

@@ -1,0 +1,95 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-010",
+  "summary": "adopt wellmanifest/new-project 0.20.92 release",
+  "workstream": "governance",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P2",
+    "origin": "health"
+  },
+  "allowedPaths": [
+    "project/ticket-010/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "project/ticket-001/README.md",
+    "project/ticket-002/README.md",
+    "project/ticket-003/README.md",
+    "project/ticket-004/README.md",
+    "project/ticket-005/README.md",
+    "project/ticket-006/README.md",
+    "project/ticket-007/README.md",
+    "project/ticket-008/README.md",
+    "project/ticket-009/README.md",
+    ".githooks/**",
+    ".github/workflows/new-project-governance.yml",
+    ".governance/**",
+    "AGENTS.md",
+    "project/new-ticket.sh",
+    "project/readme.sh",
+    "pyproject.toml",
+    "scripts/install-agent-hosts.sh",
+    "scripts/runtime.sh",
+    "wellmanifest_governance.py",
+    "worktree-guard.yaml"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "9f61f5988f6c49b12e1ddd6f49302df8fd8af8a9",
+    "targetBranch": "main",
+    "outcome": "Upgrade standard to 0.20.92 release.",
+    "nonGoals": [
+      "No product runtime behavior changes"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 20,
+    "budgets": {
+      "maxImplementationFiles": 5,
+      "maxAffectedComponents": 2,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Upgrade governance adoption to 0.20.92 release.",
+      "components": [
+        {
+          "name": "governance-upgrade",
+          "paths": [
+            "**"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "git revert"
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "bash project/governance-check.sh"
+        ],
+        "evidence": "Governance check passes cleanly."
+      }
+    ],
+    "standardAdoption": {
+      "sourceRepository": "wellmanifest/new-project",
+      "fromRevision": "cfaa0bf0ea6b0e7349fed0bb62b5ce15792d687d",
+      "toRevision": "fcbb13e0ae04c688d825d5a87e2d2721dfab483d"
+    }
+  }
+}

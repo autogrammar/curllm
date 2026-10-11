@@ -213,6 +213,35 @@ def record_content_hash(record: dict[str, Any]) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def _required_check_names(value: Any) -> list[str]:
+    if not isinstance(value, list) or not value or any(
+        not isinstance(name, str) or not name.strip() or name != name.strip()
+        for name in value
+    ) or len(set(value)) != len(value):
+        raise ValueError("GOV-DECISION-002: required_checks must contain unique nonempty check names")
+    return value
+
+
+def _checkout_required_checks() -> list[str]:
+    for candidate in (".governance/required-checks.json", "governance/required-checks.json"):
+        path = Path(candidate)
+        if not path.exists():
+            continue
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            raise ValueError("GOV-DECISION-002: local required-checks metadata is unreadable") from error
+        if not isinstance(document, dict):
+            raise ValueError("GOV-DECISION-002: local required-checks metadata must be an object")
+        value = document.get("requiredCheckNames")
+        if value is None:
+            entries = document.get("requiredChecks")
+            if isinstance(entries, list):
+                value = [item.get("name") if isinstance(item, dict) else None for item in entries]
+        return _required_check_names(value)
+    raise ValueError("GOV-DECISION-002: local required-checks metadata is missing")
+
+
 def replay_verdict(record: dict[str, Any]) -> str:
     """Recompute verdict from INPUT + APPLIED_RULE without reading ADVISORY."""
     if record.get("verdictAuthority") == "ADVISORY":
@@ -221,9 +250,7 @@ def replay_verdict(record: dict[str, Any]) -> str:
     inputs = record["inputs"]
 
     # P-CORE-015 / check-gate family: required checks must all PASS.
-    if rule in {"P-CORE-015", "C-CI-001", "C-DECISION-GATE"} or rule.startswith(
-        "P-CORE-01"
-    ):
+    if isinstance(rule, str) and rule in {"P-CORE-015", "C-CI-001", "C-DECISION-GATE"}:
         required = inputs.get("required_checks")
         observed = inputs.get("observed_checks")
         if not isinstance(required, list) or not isinstance(observed, list):
@@ -231,6 +258,7 @@ def replay_verdict(record: dict[str, Any]) -> str:
                 "GOV-DECISION-002: check-gate rules require "
                 "required_checks and observed_checks arrays"
             )
+        required = _required_check_names(required)
         status: dict[str, str] = {}
         for item in observed:
             if not isinstance(item, str) or "=" not in item:
@@ -238,20 +266,20 @@ def replay_verdict(record: dict[str, Any]) -> str:
                     f"GOV-DECISION-002: observed_checks entry not name=STATUS: {item!r}"
                 )
             name, st = item.split("=", 1)
-            status[name] = st.upper()
+            st = st.upper()
+            if name in status and status[name] != st:
+                raise ValueError("GOV-DECISION-002: contradictory observed check statuses")
+            status[name] = st
         for name in required:
             st = status.get(str(name))
             if st != "PASS" and st != "SUCCESS":
                 return "REQUEST_CHANGES"
+        if "evaluation_verdict" in inputs and str(inputs["evaluation_verdict"]).lower() not in {"allow", "approve"}:
+            return "REQUEST_CHANGES"
         unsafe = inputs.get("unsafe_change_reasons") or []
         if unsafe:
             return "REQUEST_CHANGES"
         return "APPROVE"
-
-    # Default deterministic gate: explicit expected_verdict in inputs for tests
-    # of custom rules without encoding every POLICY rule here.
-    if "expected_verdict_from_rule" in inputs:
-        return str(inputs["expected_verdict_from_rule"])
 
     raise ValueError(
         f"GOV-DECISION-002: no deterministic replay for APPLIED_RULE {rule}"
@@ -324,7 +352,7 @@ def check_append_only(previous_markdown: str, current_markdown: str) -> list[str
     return errors
 
 
-def from_change_evaluation(evaluation: dict[str, Any], **meta: str) -> dict[str, Any]:
+def from_change_evaluation(evaluation: dict[str, Any], **meta: Any) -> dict[str, Any]:
     """Derive a decision record from t2c.change-evaluation/v1 (no dual truth)."""
     if evaluation.get("schemaVersion") != "t2c.change-evaluation/v1":
         raise ValueError("expected t2c.change-evaluation/v1")
@@ -343,6 +371,10 @@ def from_change_evaluation(evaluation: dict[str, Any], **meta: str) -> dict[str,
     if isinstance(gates, dict):
         for name, state in gates.items():
             observed.append(f"{name}={str(state).upper()}")
+    required = meta.get("required_checks")
+    if required is None:
+        required = _checkout_required_checks()
+    required = _required_check_names(required)
     record = {
         "schema": SCHEMA,
         "decisionId": meta["decisionId"],
@@ -352,12 +384,8 @@ def from_change_evaluation(evaluation: dict[str, Any], **meta: str) -> dict[str,
         "actor": meta.get("actor", "agent:validator"),
         "appliedRule": meta.get("appliedRule", "P-CORE-015"),
         "inputs": {
-            "required_checks": meta.get("required_checks")
-            or json.loads(Path("governance/required-checks.json").read_text()).get(
-                "requiredCheckNames", ["test"]
-            ),
-            "observed_checks": observed
-            or meta.get("observed_checks", ["test=PASS"]),
+            "required_checks": required,
+            "observed_checks": observed or meta.get("observed_checks", []),
             "evaluation_verdict": evaluation.get("verdict"),
         },
         "verdict": verdict if verdict != "BLOCKED" else "REQUEST_CHANGES",

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Custom Git merge driver for Wellmanifest project/TICKETS.md and TODO.md tables.
 
-Automatically resolves concurrent insertions into the AUTO:TICKET_INDEX section
-by parsing, deduplicating, and numerically sorting ticket rows by ticket-NNN ID.
+Merge unambiguous AUTO:TICKET_INDEX changes against the ancestor. Preserve
+deletions and surrounding prose; conflicting or ambiguous input falls back to Git.
 """
 
 from __future__ import annotations
@@ -18,6 +18,8 @@ ROW_PATTERN = re.compile(r"^[ \t]*\|[ \t]*\*\*ticket-([0-9]+)\*\*[ \t]*\|")
 
 
 def extract_table_rows(content: str) -> tuple[str, list[str], str] | None:
+    if content.count(START_MARKER) != 1 or content.count(END_MARKER) != 1:
+        return None
     start_idx = content.find(START_MARKER)
     end_idx = content.find(END_MARKER)
     if start_idx == -1 or end_idx == -1 or start_idx >= end_idx:
@@ -51,44 +53,52 @@ def parse_ticket_rows(lines: list[str]) -> tuple[list[str], dict[int, str]]:
     return table_headers, ticket_rows
 
 
-def merge_ticket_index_content(ancestor_text: str, current_text: str, other_text: str) -> str | None:
-    curr_parts = extract_table_rows(current_text)
-    other_parts = extract_table_rows(other_text)
-
-    if not curr_parts or not other_parts:
+def checked_table(content: str):
+    parts = extract_table_rows(content)
+    if parts is None:
         return None
+    prefix, lines, suffix = parts
+    headers, rows = parse_ticket_rows(lines)
+    row_lines = [line.strip() for line in lines if ROW_PATTERN.match(line.strip())]
+    if len(row_lines) != len(rows):
+        return None  # Duplicate identities must not silently overwrite a row.
+    if any(line.strip() and line.strip() not in headers and not ROW_PATTERN.match(line.strip())
+           for line in lines):
+        return None  # The custom driver must not drop unknown target-owned text.
+    return prefix, headers, rows, suffix
 
-    curr_header, curr_lines, curr_footer = curr_parts
-    _, other_lines, _ = other_parts
 
-    curr_th, curr_rows = parse_ticket_rows(curr_lines)
-    other_th, other_rows = parse_ticket_rows(other_lines)
+def three_way(ancestor, current, other):
+    if current == other:
+        return True, current
+    if current == ancestor:
+        return True, other
+    if other == ancestor:
+        return True, current
+    return False, None
 
-    headers = curr_th if curr_th else other_th
 
-    all_tickets = set(curr_rows.keys()) | set(other_rows.keys())
-    merged_rows: dict[int, str] = {}
-
-    for t_id in all_tickets:
-        if t_id in curr_rows and t_id in other_rows:
-            c_row = curr_rows[t_id]
-            o_row = other_rows[t_id]
-            if c_row == o_row:
-                merged_rows[t_id] = c_row
-            else:
-                c_score = sum(1 for part in c_row.split("|") if part.strip() and part.strip() != "-")
-                o_score = sum(1 for part in o_row.split("|") if part.strip() and part.strip() != "-")
-                merged_rows[t_id] = o_row if o_score >= c_score else c_row
-        elif t_id in curr_rows:
-            merged_rows[t_id] = curr_rows[t_id]
-        else:
-            merged_rows[t_id] = other_rows[t_id]
-
-    sorted_rows = [merged_rows[t_id] for t_id in sorted(merged_rows.keys())]
-    table_lines = headers + sorted_rows
-    table_body = "\n" + "\n".join(table_lines) + "\n"
-
-    return curr_header + table_body + curr_footer
+def merge_ticket_index_content(ancestor_text: str, current_text: str, other_text: str) -> str | None:
+    parts = [checked_table(text) for text in (ancestor_text, current_text, other_text)]
+    if any(part is None for part in parts):
+        return None
+    ancestor, current, other = parts
+    merged = []
+    for position in (0, 1, 3):
+        clean, value = three_way(ancestor[position], current[position], other[position])
+        if not clean:
+            return None
+        merged.append(value)
+    ancestor_rows, current_rows, other_rows = ancestor[2], current[2], other[2]
+    rows = []
+    for ticket in sorted(set(ancestor_rows) | set(current_rows) | set(other_rows)):
+        clean, value = three_way(ancestor_rows.get(ticket), current_rows.get(ticket), other_rows.get(ticket))
+        if not clean:
+            return None
+        if value is not None:
+            rows.append(value)
+    prefix, headers, suffix = merged
+    return prefix + "\n" + "\n".join(headers + rows) + "\n" + suffix
 
 
 def run_merge(ancestor_file: Path, current_file: Path, other_file: Path) -> int:

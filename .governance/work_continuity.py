@@ -10,15 +10,19 @@ durability still requires a protected external receipt store.
 from __future__ import annotations
 
 import argparse
+from contextlib import ExitStack, contextmanager
+import errno
 import hashlib
 import importlib.util
 import json
 import os
 from pathlib import Path
 import re
+import stat
 import subprocess
 import sys
 import tempfile
+import time
 from datetime import datetime, timezone
 from typing import Any, Iterable
 from urllib.parse import urlsplit
@@ -394,7 +398,9 @@ def validate_index(value: Any) -> dict[str, Any]:
         safe_id(entry["sessionId"], "index sessionId")
         reference(entry["eventRef"], "index eventRef", kind="receipt")
         reference(entry["checkpointRef"], "index checkpointRef", kind="receipt")
-        if not isinstance(entry["checkpointSequence"], int) or entry["checkpointSequence"] < 1:
+        if (not isinstance(entry["checkpointSequence"], int)
+                or isinstance(entry["checkpointSequence"], bool)
+                or entry["checkpointSequence"] < 1):
             fail("GOV-CONTINUITY-001", "index checkpointSequence is invalid")
         timestamp(entry["recordedAt"], "index recordedAt")
     timestamp(index["updatedAt"], "index updatedAt")
@@ -505,11 +511,139 @@ def storage_paths(root: Path) -> tuple[Path, Path, int, int]:
     )
 
 
-def iter_events(path: Path) -> Iterable[dict[str, Any]]:
-    if not path.exists():
-        return
+
+@contextmanager
+def _posix_stream_descriptor(path: Path, append: bool):
+    no_follow = getattr(os, "O_NOFOLLOW", None)
+    directory_flag = getattr(os, "O_DIRECTORY", None)
+    if no_follow is None or directory_flag is None:
+        fail("GOV-CONTINUITY-001", "safe continuity directory opens are unavailable")
+    directory_flags = os.O_RDONLY | directory_flag | no_follow | getattr(os, "O_CLOEXEC", 0)
+    directory = os.open(path.anchor, directory_flags)
+    descriptor = None
     try:
-        with path.open("rb") as stream:
+        for part in path.parts[1:-1]:
+            try:
+                child = os.open(part, directory_flags, dir_fd=directory)
+            except FileNotFoundError:
+                if not append:
+                    raise
+                try:
+                    os.mkdir(part, mode=0o700, dir_fd=directory)
+                except FileExistsError:
+                    pass  # Reopen with no-follow; a concurrent link is never traversed.
+                child = os.open(part, directory_flags, dir_fd=directory)
+            os.close(directory)
+            directory = child
+        flags = (os.O_WRONLY | os.O_CREAT | os.O_APPEND) if append else os.O_RDONLY
+        flags |= no_follow | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NONBLOCK", 0)
+        descriptor = os.open(path.name, flags, 0o600, dir_fd=directory)
+        yield descriptor
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        os.close(directory)
+
+
+@contextmanager
+def _windows_stream_descriptor(path: Path, append: bool, *, readwrite: bool = False):
+    # Open reparse points themselves. Held directory handles omit DELETE
+    # sharing, so parent names cannot be replaced during the file operation.
+    # https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew
+    import ctypes
+    from ctypes import wintypes
+    import msvcrt
+    if len(path.anchor) != 3 or path.anchor[1:] != ":\\":
+        fail("GOV-CONTINUITY-001", "continuity requires an absolute local drive path")
+    class FileInformation(ctypes.Structure):
+        _fields_ = [("attributes", wintypes.DWORD), ("creation", wintypes.FILETIME),
+                    ("access", wintypes.FILETIME), ("write", wintypes.FILETIME),
+                    ("volume", wintypes.DWORD), ("sizeHigh", wintypes.DWORD),
+                    ("sizeLow", wintypes.DWORD), ("links", wintypes.DWORD),
+                    ("indexHigh", wintypes.DWORD), ("indexLow", wintypes.DWORD)]
+    api = ctypes.WinDLL("kernel32", use_last_error=True)
+    api.CreateFileW.argtypes = [wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD,
+                               wintypes.LPVOID, wintypes.DWORD, wintypes.DWORD, wintypes.HANDLE]
+    api.CreateFileW.restype = wintypes.HANDLE
+    api.GetFileInformationByHandle.argtypes = [wintypes.HANDLE, ctypes.POINTER(FileInformation)]
+    api.GetFileInformationByHandle.restype = wintypes.BOOL
+    api.CloseHandle.argtypes = [wintypes.HANDLE]
+    api.CloseHandle.restype = wintypes.BOOL
+    invalid = ctypes.c_void_p(-1).value
+    handles = []
+    descriptor = None
+    def open_handle(candidate, directory=False):
+        access = 0x80 if directory else (
+            0xC0000080 if readwrite else (0x40000080 if append else 0x80000000))
+        flags = 0x00200000 | (0x02000000 if directory else 0)
+        creation = 4 if append and not directory else 3  # OPEN_ALWAYS / OPEN_EXISTING
+        handle = api.CreateFileW(str(candidate), access, 3, None, creation, flags, None)
+        if handle == invalid:
+            error = ctypes.get_last_error()
+            if error in (2, 3):
+                raise FileNotFoundError(errno.ENOENT, "continuity path is absent", str(candidate))
+            raise ctypes.WinError(error)
+        handles.append(handle)
+        metadata = FileInformation()
+        if not api.GetFileInformationByHandle(handle, ctypes.byref(metadata)):
+            raise ctypes.WinError(ctypes.get_last_error())
+        if metadata.attributes & 0x400 or bool(metadata.attributes & 0x10) != directory:
+            fail("GOV-CONTINUITY-001", "continuity paths must not be reparse points or unexpected types")
+        if not directory and metadata.links != 1:
+            fail("GOV-CONTINUITY-001", "continuity stream must be a single-linked regular file")
+        return handle
+    try:
+        open_handle(Path(path.anchor), directory=True)
+        current = Path(path.anchor)
+        for part in path.parts[1:-1]:
+            current /= part
+            try:
+                open_handle(current, directory=True)
+            except FileNotFoundError:
+                if not append:
+                    raise
+                try:
+                    current.mkdir(mode=0o700)
+                except FileExistsError:
+                    pass
+                open_handle(current, directory=True)
+        handle = open_handle(path)
+        descriptor = msvcrt.open_osfhandle(
+            handle, os.O_BINARY | os.O_NOINHERIT | (
+                os.O_RDWR if readwrite else (os.O_APPEND if append else os.O_RDONLY))
+        )
+        handles.pop()  # The CRT descriptor now owns the file handle.
+        yield descriptor
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        for handle in reversed(handles):
+            api.CloseHandle(handle)
+
+
+@contextmanager
+def _stream_descriptor(path: Path, append: bool):
+    candidate = path.absolute()
+    if not candidate.name or ".." in candidate.parts:
+        fail("GOV-CONTINUITY-001", "continuity stream needs a confined file path")
+    adapter = _windows_stream_descriptor if os.name == "nt" else _posix_stream_descriptor
+    try:
+        with adapter(candidate, append) as descriptor:
+            metadata = os.fstat(descriptor)
+            if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+                fail("GOV-CONTINUITY-001", "continuity stream must be a single-linked regular file")
+            yield descriptor
+    except FileNotFoundError:
+        if not append:
+            raise
+        fail("GOV-CONTINUITY-001", "continuity stream parent disappeared before creation")
+    except OSError as error:
+        fail("GOV-CONTINUITY-001", f"cannot safely access continuity stream: {error}")
+
+
+def iter_events(path: Path) -> Iterable[dict[str, Any]]:
+    try:
+        with _stream_descriptor(path, append=False) as descriptor, os.fdopen(descriptor, "rb", closefd=False) as stream:
             for number, raw in enumerate(stream, start=1):
                 if len(raw) > 1024 * 1024:
                     fail("GOV-CONTINUITY-001", f"event line {number} exceeds the bounded event size")
@@ -520,6 +654,8 @@ def iter_events(path: Path) -> Iterable[dict[str, Any]]:
                 except (UnicodeError, json.JSONDecodeError) as exc:
                     fail("GOV-CONTINUITY-002", f"event stream line {number} is invalid: {exc}")
                 yield validate_event(value)
+    except FileNotFoundError:
+        return
     except ContinuityError:
         raise
     except OSError as exc:
@@ -555,16 +691,12 @@ def event_state(events: Iterable[dict[str, Any]], repository: str) -> tuple[list
 
 
 def append_event(path: Path, event: dict[str, Any]) -> None:
-    path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     payload = canonical_bytes(event) + b"\n"
-    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
-    try:
+    with _stream_descriptor(path, append=True) as descriptor:
         offset = 0
         while offset < len(payload):
             offset += os.write(descriptor, payload[offset:])
         os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
 
 
 def index_from_events(repository: str, events: list[dict[str, Any]], maximum: int) -> dict[str, Any]:
@@ -594,10 +726,15 @@ def index_from_events(repository: str, events: list[dict[str, Any]], maximum: in
     return validate_index(value)
 
 
-def write_index(path: Path, value: dict[str, Any], maximum_bytes: int) -> None:
+def index_payload(value: dict[str, Any], maximum_bytes: int) -> bytes:
     payload = json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False).encode("utf-8") + b"\n"
     if len(payload) > maximum_bytes:
         fail("GOV-CONTINUITY-001", "checkpoint index exceeds its bounded byte limit")
+    return payload
+
+
+def write_index(path: Path, value: dict[str, Any], maximum_bytes: int) -> None:
+    payload = index_payload(value, maximum_bytes)
     path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     descriptor, temporary_name = tempfile.mkstemp(prefix="checkpoint-index.", suffix=".json", dir=path.parent)
     temporary = Path(temporary_name)
@@ -622,20 +759,183 @@ def write_index(path: Path, value: dict[str, Any], maximum_bytes: int) -> None:
             temporary.unlink()
 
 
+@contextmanager
+def _posix_lock_descriptor(path: Path):
+    """Anchor every parent and recheck public names after a potentially long wait."""
+    no_follow = getattr(os, "O_NOFOLLOW", None)
+    directory_flag = getattr(os, "O_DIRECTORY", None)
+    if no_follow is None or directory_flag is None:
+        fail("GOV-CONTINUITY-001", "safe continuity lock directory opens are unavailable")
+    directory_flags = os.O_RDONLY | directory_flag | no_follow | getattr(os, "O_CLOEXEC", 0)
+    directories = [os.open(path.anchor, directory_flags)]
+    descriptor = None
+    try:
+        for part in path.parts[1:-1]:
+            try:
+                child = os.open(part, directory_flags, dir_fd=directories[-1])
+            except FileNotFoundError:
+                try:
+                    os.mkdir(part, mode=0o700, dir_fd=directories[-1])
+                except FileExistsError:
+                    pass
+                child = os.open(part, directory_flags, dir_fd=directories[-1])
+            directories.append(child)
+        descriptor = os.open(path.name, os.O_RDWR | os.O_CREAT | no_follow
+                             | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NONBLOCK", 0),
+                             0o600, dir_fd=directories[-1])
+        def verify_identity():
+            # Held descriptors prevent traversal through a swapped link. They
+            # alone do not prove the public path still names the locked inode.
+            for parent, child, part in zip(directories, directories[1:], path.parts[1:-1]):
+                named = os.stat(part, dir_fd=parent, follow_symlinks=False)
+                held = os.fstat(child)
+                if not stat.S_ISDIR(named.st_mode) or (named.st_dev, named.st_ino) != (held.st_dev, held.st_ino):
+                    fail("GOV-CONTINUITY-001", "continuity lock parent identity changed")
+            named = os.stat(path.name, dir_fd=directories[-1], follow_symlinks=False)
+            held = os.fstat(descriptor)
+            if (not stat.S_ISREG(named.st_mode) or named.st_nlink != 1
+                    or (named.st_dev, named.st_ino) != (held.st_dev, held.st_ino)):
+                fail("GOV-CONTINUITY-001", "continuity lock file identity changed")
+        yield descriptor, verify_identity
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        for directory in reversed(directories):
+            os.close(directory)
+
+
+@contextmanager
+def _lock_descriptor(path: Path):
+    with ExitStack() as handles:
+        try:
+            if os.name == "nt":
+                # No DELETE sharing on any held handle: Windows cannot rename
+                # the parent or lock while this transaction owns those handles.
+                descriptor = handles.enter_context(_windows_stream_descriptor(path, True, readwrite=True))
+                verify = lambda: None
+            elif os.name == "posix":
+                descriptor, verify = handles.enter_context(_posix_lock_descriptor(path))
+            else:
+                fail("GOV-CONTINUITY-001", "safe continuity transaction locking is unavailable")
+        except (OSError, NotImplementedError) as error:
+            raise ContinuityError("GOV-CONTINUITY-001", "continuity transaction lock path is unsafe or unavailable") from error
+        def verify_identity():
+            try:
+                verify()
+            except (OSError, NotImplementedError) as error:
+                raise ContinuityError("GOV-CONTINUITY-001", "continuity transaction lock identity is unavailable") from error
+        # Exceptions from the transaction body keep their original meaning,
+        # notably interrupted journal/index writes which exact replay repairs.
+        yield descriptor, verify_identity
+
+
+@contextmanager
+def storage_transaction(event_path: Path):
+    """Stable OS-owned lock; never unlink it while another writer can use it."""
+    if not event_path.name or ".." in event_path.absolute().parts:
+        fail("GOV-CONTINUITY-001", "continuity transaction needs a confined file path")
+    lock_path = event_path.with_name(event_path.name + ".lock").absolute()
+    with _lock_descriptor(lock_path) as (descriptor, verify_identity):
+        with _locked_transaction(descriptor, verify_identity):
+            yield
+
+
+@contextmanager
+def _locked_transaction(descriptor, verify_identity):
+    acquired = False
+    try:
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+            fail("GOV-CONTINUITY-001", "continuity transaction lock must be a regular private file")
+        if os.name == "nt":
+            import msvcrt
+            def acquire():
+                os.lseek(descriptor, 0, os.SEEK_SET)
+                msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
+            def unlock():
+                os.lseek(descriptor, 0, os.SEEK_SET)
+                msvcrt.locking(descriptor, msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            def acquire():
+                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            def unlock():
+                fcntl.flock(descriptor, fcntl.LOCK_UN)
+        deadline = time.monotonic() + 30
+        while True:
+            verify_identity()
+            try:
+                acquire()
+                acquired = True
+                break
+            except OSError as error:
+                if error.errno not in {errno.EACCES, errno.EAGAIN, errno.EDEADLK}:
+                    raise
+                if time.monotonic() >= deadline:
+                    fail("GOV-CONTINUITY-001", "continuity transaction lock acquisition timed out")
+                time.sleep(0.05)
+        verify_identity()
+        yield
+    finally:
+        if acquired:
+            unlock()
+
+
 def commit_event(root: Path, event: dict[str, Any]) -> dict[str, Any]:
     repository = repository_ref(root)
     event_path, index_path, maximum, maximum_bytes = storage_paths(root)
-    events, _ = event_state(iter_events(event_path), repository)
-    matching = next((existing for existing in events if existing["eventRef"] == event["eventRef"]), None)
-    if matching is not None:
-        if matching != event:
-            fail("GOV-CONTINUITY-002", "event reference already binds different content")
-        return {"status": "already-recorded", "event": event}
-    candidate = events + [event]
-    event_state(candidate, repository)
-    append_event(event_path, event)
-    write_index(index_path, index_from_events(repository, candidate, maximum), maximum_bytes)
-    return {"status": "recorded", "event": event}
+    validate_event(event)
+    with storage_transaction(event_path):
+        events, _ = event_state(iter_events(event_path), repository)
+        matching = next((existing for existing in events if existing["eventRef"] == event["eventRef"]), None)
+        if matching is not None:
+            if matching != event:
+                fail("GOV-CONTINUITY-002", "event reference already binds different content")
+            # An append can survive a failed index replace. The journal is
+            # authoritative for this advisory projection; exact replay heals it.
+            write_index(index_path, index_from_events(repository, events, maximum), maximum_bytes)
+            return {"status": "already-recorded", "event": event}
+        candidate = events + [event]
+        event_state(candidate, repository)
+        index = index_from_events(repository, candidate, maximum)
+        index_payload(index, maximum_bytes)  # Reject bounded-size failure before append.
+        append_event(event_path, event)
+        write_index(index_path, index, maximum_bytes)
+        return {"status": "recorded", "event": event}
+
+
+def resolve_compact_target_branch(root: Path) -> str:
+    candidates = (
+        root / ".governance" / "manifest.json",
+        root / ".governance" / "manifest.base.json",
+        root / "governance" / "manifest.hub.json",
+    )
+    targets: list[str] = []
+    for cand in candidates:
+        if cand.is_file():
+            try:
+                manifest_data = json.loads(cand.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            delivery_cfg = manifest_data.get("delivery")
+            if isinstance(delivery_cfg, dict):
+                tb = delivery_cfg.get("targetBranches")
+                if isinstance(tb, list):
+                    for b in tb:
+                        if isinstance(b, str) and b and b not in targets:
+                            targets.append(b)
+            rep_cfg = manifest_data.get("repositoryPolicy", {}).get("delivery", {})
+            if isinstance(rep_cfg, dict):
+                tb = rep_cfg.get("targetBranches")
+                if isinstance(tb, list):
+                    for b in tb:
+                        if isinstance(b, str) and b and b not in targets:
+                            targets.append(b)
+            if targets:
+                break
+    if len(targets) == 1:
+        return targets[0]
+    fail("GOV-CONTINUITY-001", "intent target branch must be a bounded non-empty string")
 
 
 def intent_state(root: Path, ticket: str) -> tuple[dict[str, Any], str, str, str]:
@@ -666,6 +966,8 @@ def intent_state(root: Path, ticket: str) -> tuple[dict[str, Any], str, str, str
         fail("GOV-CONTINUITY-003", "ticket intent workstream is invalid")
     delivery = value.get("delivery")
     target_branch = delivery.get("targetBranch") if isinstance(delivery, dict) else None
+    if target_branch is None:
+        target_branch = resolve_compact_target_branch(root)
     git_ref(target_branch, "intent target branch")
     scope = {
         "ticket": value.get("ticket"),
@@ -849,9 +1151,10 @@ def rebuild_index(args: argparse.Namespace) -> dict[str, Any]:
     root = args.root.resolve()
     repository = repository_ref(root)
     event_path, index_path, maximum, maximum_bytes = storage_paths(root)
-    events, _ = event_state(iter_events(event_path), repository)
-    index = index_from_events(repository, events, maximum)
-    write_index(index_path, index, maximum_bytes)
+    with storage_transaction(event_path):
+        events, _ = event_state(iter_events(event_path), repository)
+        index = index_from_events(repository, events, maximum)
+        write_index(index_path, index, maximum_bytes)
     return {"status": "rebuilt", "entries": len(index["entries"]), "index": str(index_path.relative_to(root))}
 
 

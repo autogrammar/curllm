@@ -14,13 +14,17 @@
       "additionalProperties": false,
       "required": ["path", "hooksPathConfig", "runtimeFiles"],
       "properties": {
-        "path": { "type": "string", "pattern": "^[^/][^\\\\]*$" },
+        "path": { "type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))[^/\\\\:\\x00-\\x1f\\x7f]+(?:/[^/\\\\:\\x00-\\x1f\\x7f]+)*$" },
         "hooksPathConfig": { "type": "string", "minLength": 1 },
+        "additionalHooks": {
+          "type": "array", "uniqueItems": true,
+          "items": { "type": "string", "enum": [".githooks/commit-msg", ".githooks/prepare-commit-msg"] }
+        },
         "runtimeFiles": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "type": "string", "pattern": "^[^/][^\\\\]*$" }
+          "items": { "type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))[^/\\\\:\\x00-\\x1f\\x7f]+(?:/[^/\\\\:\\x00-\\x1f\\x7f]+)*$" }
         }
       }
     },
@@ -33,7 +37,7 @@
         "required": ["id", "file", "readers"],
         "properties": {
           "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
-          "file": { "type": "string", "pattern": "^[^/][^\\\\]*$" },
+          "file": { "type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))[^/\\\\:\\x00-\\x1f\\x7f]+(?:/[^/\\\\:\\x00-\\x1f\\x7f]+)*$" },
           "readers": {
             "type": "array",
             "minItems": 1,
@@ -59,7 +63,7 @@
             "required": ["id", "path"],
             "properties": {
               "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
-              "path": { "type": "string", "pattern": "^[^/][^\\\\]*$" }
+              "path": { "type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))[^/\\\\:\\x00-\\x1f\\x7f]+(?:/[^/\\\\:\\x00-\\x1f\\x7f]+)*$" }
             }
           }
         },
@@ -74,7 +78,7 @@
             "properties": {
               "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
               "repository": { "type": "string", "pattern": "^wellmanifest/[a-z0-9.-]+$" },
-              "path": { "type": "string", "pattern": "^[^/][^\\\\]*$" },
+              "path": { "type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))[^/\\\\:\\x00-\\x1f\\x7f]+(?:/[^/\\\\:\\x00-\\x1f\\x7f]+)*$" },
               "url": { "type": "string", "pattern": "^https://github\\.com/wellmanifest/[a-z0-9.-]+/blob/main/.+$" }
             }
           }

@@ -37,6 +37,11 @@ fi
 
 start_count="$(grep -c '^<!-- AUTO:TICKET_INDEX:START -->$' "$index_file" || true)"
 end_count="$(grep -c '^<!-- AUTO:TICKET_INDEX:END -->$' "$index_file" || true)"
+if [[ "$start_count" -eq 0 && "$end_count" -eq 0 ]]; then
+  printf '\n<!-- AUTO:TICKET_INDEX:START -->\n<!-- AUTO:TICKET_INDEX:END -->\n' >> "$index_file"
+  start_count=1
+  end_count=1
+fi
 if [[ "$start_count" != 1 || "$end_count" != 1 ]]; then
   echo "$index_file must contain exactly one ticket-index marker pair" >&2
   exit 2

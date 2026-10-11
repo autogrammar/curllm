@@ -64,6 +64,16 @@ contract_path() {
   local root="$1"
   for candidate in "governance/agent-hosts.json" ".governance/agent-hosts.json"; do
     if [[ -f "$root/$candidate" ]]; then
+      python3 - "$root/$candidate" <<'PY' || return 1
+import json, sys
+contract = json.load(open(sys.argv[1], encoding="utf-8"))
+hooks = contract.get("hook", {}).get("additionalHooks", [])
+allowed = {".githooks/commit-msg", ".githooks/prepare-commit-msg"}
+if (not isinstance(hooks, list)
+        or any(not isinstance(hook, str) or hook not in allowed for hook in hooks)
+        or len(hooks) != len(set(hooks))):
+    raise SystemExit("GOV-AGENT-HOST-004: invalid additional hook declaration")
+PY
       printf '%s\n' "$root/$candidate"
       return 0
     fi
@@ -86,6 +96,8 @@ if hub.is_file():
 for host in contract["hosts"]:
     print(f"{host['file']}\t0")
 print(f"{contract['hook']['path']}\t1")
+for hook in contract["hook"].get("additionalHooks", []):
+    print(f"{hook}\t1")
 for runtime_file in contract["hook"]["runtimeFiles"]:
     # The hub owns package sources; adopters own the managed target paths.
     relative = source_paths.get(runtime_file, runtime_file)
@@ -112,6 +124,7 @@ contract_source = sys.argv[3]
 governed = (
     {host["file"] for host in contract["hosts"]}
     | {contract["hook"]["path"]}
+    | set(contract["hook"].get("additionalHooks", []))
     | set(contract["hook"]["runtimeFiles"])
 )
 selected = [item for item in manifest["files"]
@@ -259,11 +272,15 @@ paragraph = [
 text = path.read_text(encoding="utf-8") if path.exists() else ""
 lines = text.splitlines()
 heading = f"# {marker}"
+if lines.count(heading) > 1:
+    raise SystemExit("Duplicate managed host contract heading; preserve the file and repair its boundary.")
 if heading in lines:
     start = lines.index(heading)
     body = start + 1
     while body < len(lines) and not lines[body].strip():
         body += 1
+    if body >= len(lines) or not lines[body].startswith("When the current "):
+        raise SystemExit("Malformed managed host contract paragraph; preserve the file and repair its boundary.")
     if body < len(lines) and lines[body].startswith("When the current "):
         end = body
         while end < len(lines) and lines[end].strip() and not lines[end].startswith("#"):

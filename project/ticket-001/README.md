@@ -2,7 +2,7 @@
 
 - **ID**: ticket-001
 - **Owner**: antigravity
-- **Status**: IN_PROGRESS
+- **Status**: DONE
 - **Workflow state**: EDIT
 - **Created**: 2026-09-19
 

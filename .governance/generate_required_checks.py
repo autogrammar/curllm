@@ -16,6 +16,7 @@ Read-only unless --write is given.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -27,7 +28,10 @@ SCHEMA = "new-project.required-checks/v1"
 JOB_LINE = re.compile(r"^  ([A-Za-z0-9][A-Za-z0-9_-]*):\s*(?:#.*)?$")
 JOB_NAME_LINE = re.compile(r"^    name:\s*(.+?)\s*$")
 TOP_LEVEL_KEY = re.compile(r"^[A-Za-z_][A-Za-z0-9_-]*:")
-REUSABLE_CALL = re.compile(r"^    uses:\s*\S+/\S+/\.github/workflows/")
+REUSABLE_CALL = re.compile(r"^    (?:uses:|['\"]uses['\"]:)")
+IMMUTABLE_CALL = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml@[0-9a-f]{40}")
+CONTRACT_PATH = Path('.github/reusable-workflows.lock.json')
+CONTRACT_SCHEMA = 'new-project.reusable-workflows/v1'
 DECLARATION_CANDIDATES = (
     Path(".governance/required-checks.json"),
     Path("governance/required-checks.json"),
@@ -38,22 +42,198 @@ HUB_REPOSITORY = "wellmanifest/new-project"
 
 def scalar(raw: str) -> str:
     value = raw.strip()
+    if value.startswith('"'):
+        try:
+            decoded, end = json.JSONDecoder().raw_decode(value)
+        except json.JSONDecodeError as exc:
+            raise SystemExit('unsupported double-quoted workflow scalar') from exc
+        if value[end:].strip() and not value[end:].lstrip().startswith('#'):
+            raise SystemExit('invalid trailing workflow scalar content')
+        return decoded
+    if value.startswith("'"):
+        match = re.fullmatch(r"'((?:[^']|'')*)'\s*(?:#.*)?", value)
+        if match is None:
+            raise SystemExit('unsupported single-quoted workflow scalar')
+        return match.group(1).replace("''", "'")
     if " #" in value:
         value = value.split(" #", 1)[0].rstrip()
-    if len(value) >= 2 and value[0] in {"'", '"'} and value[-1] == value[0]:
-        return value[1:-1]
     return value
 
 
-def published_checks_text(text: str, callers: list[str]) -> list[str]:
-    """Job display names, mirroring how GitHub names a check context.
+def unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise SystemExit(f'duplicate reusable workflow contract key: {key}')
+        result[key] = value
+    return result
 
-    A job that calls a reusable workflow is collected into ``callers`` instead of
-    the returned names: it publishes one context per job of the called workflow,
-    named "<caller> / <callee job>", and the callee lives in another repository.
+
+def contained_source(root: Path, relative: str) -> Path:
+    path = Path(relative)
+    if (path.is_absolute() or '..' in path.parts or '\\' in relative
+            or not re.fullmatch(r'\.github/reusable-workflows/[A-Za-z0-9_.-]+\.ya?ml', relative)
+            or path.as_posix() != relative):
+        raise SystemExit('unsafe reusable workflow source path')
+    candidate = root
+    for part in path.parts:
+        candidate /= part
+        if candidate.is_symlink():
+            raise SystemExit('symlinked reusable workflow source')
+    if not candidate.is_file():
+        raise SystemExit('missing reusable workflow source')
+    return candidate
+
+
+def reusable_sources(root: Path) -> dict[str, str]:
+    """Read reviewed source bindings; this never fetches or executes workflows.
+
+    The SHA binds the callee reference and the digest binds its reviewed bytes.
+    Neither the lock nor these bytes are independent publication approval.
     """
+    path = root / CONTRACT_PATH
+    if not path.exists() and not path.is_symlink():
+        return {}
+    if path.is_symlink() or (root / '.github').is_symlink():
+        raise SystemExit('symlinked reusable workflow contract')
+    try:
+        document = json.loads(path.read_text(encoding='utf-8'), object_pairs_hook=unique_object)
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise SystemExit(f'invalid reusable workflow contract: {exc}') from exc
+    if (not isinstance(document, dict) or set(document) != {'schema', 'workflows'}
+            or document['schema'] != CONTRACT_SCHEMA
+            or not isinstance(document['workflows'], list) or not document['workflows']):
+        raise SystemExit('invalid reusable workflow contract shape')
+    sources = {}
+    for item in document['workflows']:
+        if not isinstance(item, dict) or set(item) != {'uses', 'sourceFile', 'sourceSha256'}:
+            raise SystemExit('invalid reusable workflow source binding')
+        ref, relative, digest = item['uses'], item['sourceFile'], item['sourceSha256']
+        if not isinstance(ref, str) or not IMMUTABLE_CALL.fullmatch(ref):
+            raise SystemExit('reusable workflow must use a full immutable commit SHA')
+        if ref in sources:
+            raise SystemExit('duplicate reusable workflow reference')
+        if not isinstance(relative, str) or not isinstance(digest, str) or not re.fullmatch('[0-9a-f]{64}', digest):
+            raise SystemExit('invalid reusable workflow source digest or path')
+        source = contained_source(root, relative).read_bytes()
+        if hashlib.sha256(source).hexdigest() != digest:
+            raise SystemExit('reusable workflow source digest mismatch')
+        try:
+            sources[ref] = source.decode('utf-8')
+        except UnicodeError as exc:
+            raise SystemExit('reusable workflow source must be UTF-8') from exc
+    return sources
+
+
+def literal_jobs(text: str) -> list[tuple[str, str]]:
+    """Only literal block-mapping job declarations have an offline contract."""
+    jobs = []
+    current = None
+    body = []
+    in_jobs = False
+    top_keys = set()
+    for line in text.splitlines():
+        if not line.strip() or line.lstrip().startswith('#'):
+            continue
+        if '\t' in line[:len(line) - len(line.lstrip())]:
+            raise SystemExit('unsupported reusable workflow indentation')
+        if not line.startswith(' '):
+            if not TOP_LEVEL_KEY.match(line):
+                raise SystemExit('unsupported reusable workflow top-level mapping')
+            key = line.split(':', 1)[0]
+            if key in top_keys:
+                raise SystemExit('duplicate reusable workflow top-level key')
+            top_keys.add(key)
+        if TOP_LEVEL_KEY.match(line):
+            if current is not None:
+                jobs.append((current, '\n'.join(body)))
+            current, body = None, []
+            in_jobs = bool(re.fullmatch(r'jobs:\s*(?:#.*)?', line))
+            continue
+        if not in_jobs or not line.strip() or line.lstrip().startswith('#'):
+            continue
+        match = JOB_LINE.match(line)
+        if match:
+            if current is not None:
+                jobs.append((current, '\n'.join(body)))
+            current, body = match.group(1), []
+        elif line.startswith('  ') and not line.startswith('    '):
+            raise SystemExit('unsupported reusable workflow job mapping')
+        elif current is not None:
+            if line.startswith('    ') and not line.startswith('     '):
+                if not re.match(r'^    [A-Za-z_][A-Za-z0-9_-]*:', line):
+                    raise SystemExit('unsupported reusable workflow job fields')
+            body.append(line)
+        else:
+            raise SystemExit('unsupported reusable workflow jobs')
+    if current is not None:
+        jobs.append((current, '\n'.join(body)))
+    if not jobs or len({key for key, _ in jobs}) != len(jobs):
+        raise SystemExit('missing or duplicate reusable workflow jobs')
+    return jobs
+
+
+def literal_name(key: str, body: str) -> str:
+    names = [scalar(m.group(1)) for line in body.splitlines() if (m := JOB_NAME_LINE.match(line))]
+    name = names[0] if names else key
+    if len(names) > 1 or not name or '${{' in name or name.startswith(('*', '&', '|', '>')):
+        raise SystemExit('unsupported reusable workflow job name')
+    return name
+
+
+def callee_names(text: str) -> list[str]:
+    active = '\n'.join(line for line in text.splitlines() if not line.lstrip().startswith('#'))
+    if not re.search(r'^on:\s*(?:workflow_call\s*(?:#.*)?$|\n\s+workflow_call:)', active, re.M):
+        raise SystemExit('source is not a reusable workflow_call workflow')
+    names = []
+    for key, body in literal_jobs(text):
+        fields = [line.split(':', 1)[0].strip() for line in body.splitlines()
+                  if re.match(r'^    [A-Za-z_][A-Za-z0-9_-]*:', line)]
+        if len(fields) != len(set(fields)):
+            raise SystemExit('duplicate reusable workflow job field')
+        if re.search(r'^    (?:uses|strategy|if):', body, re.M):
+            raise SystemExit('nested, matrix or conditional reusable jobs are unsupported')
+        names.append(literal_name(key, body))
+    if len(names) != len(set(names)):
+        raise SystemExit('duplicate reusable workflow check names')
+    return names
+
+
+def resolved_checks_text(text: str, sources: dict[str, str], callers: list[str]) -> list[str]:
+    if not pull_request_gating(text):
+        return []
+    unresolved = []
+    names = published_checks_text(text, unresolved)
+    active = '\n'.join(line for line in text.splitlines() if not line.lstrip().startswith('#'))
+    if (not unresolved and re.search(
+            r'^  [A-Za-z0-9][A-Za-z0-9_-]*:\s*\{.*\buses\b', active, re.M)):
+        raise SystemExit('unsupported reusable workflow caller mapping')
+    if not unresolved:
+        return names
+    for key, body in literal_jobs(text):
+        calls = [scalar(line.split('uses:', 1)[1]) for line in body.splitlines()
+                 if REUSABLE_CALL.match(line)]
+        if not calls:
+            continue
+        name = literal_name(key, body)
+        if len(calls) != 1:
+            raise SystemExit('duplicate reusable workflow uses')
+        source = sources.get(calls[0])
+        if source is None:
+            callers.append(name)
+            continue
+        if re.search(r'^    (?:strategy|if):', body, re.M):
+            raise SystemExit('matrix or conditional reusable callers are unsupported')
+        names.extend(f'{name} / {leaf}' for leaf in callee_names(source))
+    if len(names) != len(set(names)):
+        raise SystemExit('duplicate published reusable check names')
+    return names
+
+
+def pull_request_gating(text: str) -> bool:
+    """Keep after-merge-only callers out of pre-merge declarations."""
     if "pull_request" not in text:
-        return []  # A workflow that never runs on a PR cannot gate one.
+        return False  # A workflow that never runs on a PR cannot gate one.
     # A pull_request trigger with exclusively the 'closed' type publishes
     # checks that run after the merge decision, never before.  They cannot
     # gate a pull request and must not inflate the required-checks declaration.
@@ -65,7 +245,12 @@ def published_checks_text(text: str, callers: list[str]) -> list[str]:
     ) or bool(
         re.search(r"\btypes:\s*\n(?:\s*-[^\n]*\n)*\s*-\s*(?:opened|synchronize|reopened|ready_for_review)\b", text)
     )
-    if has_closed_type and not has_gating_types:
+    return not (has_closed_type and not has_gating_types)
+
+
+def published_checks_text(text: str, callers: list[str]) -> list[str]:
+    """Direct display names and unresolved reusable caller display names."""
+    if not pull_request_gating(text):
         return []
     names: list[str] = []
     current: str | None = None
@@ -143,12 +328,10 @@ def declaration_for(
         return None
     checks: list[dict[str, str]] = []
     callers: list[str] = []
+    sources = reusable_sources(root)
     for relative, (workflow, content) in sorted(workflows.items()):
-        names = (
-            published_checks_text(content.decode("utf-8"), callers)
-            if content is not None
-            else published_checks(workflow, callers)
-        )
+        text = content.decode('utf-8') if content is not None else workflow.read_text(encoding='utf-8')
+        names = resolved_checks_text(text, sources, callers)
         for name in names:
             checks.append({"name": name, "workflowFile": relative})
     if not checks and not callers:

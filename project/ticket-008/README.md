@@ -1,7 +1,7 @@
 # Install continuous curllm monitoring
 
 - **Owner**: agent:codex
-- **Status**: IN_PROGRESS
+- **Status**: DONE
 - **Workflow state**: PUBLICATION
 - **Workstream**: governance
 

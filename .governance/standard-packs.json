@@ -34,7 +34,8 @@
         {"id": "wellmanifest/merge", "minimumLevel": "S4"},
         {"id": "wellmanifest/validation-attestation", "minimumLevel": "S4"},
         {"id": "wellmanifest/ticket-lifecycle", "minimumLevel": "S3"},
-        {"id": "wellmanifest/logs", "minimumLevel": "S3"}
+        {"id": "wellmanifest/logs", "minimumLevel": "S3"},
+        {"id": "wellmanifest/docs", "minimumLevel": "S3"}
       ]
     },
     "domain-pack": {
@@ -53,7 +54,8 @@
       "extends": ["runtime-service"],
       "requirements": [
         {"id": "wellmanifest/repair-lifecycle", "minimumLevel": "S5"},
-        {"id": "wellmanifest/validation-attestation", "minimumLevel": "S5"}
+        {"id": "wellmanifest/validation-attestation", "minimumLevel": "S5"},
+        {"id": "wellmanifest/session-recovery", "minimumLevel": "S3"}
       ]
     },
     "deployment": {
@@ -86,11 +88,13 @@
     {"id": "wellmanifest/authority-lifecycle", "owns": ["authority lease semantics", "fencing and expiry semantics"]},
     {"id": "wellmanifest/llm", "owns": ["LLM policy boundary"], "excludes": ["runtime provider credentials", "runtime model routing"]},
     {"id": "wellmanifest/logs", "owns": ["structured log contract", "diagnostic event vocabulary"]},
+    {"id": "wellmanifest/docs", "owns": ["documentation ownership", "canonical document paths", "documentation gate"]},
     {"id": "wellmanifest/poa", "owns": ["plan of action contract"]},
     {"id": "wellmanifest/dsl", "owns": ["DSL interoperability contract"]},
     {"id": "wellmanifest/code-dsl", "owns": ["code-level semantic query contract", "AST diagnostics model"]},
     {"id": "wellmanifest/nl-dsl-llm", "owns": ["tripartite natural-language, canonical DSL, and adaptive LLM contract", "universal MCP/CLI parity"]},
     {"id": "wellmanifest/repair-lifecycle", "owns": ["repair and remediation lifecycle"]},
-    {"id": "wellmanifest/deployment", "owns": ["deployment contract", "deployment verification"]}
+    {"id": "wellmanifest/deployment", "owns": ["deployment contract", "deployment verification"]},
+    {"id": "wellmanifest/session-recovery", "owns": ["LLM session recovery", "conversation storage resilience", "host resumption protocol", "session crash isolation", "state rehydration"]}
   ]
 }

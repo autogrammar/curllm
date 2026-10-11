@@ -2,7 +2,7 @@
 
 - **ID**: ticket-009
 - **Owner**: agent:codex
-- **Status**: IN_PROGRESS
+- **Status**: DONE
 - **Workflow state**: PUBLICATION
 - **Workstream**: application
 

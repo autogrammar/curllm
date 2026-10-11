@@ -118,10 +118,17 @@ def local_remote_path(root: Path, remote: str) -> Path | None:
 
 def normalized_network_remote(remote: str) -> str:
     value = remote.strip().rstrip("/")
-    parsed = urlparse(value)
+    try:
+        parsed = urlparse(value)
+        port = parsed.port
+    except ValueError as error:
+        raise AuditError("Network remote has an invalid host or port") from error
     if parsed.scheme and parsed.hostname:
         path = parsed.path.lstrip("/")
         host = parsed.hostname.lower()
+        default_port = {"ssh": 22, "https": 443, "http": 80, "git": 9418}.get(parsed.scheme)
+        if port is not None and port != default_port:
+            host = f"[{host}]:{port}" if ":" in host else f"{host}:{port}"
     else:
         match = SCP_REMOTE_RE.fullmatch(value)
         if not match:

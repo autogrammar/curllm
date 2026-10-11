@@ -140,8 +140,13 @@ def load_authorization(root, path, expected_digest):
         raise MigrationError('GOV-SNAPSHOT-MIGRATION-003', 'External authorization is invalid or its protected pin differs') from error
 
 
+def _entry_stamp(info):
+    return (info.st_dev, info.st_ino, info.st_mode, info.st_size,
+            info.st_mtime_ns, info.st_ctime_ns)
+
+
 def workspace_entry(root, path):
-    """Hash only the approved path, never following candidate directory symlinks."""
+    """Bind content and Git mode to one descriptor; reject observed mutation."""
     descriptor = os.open(root, os.O_RDONLY | os.O_DIRECTORY)
     try:
         parts = path.split('/')
@@ -149,16 +154,32 @@ def workspace_entry(root, path):
             child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=descriptor)
             os.close(descriptor)
             descriptor = child
-        info = os.stat(parts[-1], dir_fd=descriptor, follow_symlinks=False)
-        if stat.S_ISLNK(info.st_mode):
+        try:
+            opened = os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
+                             dir_fd=descriptor)
+        except FileNotFoundError:
+            return None
+        except OSError:
+            before = os.stat(parts[-1], dir_fd=descriptor, follow_symlinks=False)
+            if not stat.S_ISLNK(before.st_mode):
+                return {'unsupported': True}
             raw = os.fsencode(os.readlink(parts[-1], dir_fd=descriptor))
+            after = os.stat(parts[-1], dir_fd=descriptor, follow_symlinks=False)
+            if _entry_stamp(before) != _entry_stamp(after):
+                return {'unsupported': True}
             mode = '120000'
-        elif stat.S_ISREG(info.st_mode):
-            with os.fdopen(os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=descriptor), 'rb') as stream:
-                raw = stream.read()
-            mode = '100755' if info.st_mode & stat.S_IXUSR else '100644'
         else:
-            return {'unsupported': True}
+            with os.fdopen(opened, 'rb') as stream:
+                before = os.fstat(stream.fileno())
+                if not stat.S_ISREG(before.st_mode):
+                    return {'unsupported': True}
+                raw = stream.read()
+                after = os.fstat(stream.fileno())
+                current = os.stat(parts[-1], dir_fd=descriptor, follow_symlinks=False)
+                if (_entry_stamp(before) != _entry_stamp(after)
+                        or _entry_stamp(after) != _entry_stamp(current)):
+                    return {'unsupported': True}
+                mode = '100755' if after.st_mode & stat.S_IXUSR else '100644'
         return {'mode': mode, 'oid': hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()}
     except FileNotFoundError:
         return None

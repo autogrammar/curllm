@@ -45,14 +45,14 @@ pipeline:
       seconds: 300
     - kind: systemd-path
 
-  command: python3 scripts/worktree_overlap_check.py --workspace-root {workdir}
+  command: python3 .governance/worktree_overlap_check.py --workspace-root {workdir}
 
-# Install (see docs/WORKTREE_GUARD.md):
-#   per repository   ./scripts/install-worktree-guard.sh --target <repo> --pyqual <repo>/pyqual.yaml
-#   per workspace    ./scripts/install-worktree-guard.sh --workspace <org-dir> --interval 300 --enable
+# Run the managed, read-only guard:
+#   once:  python3 .governance/worktree_guard.py --root . --once
+#   watch: python3 .governance/worktree_guard.py --root . --watch --interval 300
 #
 # Optional pyqual.yaml snippet, also printed by
-# `python3 scripts/worktree_guard.py --print-pyqual-stage`:
+# `python3 .governance/worktree_guard.py --print-pyqual-stage`:
 #
 # custom_tools:
 #   - name: worktree_guard

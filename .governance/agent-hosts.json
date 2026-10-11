@@ -4,6 +4,7 @@
   "hook": {
     "path": ".githooks/pre-commit",
     "hooksPathConfig": ".githooks",
+    "additionalHooks": [".githooks/commit-msg"],
     "runtimeFiles": [
       ".governance/worktree_guard.py",
       ".governance/worktree_overlap_check.py",

@@ -1,7 +1,7 @@
 # Continuous diagnostics and verified autonomy runtime
 
 - **Owner**: agent:codex
-- **Status**: IN_PROGRESS
+- **Status**: DONE
 - **Workflow state**: PUBLICATION
 - **Workstream**: application
 

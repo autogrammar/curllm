@@ -308,7 +308,11 @@ function globToRegExp(glob) {
   let expression = "^";
   for (let index = 0; index < glob.length; index += 1) {
     const char = glob[index];
-    if (char === "*" && glob[index + 1] === "*") {
+    if (char === "*" && glob[index + 1] === "*" && glob[index + 2] === "/"
+        && (index === 0 || glob[index - 1] === "/")) {
+      expression += "(?:[^/]+/)*";
+      index += 2;
+    } else if (char === "*" && glob[index + 1] === "*") {
       expression += ".*";
       index += 1;
     } else if (char === "*") {

@@ -2,7 +2,7 @@
 
 - **ID**: ticket-005
 - **Owner**: agent:codex
-- **Status**: IN_PROGRESS
+- **Status**: DONE
 - **Workflow state**: PUBLICATION
 - **Created**: 2026-10-06
 

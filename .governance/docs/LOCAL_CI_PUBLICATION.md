@@ -1,15 +1,18 @@
 # Local CI publication policy — adopted reference
 
-Canonical policy: [Wellmanifest/new-project 0.20.10](https://github.com/wellmanifest/new-project/blob/d5f77d83b3752477cfb95a535d0e1ce77f148576/docs/information/local-ci-publication.md).
-Source revision: `d5f77d83b3752477cfb95a535d0e1ce77f148576`.
-Canonical document SHA-256: `44803480f1d51f64eec81a62335b6725747f01b5f2de78105ebfc4017a7922c6`.
+Canonical policy: [Wellmanifest/new-project 0.20.53](https://github.com/wellmanifest/new-project/blob/d4dab328fbea876eadd3f4ad4e2349d520a2b15a/docs/information/local-ci-publication.md).
+Source revision: `d4dab328fbea876eadd3f4ad4e2349d520a2b15a`.
+Canonical document SHA-256: `58416ae05eb5513fd1c082c81c9c4be18cb8e6b2672c864bc20e9a8957401b59`.
 
 This managed file is an adoption reference. The authored document and its
 metadata remain at the canonical Wellmanifest home; do not register this copy
 as a new document owned by the adopting repository.
 
-For Semcod and Subactor, prefer protected local OneDev verification followed
-by the independent local Validator App. Resolve the actual protected profile,
+For every repository, by default, prefer protected local OneDev verification
+followed by the independent local Validator App. No organization list limits
+this default; only `.governance/local-ci-publication.json` with
+`scope.mode: "restricted"` (schema `new-project.local-ci-publication/v1`) may
+narrow it, and a restriction never grants or removes authority. Resolve the actual protected profile,
 observe existing reconciliation, require fresh verification of the PR head
 merged with the current base, then invoke the trusted local Validator adapter
 under existing publication authorization. The supported local adapter is

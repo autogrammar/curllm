@@ -281,6 +281,16 @@
       "remediation": "Replace the local path with a repository-relative reference and sanitize committed logs.",
       "documentation": null
     },
+    "GOV-PHYS-001": {
+      "message": "A changed path carries a declared physical contract but the intent declares no physical change for it.",
+      "remediation": "Declare every changed physical property with before, after and hardware acceptance checks, or property none with a rationale.",
+      "documentation": "error/GOV-PHYS.md"
+    },
+    "GOV-PHYS-002": {
+      "message": "The adopter's physical contract declaration is missing required fields or unreadable.",
+      "remediation": "Repair physical-contracts.json; the gate fails closed while it is invalid.",
+      "documentation": "error/GOV-PHYS.md"
+    },
     "GOV-POLICY-DSL-001": {
       "message": "CONTRIBUTING.md or its pinned Policy DSL runtime is invalid.",
       "remediation": "Restore the managed Policy DSL files or correct the selected dsl fences, then rerun the governance gate.",
@@ -336,6 +346,11 @@
       "remediation": "Install a compatible Goal release and use one active standard-adoption ticket to prepare, review and restage the immutable update.",
       "documentation": "error/GOV-STANDARD-UPDATE.md"
     },
+    "GOV-STANDARD-PACK-001": {
+      "message": "The repository does not satisfy the standard-pack baseline selected by its governance profile.",
+      "remediation": "Adopt every pack required by the selected profile at or above its minimum level, then rerun standard_pack_check.py --strict.",
+      "documentation": null
+    },
     "GOV-SYNC-001": {
       "message": "A managed governance file does not match its pinned SHA-256 digest.",
       "remediation": "Adopt or upgrade the complete immutable package through Goal; do not patch managed payload files manually.",
@@ -345,6 +360,11 @@
       "message": "Implementation changed without exactly one active ticket.",
       "remediation": "Keep the owning ticket IN_PROGRESS through implementation publication; after merge, let the protected controller emit the external terminal receipt without a repository closure commit.",
       "documentation": "error/GOV-TICKET-001.md"
+    },
+    "GOV-TICKET-EXTERNAL-001": {
+      "message": "The selected external ticket backend has no valid active local adapter.",
+      "remediation": "Refresh the repository-local adapter from the external ticket system and keep its bounded scope, state and source evidence consistent.",
+      "documentation": null
     },
     "GOV-TICKET-ACTIVITY-001": {
       "message": "Ticket activity cannot be resolved safely from the managed policy and clone-external terminal receipt registry.",
@@ -500,6 +520,11 @@
       "message": "The migration authorization was consumed or its one-use base or ticket changed.",
       "remediation": "Preserve the source; reobserve the exact subject and protected grant before a bounded successor action.",
       "documentation": "error/GOV-SNAPSHOT-MIGRATION.md"
+    },
+    "GOV-VERSION-001": {
+      "message": "Declared package version does not match root VERSION specification.",
+      "remediation": "Synchronize package manifests (pyproject.toml, setup.py, package.json, Cargo.toml) and code declarations with the authoritative VERSION file.",
+      "documentation": "error/GOV-VERSION.md"
     }
   }
 }

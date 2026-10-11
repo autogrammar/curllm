@@ -105,10 +105,10 @@ def _resolve_base(root: Path) -> str:
         if merge_base:
             return merge_base
 
-    head = _git(root, "rev-parse", "HEAD")
-    if not head:
-        raise GovernanceGateError("GOV-PACKAGING-003: cannot resolve Git base")
-    return head
+    raise GovernanceGateError(
+        "GOV-PACKAGING-003: cannot resolve Git base; "
+        "set WELLMANIFEST_BASE_SHA or fetch the target branch"
+    )
 
 
 def _changed_paths(root: Path, base: str) -> list[str]:
@@ -134,8 +134,9 @@ def pytest_sessionstart(session: object) -> None:
         return
     rootpath = getattr(config, "rootpath", Path.cwd())
     root = Path(str(rootpath)).resolve()
-    gate = root / "project" / "governance-check.sh"
-    if not gate.is_file():
+    gate_sh = root / "project" / "governance-check.sh"
+    gate_bat = root / "project" / "governance-check.bat"
+    if not gate_sh.is_file() and not gate_bat.is_file():
         raise GovernanceGateError(
             "GOV-PACKAGING-003: managed governance gate is missing"
         )
@@ -144,7 +145,13 @@ def pytest_sessionstart(session: object) -> None:
 
     _activate_managed_hook(root)
     base = _resolve_base(root)
-    command = [str(gate), "--base", base]
+    if sys.platform.startswith("win"):
+        if gate_bat.is_file():
+            command = [os.environ.get("COMSPEC", "cmd.exe"), "/c", str(gate_bat), "--base", base]
+        else:
+            command = ["bash", str(gate_sh), "--base", base]
+    else:
+        command = [str(gate_sh), "--base", base]
     for path in _changed_paths(root, base):
         command.extend(("--changed-file", path))
 

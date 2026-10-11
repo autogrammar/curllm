@@ -44,6 +44,27 @@ run_commit_guards() {
   run_worktree_guard
 }
 
+policy_runner="$root/.governance/repository_policy.py"
+if [[ -f "$policy_runner" ]]; then
+  repository_profile="$(PYTHONDONTWRITEBYTECODE=1 python3 "$policy_runner" --root "$root" --profile 2>/dev/null || true)"
+  if [[ "$repository_profile" == "local-audit" ]]; then
+    PYTHONDONTWRITEBYTECODE=1 python3 "$policy_runner" --root "$root" --staged >/dev/null || true
+    exit 0
+  fi
+  if [[ "$repository_profile" == "main-only-planfile" || "$repository_profile" == "main-only-files" ]]; then
+    if [[ -z "$branch" || "$branch" == "HEAD" ]]; then
+      echo "GOV-AGENT-HOST-001: detached HEAD is not allowed by the main-only delivery profile." >&2
+      exit 1
+    fi
+    if ! PYTHONDONTWRITEBYTECODE=1 python3 "$policy_runner" --root "$root" --staged; then
+      echo "GOV-AGENT-HOST-002: staged change rejected by the repository delivery profile." >&2
+      exit 1
+    fi
+    run_commit_guards
+    exit 0
+  fi
+fi
+
 if [[ -z "$branch" || "$branch" == "HEAD" ]]; then
   echo "GOV-AGENT-HOST-001: detached HEAD is not bound to ticket-NNN." >&2
   exit 1

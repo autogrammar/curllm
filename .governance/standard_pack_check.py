@@ -7,12 +7,13 @@ import argparse
 import hashlib
 import json
 import re
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any
 
 LEVELS = {f"S{index}": index for index in range(6)}
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
+DIAGNOSTIC_CODE = "GOV-STANDARD-PACK-001"
 
 
 def load_json(path: Path) -> Any:
@@ -29,13 +30,19 @@ def sha256(path: Path) -> str:
 
 
 def finding(code: str, message: str, path: str = "") -> dict[str, str]:
-    return {"code": code, "message": message, "path": path}
+    return {
+        "code": code,
+        "diagnostic": DIAGNOSTIC_CODE,
+        "message": message,
+        "path": path,
+    }
 
 
 def catalog_ownership_findings(packs, pack_ids, concerns, findings) -> None:
     for pack in packs:
         owns = pack.get("owns") if isinstance(pack, dict) else None
-        if not isinstance(pack, dict) or not isinstance(pack.get("id"), str) or not isinstance(owns, list):
+        if (not isinstance(pack, dict) or not isinstance(pack.get("id"), str)
+                or not pack["id"] or not isinstance(owns, list)):
             findings.append(finding("STD-PACK-CATALOG", "each pack needs an id and ownership list"))
             continue
         pack_id = pack["id"]
@@ -45,6 +52,7 @@ def catalog_ownership_findings(packs, pack_ids, concerns, findings) -> None:
         for concern in owns:
             if not isinstance(concern, str) or not concern:
                 findings.append(finding("STD-PACK-CATALOG", f"invalid ownership claim in {pack_id}"))
+                continue
             elif concern in concerns:
                 findings.append(finding("STD-PACK-DUPLICATE-OWNER", f"duplicate normative owner: {concern}"))
             concerns.add(concern)
@@ -55,11 +63,23 @@ def catalog_profile_findings(profiles, pack_ids, findings) -> None:
         if not isinstance(profile, dict):
             findings.append(finding("STD-PACK-PROFILE", f"profile {name} is not an object"))
             continue
-        for parent in profile.get("extends", []):
-            if parent not in profiles or parent == name:
+        parents = profile.get("extends", [])
+        if not isinstance(parents, list):
+            findings.append(finding("STD-PACK-PROFILE", f"profile {name} extends must be an array"))
+            parents = []
+        for parent in parents:
+            if not isinstance(parent, str) or parent not in profiles or parent == name:
                 findings.append(finding("STD-PACK-PROFILE", f"profile {name} has invalid parent {parent}"))
-        for requirement in profile.get("requirements", []):
-            if requirement.get("id") not in pack_ids or requirement.get("minimumLevel") not in LEVELS:
+        requirements = profile.get("requirements", [])
+        if not isinstance(requirements, list):
+            findings.append(finding("STD-PACK-PROFILE", f"profile {name} requirements must be an array"))
+            requirements = []
+        for requirement in requirements:
+            if (not isinstance(requirement, dict)
+                    or not isinstance(requirement.get("id"), str)
+                    or requirement["id"] not in pack_ids
+                    or not isinstance(requirement.get("minimumLevel"), str)
+                    or requirement["minimumLevel"] not in LEVELS):
                 findings.append(finding("STD-PACK-PROFILE", f"profile {name} has invalid requirement"))
 
 
@@ -75,10 +95,26 @@ def catalog_findings(catalog: Any) -> list[dict[str, str]]:
     pack_ids: set[str] = set()
     concerns: set[str] = set()
     catalog_ownership_findings(packs, pack_ids, concerns, findings)
-    for alias, target in (catalog.get("aliases") or {}).items():
-        if alias in pack_ids or target not in pack_ids:
+    aliases = catalog.get("aliases", {})
+    if not isinstance(aliases, dict):
+        findings.append(finding("STD-PACK-ALIAS", "aliases must be an object"))
+        aliases = {}
+    for alias, target in aliases.items():
+        if (not isinstance(alias, str) or not alias or alias in pack_ids
+                or not isinstance(target, str) or target not in pack_ids):
             findings.append(finding("STD-PACK-ALIAS", f"invalid compatibility alias: {alias} -> {target}"))
     catalog_profile_findings(profiles, pack_ids, findings)
+    for name, model in models.items():
+        if not isinstance(name, str) or not name.strip():
+            findings.append(finding("STD-PACK-CATALOG", "execution model name must be nonempty"))
+        if not isinstance(model, dict):
+            findings.append(finding("STD-PACK-CATALOG", f"execution model {name} must be an object"))
+            continue
+        level = model.get("maximumLevel")
+        if not isinstance(level, str) or level not in LEVELS:
+            findings.append(finding("STD-PACK-CATALOG", f"execution model {name} has invalid maximumLevel"))
+        if not isinstance(model.get("authorizesEffects"), bool):
+            findings.append(finding("STD-PACK-CATALOG", f"execution model {name} authorizesEffects must be boolean"))
     return findings
 
 
@@ -118,14 +154,24 @@ def adoption_artifact_findings(root, pack_id, record, level, findings) -> None:
             continue
         target = artifact.get("target")
         expected_digest = artifact.get("sha256")
-        if not isinstance(target, str) or target.startswith("/") or ".." in Path(target).parts:
+        if (not isinstance(target, str) or not target
+                or PureWindowsPath(target).drive or PureWindowsPath(target).root
+                or ".." in PureWindowsPath(target).parts or ".." in Path(target).parts):
             findings.append(finding("STD-ADOPTION-ARTIFACT", f"unsafe target for {pack_id}"))
             continue
-        target_path = root / target
-        if not target_path.is_file():
-            findings.append(finding("STD-ADOPTION-MISSING", f"managed projection is missing for {pack_id}", target))
-        elif SHA64.fullmatch(str(expected_digest or "")) is None or sha256(target_path) != expected_digest:
-            findings.append(finding("STD-ADOPTION-DRIFT", f"managed projection drift for {pack_id}", target))
+        try:
+            target_path = (root / target).resolve()
+            target_path.relative_to(root.resolve())
+        except (OSError, ValueError, RuntimeError):
+            findings.append(finding("STD-ADOPTION-ARTIFACT", f"unsafe target for {pack_id}", target))
+            continue
+        try:
+            if not target_path.is_file():
+                findings.append(finding("STD-ADOPTION-MISSING", f"managed projection is missing for {pack_id}", target))
+            elif SHA64.fullmatch(str(expected_digest or "")) is None or sha256(target_path) != expected_digest:
+                findings.append(finding("STD-ADOPTION-DRIFT", f"managed projection drift for {pack_id}", target))
+        except OSError:
+            findings.append(finding("STD-ADOPTION-ARTIFACT", f"cannot read managed projection for {pack_id}", target))
 
 def adoption_record_findings(root, pack_id, record, models, findings) -> None:
     level = record.get("level")
@@ -200,6 +246,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--catalog", default=".governance/standard-packs.json")
     parser.add_argument("--adoption", default=".governance/standard-adoption.json")
     parser.add_argument("--format", choices=("text", "json"), default="text")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="return non-zero for findings even when the adoption record is in audit mode",
+    )
     args = parser.parse_args(argv)
     root = Path(args.root).resolve()
     catalog_path = root / args.catalog
@@ -217,7 +268,14 @@ def main(argv: list[str] | None = None) -> int:
     else:
         adoption = load_json(adoption_path)
     findings = structural or adoption_findings(root, catalog, adoption)
-    result = {"schema": "wellmanifest.standard-adoption-report/v1", "mode": adoption.get("mode", "enforce"), "profile": adoption.get("profile"), "ok": not findings, "findings": findings}
+    result = {
+        "schema": "wellmanifest.standard-adoption-report/v1",
+        "mode": adoption.get("mode", "enforce"),
+        "profile": adoption.get("profile"),
+        "strict": args.strict,
+        "ok": not findings,
+        "findings": findings,
+    }
     if args.format == "json":
         print(json.dumps(result, indent=2, sort_keys=True))
     else:
@@ -227,7 +285,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"{item['code']}: {item['message']}{suffix}")
     if structural:
         return 2
-    return 1 if findings and adoption.get("mode") == "enforce" else 0
+    return 1 if findings and (args.strict or adoption.get("mode") == "enforce") else 0
 
 
 if __name__ == "__main__":

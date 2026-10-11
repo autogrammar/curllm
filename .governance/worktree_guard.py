@@ -207,9 +207,11 @@ def watch(
         if current != previous:
             previous = current
             print("worktree-guard: change detected, running overlap check", flush=True)
-            code = run_once(root, config, output_format, report, checker_path, scope)
-            if code != 0:
-                print("worktree-guard: overlap check failed", flush=True)
+        # The topology fingerprint omits dirty/staged files. Check each interval
+        # so edits in existing worktrees cannot leave a stale passing report.
+        code = run_once(root, config, output_format, report, checker_path, scope)
+        if code != 0:
+            print("worktree-guard: overlap check failed", flush=True)
         time.sleep(interval)
 
 

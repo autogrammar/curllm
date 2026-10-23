@@ -1,0 +1,71 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-012",
+  "summary": "Shared lockfile dependency maintenance",
+  "workstream": "integration",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P2",
+    "origin": "health"
+  },
+  "allowedPaths": [
+    "project/ticket-012/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "uv.lock"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "a92a6431efe8a5961e3d0022bf2c386e972754e0",
+    "targetBranch": "main",
+    "outcome": "Automated shared-lockfile dependency updates carried through the integration workstream.",
+    "nonGoals": [
+      "runtime code changes"
+    ],
+    "complexity": "L",
+    "estimatedMinutes": 60,
+    "budgets": {
+      "maxImplementationFiles": 15,
+      "maxAffectedComponents": 5,
+      "maxPublicInterfaceChanges": 3,
+      "maxRuntimeDependencies": 3
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "No architecture change; dependency lockfile refresh only.",
+      "components": [
+        {
+          "name": "dependencies",
+          "paths": [
+            "uv.lock"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "git revert the dependency bump commit"
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "project/governance-check.sh"
+        ],
+        "evidence": "governance gate GOV-PASS on the PR diff"
+      }
+    ]
+  }
+}

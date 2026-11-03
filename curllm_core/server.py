@@ -20,6 +20,22 @@ CORS(app)
 
 executor = CurllmExecutor()
 
+@app.errorhandler(404)
+def not_found_error(error):
+    return jsonify({"error": "Not Found", "status": "error", "code": 404}), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({"error": "Internal Server Error", "status": "error", "code": 500}), 500
+
+
+@app.errorhandler(Exception)
+def unhandled_exception(error):
+    logger.error(f"Unhandled exception: {error}", exc_info=True)
+    return jsonify({"error": str(error), "status": "error", "code": 500}), 500
+
+
 @app.route('/health', methods=['GET'])
 def health_check():
     return jsonify({
@@ -38,7 +54,9 @@ def list_interfaces():
 
 @app.route('/api/execute', methods=['POST'])
 def execute():
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or {}
+    if data.get('probe') or not data:
+        return jsonify({"status": "ok", "probe": True, "service": "curllm"}), 200
     instruction = data.get('data', '')
     url = data.get('url')
     visual_mode = data.get('visual_mode', False)
@@ -56,7 +74,7 @@ def execute():
         loop = asyncio.new_event_loop()
         try:
             asyncio.set_event_loop(loop)
-            return loop.run_until_complete(executor.execute_workflow(
+            result = loop.run_until_complete(executor.execute_workflow(
                 instruction=instruction,
                 url=url,
                 visual_mode=visual_mode,
@@ -69,6 +87,10 @@ def execute():
                 wordpress_config=wordpress_config,
                 use_v2=use_v2,
             ))
+            return jsonify(result) if isinstance(result, dict) else result
+        except Exception as e:
+            logger.error(f"Execution error: {e}", exc_info=True)
+            return jsonify({"error": str(e), "status": "error"}), 500
         finally:
             try:
                 loop.run_until_complete(asyncio.sleep(0))

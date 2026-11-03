@@ -2,7 +2,7 @@
 
 import logging
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 
 from curllm_server.routes.health import health_bp
@@ -18,6 +18,14 @@ logging.basicConfig(
 
 app = Flask(__name__)
 CORS(app)
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({"error": "Not Found", "status": "error", "code": 404}), 404
+
+@app.errorhandler(500)
+def server_error(e):
+    return jsonify({"error": "Internal Server Error", "status": "error", "code": 500}), 500
 
 # Register blueprints
 app.register_blueprint(health_bp)

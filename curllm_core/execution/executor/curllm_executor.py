@@ -1,9 +1,12 @@
 import json
+import logging
 import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
 from urllib.parse import urlparse
+
+logger = logging.getLogger(__name__)
 from curllm_core.config import config
 from curllm_core.logger import RunLogger
 from curllm_core.llm_factory import setup_llm as setup_llm_factory

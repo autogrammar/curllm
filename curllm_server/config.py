@@ -10,6 +10,24 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def _resolve_api_port() -> int:
+    env_port = os.getenv("CURLLM_API_PORT", os.getenv("API_PORT"))
+    if env_port:
+        try:
+            return int(env_port)
+        except ValueError:
+            pass
+    try:
+        port_file = Path("/tmp/curllm_api_port")
+        if port_file.is_file():
+            content = port_file.read_text(encoding="utf-8").strip()
+            if content.isdigit():
+                return int(content)
+    except OSError:
+        pass
+    return 8020
+
+
 @dataclass
 class Config:
     """Application configuration"""
@@ -20,7 +38,7 @@ class Config:
     max_steps: int = int(os.getenv("CURLLM_MAX_STEPS", "20"))
     screenshot_dir: Path = Path(os.getenv("CURLLM_SCREENSHOT_DIR", "./screenshots"))
     enable_debug: bool = os.getenv("CURLLM_DEBUG", "false").lower() == "true"
-    api_port: int = int(os.getenv("CURLLM_API_PORT", os.getenv("API_PORT", "8000")))
+    api_port: int = _resolve_api_port()
     num_ctx: int = int(os.getenv("CURLLM_NUM_CTX", "8192"))
     num_predict: int = int(os.getenv("CURLLM_NUM_PREDICT", "512"))
     temperature: float = float(os.getenv("CURLLM_TEMPERATURE", "0.3"))

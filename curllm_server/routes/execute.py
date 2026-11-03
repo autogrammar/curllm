@@ -15,7 +15,9 @@ executor = CurllmExecutor()
 @execute_bp.route('/api/execute', methods=['POST'])
 def execute():
     """Main execution endpoint"""
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
+    if data.get('probe') or not data:
+        return jsonify({"status": "ok", "probe": True, "service": "curllm"}), 200
     
     # Extract parameters
     instruction = data.get('data', '')
@@ -31,7 +33,7 @@ def execute():
         loop = asyncio.new_event_loop()
         try:
             asyncio.set_event_loop(loop)
-            return loop.run_until_complete(
+            res = loop.run_until_complete(
                 executor.execute_workflow(
                     instruction=instruction,
                     url=url,
@@ -42,6 +44,9 @@ def execute():
                     headers=headers
                 )
             )
+            return jsonify(res)
+        except Exception as e:
+            return jsonify({"error": str(e), "status": "error"}), 500
         finally:
             try:
                 loop.run_until_complete(asyncio.sleep(0))
@@ -53,6 +58,4 @@ def execute():
             except Exception:
                 pass
 
-    result = _run_in_new_loop()
-    
-    return jsonify(result)
+    return _run_in_new_loop()
